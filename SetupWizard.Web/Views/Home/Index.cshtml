@@ -1,0 +1,72 @@
+﻿<!-- SetupWizard.Web/Views/Home/Index.cshtml -->
+@model List<dynamic>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container">
+    <h2>User Management System</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Add User Form -->
+    <div class="card mb-3">
+        <div class="card-header">Add New User</div>
+        <div class="card-body">
+            <form method="post" action="/Home/CreateUser">
+                <div class="mb-3">
+                    <label class="form-label">Username:</label>
+                    <input type="text" name="username" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email:</label>
+                    <input type="email" name="email" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Add User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users List -->
+    <div class="card">
+        <div class="card-header">Users List</div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Created Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.Id</td>
+                                <td>@user.Username</td>
+                                <td>@user.Email</td>
+                                <td>@user.CreatedDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No users found.</p>
+            }
+        </div>
+    </div>
+</div>

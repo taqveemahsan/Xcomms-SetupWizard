@@ -1,0 +1,23 @@
+-- Users Table
+CREATE TABLE Users (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(50) NOT NULL UNIQUE,
+    Email NVARCHAR(100) NOT NULL,
+    CreatedDate DATETIME2 DEFAULT GETDATE()
+);
+
+-- Settings Table  
+CREATE TABLE Settings (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    SettingKey NVARCHAR(100) NOT NULL UNIQUE,
+    SettingValue NVARCHAR(500),
+    CreatedDate DATETIME2 DEFAULT GETDATE()
+);
+
+-- Logs Table
+CREATE TABLE Logs (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    LogLevel NVARCHAR(20) NOT NULL,
+    Message NVARCHAR(MAX),
+    CreatedDate DATETIME2 DEFAULT GETDATE()
+);
