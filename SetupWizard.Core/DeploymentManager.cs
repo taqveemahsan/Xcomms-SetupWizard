@@ -58,7 +58,7 @@ namespace SetupWizard.Core
         /// <summary>
         /// Deploy pre-built API to IIS
         /// </summary>
-        public bool DeployPreBuiltAPI(string sourcePath, string targetPath, int port, string appPoolName, string connectionString)
+        public DeploymentResult DeployPreBuiltAPI(string sourcePath, string targetPath, int port, string appPoolName, string connectionString)
         {
             try
             {
@@ -74,9 +74,18 @@ namespace SetupWizard.Core
                 UpdateAPIConnectionString(targetPath, connectionString);
 
                 // Step 4: Create IIS site and app pool
-                _iisManager.DeployAPI($"MyAPI_{port}", targetPath, port, appPoolName);
+                string siteName = $"MyAPI_{port}";
+                bool result = _iisManager.DeployAPI(siteName, targetPath, port, appPoolName);
 
-                return true;
+                // Return deployment result with actual site name and port
+                return new DeploymentResult
+                {
+                    Success = result,
+                    SiteName = siteName,
+                    Port = port,
+                    AppPoolName = appPoolName,
+                    Url = $"http://localhost:{port}"
+                };
             }
             catch (Exception ex)
             {
@@ -87,7 +96,7 @@ namespace SetupWizard.Core
         /// <summary>
         /// Deploy pre-built Web App to IIS  
         /// </summary>
-        public bool DeployPreBuiltWeb(string sourcePath, string targetPath, int port, string appPoolName, string connectionString, string apiUrl)
+        public DeploymentResult DeployPreBuiltWeb(string sourcePath, string targetPath, int port, string appPoolName, string connectionString, string apiUrl)
         {
             try
             {
@@ -103,9 +112,18 @@ namespace SetupWizard.Core
                 UpdateWebConfiguration(targetPath, connectionString, apiUrl);
 
                 // Step 4: Create IIS site and app pool
-                _iisManager.DeployWebApp($"MyWeb_{port}", targetPath, port, appPoolName);
+                string siteName = $"MyWeb_{port}";
+                bool result = _iisManager.DeployWebApp(siteName, targetPath, port, appPoolName);
 
-                return true;
+                // Return deployment result with actual site name and port
+                return new DeploymentResult
+                {
+                    Success = result,
+                    SiteName = siteName,
+                    Port = port,
+                    AppPoolName = appPoolName + "_Web",
+                    Url = $"http://localhost:{port}"
+                };
             }
             catch (Exception ex)
             {
@@ -249,6 +267,18 @@ namespace SetupWizard.Core
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Deployment result class to return actual site name and port
+        /// </summary>
+        public class DeploymentResult
+        {
+            public bool Success { get; set; }
+            public string SiteName { get; set; }
+            public int Port { get; set; }
+            public string AppPoolName { get; set; }
+            public string Url { get; set; }
         }
     }
 }

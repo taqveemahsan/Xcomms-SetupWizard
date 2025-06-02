@@ -209,21 +209,20 @@ public partial class MainWizardForm : Form
             var webPort = int.Parse(GetControlValue("WebPort"));
 
             var connectionString = $"Server={currentConfig.Database.ServerName};Database={currentConfig.Database.DatabaseName};User Id={currentConfig.Database.Username};Password={currentConfig.Database.Password};TrustServerCertificate=true;";
-            var apiUrl = $"http://localhost:{apiPort}";
 
             // Deploy API
             progressForm.UpdateProgress(30, "Deploying API...");
-            bool apiResult = deploymentManager.DeployPreBuiltAPI(apiSourcePath, apiTargetPath, apiPort, "MyAPIPool", connectionString);
+            var apiResult = deploymentManager.DeployPreBuiltAPI(apiSourcePath, apiTargetPath, apiPort, "MyAPIPool", connectionString);
 
-            // Deploy Web
+            // Deploy Web with the actual API URL
             progressForm.UpdateProgress(70, "Deploying Web Application...");
-            bool webResult = deploymentManager.DeployPreBuiltWeb(webSourcePath, webTargetPath, webPort, "MyWebPool", connectionString, apiUrl);
+            var webResult = deploymentManager.DeployPreBuiltWeb(webSourcePath, webTargetPath, webPort, "MyWebPool", connectionString, apiResult.Url);
 
             progressForm.UpdateProgress(100, "Deployment completed!");
 
-            if (apiResult && webResult)
+            if (apiResult.Success && webResult.Success)
             {
-                MessageBox.Show($"Deployment successful!\n\nAPI: http://localhost:{apiPort}\nWeb: http://localhost:{webPort}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Deployment successful!\n\nAPI: {apiResult.Url}\nWeb: {webResult.Url}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             progressForm.Close();
@@ -318,13 +317,13 @@ public partial class MainWizardForm : Form
         testButton.Click += async (s, e) => await TestDatabaseConnection();
 
         connectionGroupBox.Controls.AddRange(new Control[] {
-        serverLabel, serverTextBox, userLabel, userTextBox, passLabel, passTextBox, testButton
-    });
+            serverLabel, serverTextBox, userLabel, userTextBox, passLabel, passTextBox, testButton
+        });
 
-        // Database Restore Section  
-        var restoreGroupBox = new GroupBox
+        // Database Setup Section  
+        var setupGroupBox = new GroupBox
         {
-            Text = "Database Restore",
+            Text = "Database Setup",
             Location = new Point(20, 160),
             Size = new Size(450, 120)
         };
@@ -332,52 +331,127 @@ public partial class MainWizardForm : Form
         var dbNameLabel = new Label { Text = "Database Name:", Location = new Point(10, 30) };
         var dbNameTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "DatabaseName", Text = "MyAppDB" };
 
-        var backupPathLabel = new Label { Text = "Backup File:", Location = new Point(10, 60) };
-        var backupPathTextBox = new TextBox { Location = new Point(120, 60), Width = 200, Name = "BackupPath" };
-        var backupBrowseButton = new Button { Text = "Browse", Location = new Point(330, 60), Width = 80 };
-        backupBrowseButton.Click += (s, e) => BrowseForBackupFile();
+        var scriptPathLabel = new Label { Text = "SQL Script:", Location = new Point(10, 60) };
+        var scriptPathTextBox = new TextBox { Location = new Point(120, 60), Width = 200, Name = "ScriptPath" };
+        var scriptBrowseButton = new Button { Text = "Browse", Location = new Point(330, 60), Width = 80 };
+        scriptBrowseButton.Click += (s, e) => BrowseForScriptFile();
 
-        var restoreButton = new Button { Text = "Restore Database", Location = new Point(120, 90), Width = 150, BackColor = Color.Green, ForeColor = Color.White };
-        restoreButton.Click += async (s, e) => await RestoreDatabase();
+        var setupButton = new Button { Text = "Setup Database", Location = new Point(120, 90), Width = 150, BackColor = Color.Green, ForeColor = Color.White };
+        setupButton.Click += async (s, e) => await SetupDatabaseFromScript();
 
-        restoreGroupBox.Controls.AddRange(new Control[] {
-        dbNameLabel, dbNameTextBox, backupPathLabel, backupPathTextBox, backupBrowseButton, restoreButton
-    });
+        setupGroupBox.Controls.AddRange(new Control[] {
+            dbNameLabel, dbNameTextBox, scriptPathLabel, scriptPathTextBox, scriptBrowseButton, setupButton
+        });
 
-        tab.Controls.AddRange(new Control[] { connectionGroupBox, restoreGroupBox });
+        tab.Controls.AddRange(new Control[] { connectionGroupBox, setupGroupBox });
         return tab;
     }
 
-    //private TabPage CreateDatabaseTab()
-    //{
-    //    var tab = new TabPage("Database Setup");
+    private void BrowseForScriptFile()
+    {
+        using var openFileDialog = new OpenFileDialog();
+        openFileDialog.Title = "Select SQL Script File";
+        openFileDialog.Filter = "SQL Files (*.sql)|*.sql|All Files (*.*)|*.*";
+        openFileDialog.InitialDirectory = Path.Combine(System.Windows.Forms.Application.StartupPath, "Scripts");
+        openFileDialog.Multiselect = true; // Allow selecting multiple files
 
-    //    var serverLabel = new Label { Text = "Server Name:", Location = new Point(20, 20) };
-    //    var serverTextBox = new TextBox { Location = new Point(120, 20), Width = 200, Name = "ServerName" };
+        if (openFileDialog.ShowDialog() == DialogResult.OK)
+        {
+            var textBox = FindControl("ScriptPath") as TextBox;
+            if (textBox != null)
+            {
+                if (openFileDialog.FileNames.Length > 1)
+                {
+                    // Join multiple file paths with semicolons
+                    textBox.Text = string.Join(";", openFileDialog.FileNames);
+                }
+                else
+                {
+                    textBox.Text = openFileDialog.FileName;
+                }
+            }
+        }
+    }
 
-    //    var dbLabel = new Label { Text = "Database Name:", Location = new Point(20, 60) };
-    //    var dbTextBox = new TextBox { Location = new Point(120, 60), Width = 200, Name = "DatabaseName" };
+    private async Task SetupDatabaseFromScript()
+    {
+        try
+        {
+            var serverName = GetControlValue("ServerName");
+            var username = GetControlValue("Username");
+            var password = GetControlValue("Password");
+            var databaseName = GetControlValue("DatabaseName");
+            var scriptPath = GetControlValue("ScriptPath");
 
-    //    var userLabel = new Label { Text = "Username:", Location = new Point(20, 100) };
-    //    var userTextBox = new TextBox { Location = new Point(120, 100), Width = 200, Name = "Username" };
+            if (string.IsNullOrEmpty(scriptPath))
+            {
+                MessageBox.Show("Please select SQL script file(s) first!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-    //    var passLabel = new Label { Text = "Password:", Location = new Point(20, 140) };
-    //    var passTextBox = new TextBox { Location = new Point(120, 140), Width = 200, UseSystemPasswordChar = true, Name = "Password" };
+            // Show progress
+            var progressForm = new ProgressForm();
+            progressForm.Show();
+            progressForm.UpdateProgress(30, "Setting up database from script...");
 
-    //    var testButton = new Button { Text = "Test Connection", Location = new Point(120, 180), Width = 120 };
-    //    testButton.Click += async (s, e) => await TestDatabaseConnection();
+            bool result;
+            
+            // Check if multiple script files were selected
+            if (scriptPath.Contains(";"))
+            {
+                string[] scriptPaths = scriptPath.Split(';');
+                
+                // Verify all files exist
+                foreach (var path in scriptPaths)
+                {
+                    if (!File.Exists(path))
+                    {
+                        MessageBox.Show($"SQL script file not found: {path}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        progressForm.Close();
+                        return;
+                    }
+                }
+                
+                // Execute multiple scripts
+                result = await dbManager.CreateDatabaseFromScript(serverName, username, password, databaseName, scriptPaths);
+            }
+            else
+            {
+                // Single script file
+                if (!File.Exists(scriptPath))
+                {
+                    MessageBox.Show("SQL script file not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    progressForm.Close();
+                    return;
+                }
+                
+                // Execute single script
+                result = await dbManager.SetupDatabaseFromScript(serverName, username, password, databaseName, scriptPath);
+            }
 
-    //    var createButton = new Button { Text = "Create Database", Location = new Point(250, 180), Width = 120 };
-    //    createButton.Click += async (s, e) => await CreateDatabase();
+            progressForm.UpdateProgress(100, "Database setup completed!");
+            progressForm.Close();
 
-    //    tab.Controls.AddRange(new Control[] {
-    //    serverLabel, serverTextBox, dbLabel, dbTextBox,
-    //    userLabel, userTextBox, passLabel, passTextBox,
-    //    testButton, createButton
-    //    });
+            if (result)
+            {
+                MessageBox.Show("Database setup successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-    //    return tab;
-    //}
+                // Save config for next steps
+                currentConfig.Database = new DatabaseConfig
+                {
+                    ServerName = serverName,
+                    DatabaseName = databaseName,
+                    Username = username,
+                    Password = password,
+                    ScriptPath = scriptPath
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Database setup failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 
     private string GetControlValue(string controlName)
     {
@@ -396,7 +470,7 @@ public partial class MainWizardForm : Form
 
         var welcomeLabel = new Label
         {
-            Text = "Welcome to Setup Wizard\n\nThis wizard will help you:\n• Setup Database\n• Deploy API & Web Applications\n• Configure IIS\n• Setup Backup",
+            Text = "Welcome to Setup Wizard\n\nThis wizard will help you:\nï¿½ Setup Database\nï¿½ Deploy API & Web Applications\nï¿½ Configure IIS\nï¿½ Setup Backup",
             Location = new Point(50, 50),
             Size = new Size(400, 200),
             Font = new Font("Segoe UI", 12)
@@ -445,72 +519,6 @@ public partial class MainWizardForm : Form
     });
 
         return tab;
-    }
-    private void BrowseForBackupFile()
-    {
-        using var openFileDialog = new OpenFileDialog();
-        openFileDialog.Title = "Select Database Backup File";
-        openFileDialog.Filter = "Backup Files (*.bak)|*.bak|All Files (*.*)|*.*";
-        openFileDialog.InitialDirectory = Path.Combine(System.Windows.Forms.Application.StartupPath, "..", "Database");
-
-        if (openFileDialog.ShowDialog() == DialogResult.OK)
-        {
-            var textBox = FindControl("BackupPath") as TextBox;
-            if (textBox != null)
-                textBox.Text = openFileDialog.FileName;
-        }
-    }
-    private async Task RestoreDatabase()
-    {
-        try
-        {
-            var serverName = GetControlValue("ServerName");
-            var username = GetControlValue("Username");
-            var password = GetControlValue("Password");
-            var databaseName = GetControlValue("DatabaseName");
-            var backupPath = GetControlValue("BackupPath");
-
-            if (string.IsNullOrEmpty(backupPath))
-            {
-                MessageBox.Show("Please select backup file first!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!File.Exists(backupPath))
-            {
-                MessageBox.Show("Backup file not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Show progress
-            var progressForm = new ProgressForm();
-            progressForm.Show();
-            progressForm.UpdateProgress(30, "Restoring database...");
-
-            // Restore database
-            bool result = await dbManager.RestoreDatabase(serverName, username, password, databaseName, backupPath);
-
-            progressForm.UpdateProgress(100, "Restore completed!");
-            progressForm.Close();
-
-            if (result)
-            {
-                MessageBox.Show("Database restored successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Save config for next steps
-                currentConfig.Database = new DatabaseConfig
-                {
-                    ServerName = serverName,
-                    DatabaseName = databaseName,
-                    Username = username,
-                    Password = password
-                };
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Database restore failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
     }
     private TabPage CreateBackupTab()
     {
@@ -680,7 +688,8 @@ public partial class MainWizardForm : Form
                 ServerName = GetControlValue("ServerName"),
                 DatabaseName = GetControlValue("DatabaseName"),
                 Username = GetControlValue("Username"),
-                Password = GetControlValue("Password")
+                Password = GetControlValue("Password"),
+                ScriptPath = GetControlValue("ScriptPath")  // Include script path
             };
 
             currentConfig.IIS = new IISConfig

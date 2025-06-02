@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,34 +18,57 @@ namespace SetupWizard.Core
             try
             {
                 // Step 1: Database Setup
-                progress?.Report(new ProgressEventArgs(10, "Creating database..."));
+                progress?.Report(new ProgressEventArgs(10, "Setting up database..."));
                 var dbManager = new DatabaseManager();
-                await dbManager.CreateDatabase(config.Database.ServerName, config.Database.DatabaseName,
-                                             config.Database.Username, config.Database.Password);
 
-                // Step 2: Execute Scripts
-                progress?.Report(new ProgressEventArgs(30, "Executing database scripts..."));
-                string connectionString = $"Server={config.Database.ServerName};Database={config.Database.DatabaseName};User Id={config.Database.Username};Password={config.Database.Password};";
-                string[] scripts = Directory.GetFiles("Scripts", "*.sql");
-                await dbManager.ExecuteScripts(connectionString, scripts);
+                if (!string.IsNullOrEmpty(config.Database.ScriptPath))
+                {
+                    // Setup database from script if script path is provided
+                    progress?.Report(new ProgressEventArgs(20, "Creating database from script..."));
+                    await dbManager.SetupDatabaseFromScript(
+                        config.Database.ServerName, 
+                        config.Database.Username, 
+                        config.Database.Password, 
+                        config.Database.DatabaseName, 
+                        config.Database.ScriptPath);
+                }
+                else if (!string.IsNullOrEmpty(config.Database.BackupPath))
+                {
+                    // Fallback to backup if script path is not provided but backup path is
+                    progress?.Report(new ProgressEventArgs(20, "Restoring database from backup..."));
+                    await dbManager.RestoreDatabaseFromLocalFile(
+                        config.Database.ServerName,
+                        config.Database.Username,
+                        config.Database.Password,
+                        config.Database.DatabaseName,
+                        config.Database.BackupPath);
+                }
+                else
+                {
+                    // Use default script if neither is provided
+                    progress?.Report(new ProgressEventArgs(20, "Creating database from default script..."));
+                    string defaultScriptPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database", "setup.sql");
+                    
+                    await dbManager.SetupDatabaseFromScript(
+                        config.Database.ServerName, 
+                        config.Database.Username, 
+                        config.Database.Password, 
+                        config.Database.DatabaseName, 
+                        defaultScriptPath);
+                }
 
-                // Step 3: Setup Backup
-                progress?.Report(new ProgressEventArgs(50, "Setting up database backup..."));
-                await dbManager.SetupBackup(connectionString, config.Database.DatabaseName, config.Backup.BackupPath);
-
-                // Step 4: Deploy API
-                progress?.Report(new ProgressEventArgs(70, "Deploying API to IIS..."));
+                // Step 2: Deploy API
+                progress?.Report(new ProgressEventArgs(50, "Deploying API to IIS..."));
                 var deploymentManager = new DeploymentManager();
                 string apiConnectionString = $"Server={config.Database.ServerName};Database={config.Database.DatabaseName};User Id={config.Database.Username};Password={config.Database.Password};TrustServerCertificate=true;";
-                deploymentManager.DeployPreBuiltAPI(config.IIS.APISourcePath, config.IIS.APIPath, config.IIS.APIPort, config.IIS.AppPoolName, apiConnectionString);
+                var apiResult = deploymentManager.DeployPreBuiltAPI(config.IIS.APISourcePath, config.IIS.APIPath, config.IIS.APIPort, config.IIS.AppPoolName, apiConnectionString);
 
-                // Step 5: Deploy Web App
-                progress?.Report(new ProgressEventArgs(90, "Deploying web application..."));
-                string apiUrl = $"http://localhost:{config.IIS.APIPort}";
-                deploymentManager.DeployPreBuiltWeb(config.IIS.WebSourcePath, config.IIS.WebPath, config.IIS.WebPort, config.IIS.AppPoolName, apiConnectionString, apiUrl);
+                // Step 3: Deploy Web App
+                progress?.Report(new ProgressEventArgs(80, "Deploying web application..."));
+                var webResult = deploymentManager.DeployPreBuiltWeb(config.IIS.WebSourcePath, config.IIS.WebPath, config.IIS.WebPort, config.IIS.AppPoolName, apiConnectionString, apiResult.Url);
 
-                // Step 6: Complete
-                progress?.Report(new ProgressEventArgs(100, "Setup completed successfully!"));
+                // Step 4: Complete
+                progress?.Report(new ProgressEventArgs(100, $"Setup completed successfully!\nAPI: {apiResult.Url}\nWeb: {webResult.Url}"));
             }
             catch (Exception ex)
             {

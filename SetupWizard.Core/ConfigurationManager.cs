@@ -23,6 +23,8 @@ namespace SetupWizard.Core
             public string DatabaseName { get; set; }
             public string Username { get; set; }
             public string Password { get; set; }
+            public string BackupPath { get; set; }
+            public string ScriptPath { get; set; }
         }
 
         public class IISConfig
