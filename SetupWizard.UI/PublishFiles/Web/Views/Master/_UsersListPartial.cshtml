@@ -1,0 +1,112 @@
+﻿@model IEnumerable<XCommsWeb.Models.UsersModel>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@{
+
+    int RowId = 1;
+    int rowNo = 0;
+}
+@foreach (var item in Model)
+{
+    <tr class="@Html.Raw(item.IsOnline == true ? "success" : item.IsActive == true ? "danger" : "")">
+        @*<td class="text-center hide"> @Html.HiddenFor(c => item.RowId)  </td>*@
+        @*<input type="hidden" value="@(rowNo += 1)" />*@
+        <td class="text-center col-md-1">
+            @if (item.Is_AD_User)
+            {
+                <div class="badge bg-color-@Html.Raw(item.Is_AD_User == true && item.IsActive == false ? "green" : "red") txt-color-white" rel="popover-hover" data-placement="right" data-original-title="AD User" data-content="Domain : @item.AD_DomainName">
+                    <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.Is_AD_User == true && item.IsActive == false ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                    <small> @Html.Raw(item.Is_AD_User == true && item.IsActive == false ? "Yes" : "No") </small>
+                </div>
+            }
+            else
+            {
+                <div class="badge bg-color-@Html.Raw(item.Is_AD_User == true && item.IsActive == false ? "green" : "red") txt-color-white">
+                    <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.Is_AD_User == true && item.IsActive == false ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                    <small> @Html.Raw(item.Is_AD_User == true && item.IsActive == false ? "Yes" : "No") </small>
+                </div>
+            }
+        </td>
+        <td class="text-ValignMiddle">
+            <span>
+                @item.Name
+            </span>
+            @if (item.Is_AD_User == true && item.IsADSync == true)
+            {
+                <span class="pull-right" rel="tooltip" data-placement="top" data-original-title="<i class='fa fa-check text-success fa-lg'></i> Synched With AD <br/> Domain : @item.AD_DomainName" data-html="true">
+                    <i class="fa fa-refresh fa-spin fa-lg txt-color-green"></i>
+                </span>
+            }
+        </td>
+        <td class="text-ValignMiddle">@item.DisplayName</td>
+        <td class="text-ValignMiddle @Html.Raw(string.IsNullOrEmpty(item.mobile_phone) ? "warning" : "")">
+            @Html.Raw(!string.IsNullOrEmpty(item.mobile_phone) ? @item.mobile_phone : "-")
+        </td>
+        <td class="text-center text-ValignMiddle">
+            @if (item.IsOnline)
+            {
+                <span class="indicator online">
+                    <img src="~/assets/img/online.png" />
+                </span>
+            }
+            else
+            {
+                <span class="indicator offline"></span>
+            }
+            @Html.HiddenFor(c => item.IsOnline)
+        </td>
+        <td class="text-ValignMiddle @Html.Raw(string.IsNullOrEmpty(item.Email) ? "warning" : "")">
+            @Html.Raw(!string.IsNullOrEmpty(item.Email) ? @item.Email : "-")
+        </td>
+        <td class="text-center text-ValignMiddle">@item.LastLoginDate</td>
+        <td class="text-center text-ValignMiddle">@item.EntryDate.FormateDateWithFullYearUS()</td>
+        <td class="text-center text-ValignMiddle">
+            @*<span class="label @Html.Raw(item.IsActive == false ? "label-success" : "label-danger")"> @Html.Raw(item.IsActive == false ? "Yes" : "No")</span>*@
+            <div class="badge bg-color-@Html.Raw(item.IsActive == false ? "green" : "red") txt-color-white">
+                <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.IsActive == false ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                <small> @Html.Raw(item.IsActive == false ? "Yes" : "No") </small>
+            </div>
+        </td>
+        @if (ViewBag.PermissionTyp == "Administator")
+        {
+            <td class="text-center col-md-1">
+                <div class="btn-group center-block">
+                    <center>
+                        <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu pull-right" style="min-width:auto !important;">
+                            <li>
+                                <a href="javascript:;" class="tooltips ClsEditUser" data-id="@item.ID" rel="tooltip" title="" data-placement="left" data-original-title="Edit User">
+                                    <i class="fa fa-pencil"></i><span class="mrgleft5"> Edit</span>
+                                </a>
+                            </li>
+                            @if (item.IsActive == false)
+                            {
+                                <li>
+                                    <a href="javascript:;" id="i_@item.ID" class="enabledisbale tooltips" data-id="@item.ID" data-type="D" rel="tooltip" title="" data-placement="left" data-original-title="Disable User">
+                                        <i class="fa fa-ban"></i><span class="mrgleft5"> Disable</span>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a href="javascript:;" id="i_@item.ID" class="enabledisbale tooltips" data-id="@item.ID" data-type="E" rel="tooltip" title="" data-placement="left" data-original-title="Enable User">
+                                        <i class="fa fa-check-circle"></i><span class="mrgleft5"> Enable</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </center>
+                </div>
+                @*<a href="@Url.Content("~/Desktop/DisConnecteUserFromHub?DeskbarId=" + @item.DeskbarId)">DisConnect</a>*@
+            </td>
+        }
+        else
+                {
+                    <td></td>
+                }
+    </tr>
+    RowId++;
+}

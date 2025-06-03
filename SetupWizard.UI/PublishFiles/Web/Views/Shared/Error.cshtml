@@ -1,0 +1,57 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    if (ViewBag.ErrorType == "2")
+    {
+        ViewBag.Title = "Warning";
+    }
+    else
+    {
+        ViewBag.Title = "Error";
+    }
+}
+
+@*<hgroup class="title">
+        <h1 class="error">Error.</h1>
+        <h2 class="error">@ViewBag.StrError</h2>
+    </hgroup>*@
+<div class="row text-center" style="margin-top:5%;">
+    @if (ViewBag.ErrorType == "2")
+    {
+        <div class="col-md-offset-2 col-md-8">
+            <div class="alert alert-block alert-warning fade in center">
+                <i class="fa-fw fa fa-5x fa-warning margin-top-10"></i>
+                <h1 class="alert-heading">Warning</h1>
+                <h3>
+                   @ViewBag.StrError
+                </h3>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-offset-2 col-md-8">
+            <div class="alert alert-block alert-danger fade in center">
+                <i class="fa-fw fa fa-5x fa-times-circle-o margin-top-10"></i>
+                <h1 class="alert-heading">@ViewBag.Title</h1>
+                <h3>
+                    @*There is some issue with process. <br />Please check your internet connection else contact your administrator or service provider.
+                    <br /><br />*@
+                    <b> @ViewBag.StrError</b>
+                    <span>
+                        Oops ! <br /> The page you requested could not be found, either contact your administrator or try again. Use your browsers <b>Back</b> button to navigate to the page you have prevously come from
+                    </span>
+                </h3>
+            </div>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+        return {
+            init: function (DomainName) {
+            }
+        }
+    }();
+</script>

@@ -1,0 +1,266 @@
+﻿@model XCommsWeb.Models.PermisionModel
+@using System.Configuration;
+@using XCommsWeb.Models;
+@{
+    ViewBag.Title = "Create New Content";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    List<Tbl_Permission> PermissionList = MS.GetPermissionList(ViewBag.BaseTenantId);
+    var text = "Save";
+    var title = "New Content Manager";
+    if (Model.Id > 0)
+    {
+        text = "Update";
+        title = "Edit Content Manager";
+    }
+}
+<style>
+    .hasbgcolor {
+        color: red;
+    }
+
+    button[disabled] {
+        background-color: #CCC;
+    }
+
+    a[disabled] {
+        background-color: #CCC;
+    }
+</style>
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-8" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header role="heading">
+                <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                <h2>@title</h2>
+            </header>
+            <div>
+                <div class="widget-body no-padding ">
+                    @using (Html.BeginForm("ContentMasterSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "", enctype = "multipart/form-data" }))
+                    {
+                        <fieldset>
+                            <div class="row smart-form">
+                                <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <label class="label">First Name <span class="hasbgcolor">*</span> : </label>
+                                    <label class="input">
+                                        <i class="icon-append fa fa-user txt-color-blue"></i>
+                                        @Html.TextBoxFor(c => c.FirstName, new { @class = "form-control required", placeholder = "First Name", autocomplete = "off" })
+                                        <b class="tooltip tooltip-top-right">
+                                            <i class="fa fa-warning txt-color-teal"></i>
+                                            Enter First Name
+                                        </b>
+                                        @Html.HiddenFor(c => c.Id)
+                                        @Html.HiddenFor(c => c.OldPassword)
+                                    </label>
+                                </section>
+                                <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <label class="label">Last Name <span class="hasbgcolor">*</span> : </label>
+                                    <label class="input">
+                                        <i class="icon-append fa fa-user txt-color-blue"></i>
+                                        @Html.TextBoxFor(c => c.LastName, new { @class = "form-control required", placeholder = "Last Name", autocomplete = "off" })
+                                        <b class="tooltip tooltip-top-right">
+                                            <i class="fa fa-warning txt-color-teal"></i>
+                                            Enter Last Name
+                                        </b>
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row smart-form">
+                                <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <label class="label">User Name <span class="hasbgcolor">*</span> : </label>
+                                    <label class="input">
+                                        <i class="icon-append fa fa-user txt-color-blue"></i>
+                                        @if (Model.Id > 0)
+                                        {
+                                            @Html.TextBoxFor(c => c.Username, new { @class = "form-control required", @readonly = true, placeholder = "User Name", autocomplete = "new-password" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(c => c.Username, new { @class = "form-control required", @maxlength = 50, placeholder = "User Name", autocomplete = "new-password" })
+                                        }
+                                        <b class="tooltip tooltip-top-right">
+                                            <i class="fa fa-warning txt-color-teal"></i>
+                                            Enter User Name
+                                        </b>
+                                    </label>
+                                </section>
+                                <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <label class="label">E-mail Id <span class="hasbgcolor">*</span> : </label>
+                                    <label class="input">
+                                        <i class="icon-append fa fa-envelope txt-color-blue"></i>
+                                        @Html.TextBoxFor(c => c.EmailId, new { @class = "form-control required  ", @maxlength = 50, placeholder = "E-mail Id" })
+                                        <b class="tooltip tooltip-top-right">
+                                            <i class="fa fa-warning txt-color-teal"></i>
+                                            Enter E-mail Address
+                                        </b>
+                                    </label>
+                                </section>
+                               
+                            </div>
+                            <div class="row smart-form">
+                                <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <div class="label">Access level <span class="hasbgcolor">*</span> : </div>
+                                    <label class="input">
+                                        @Html.DropDownListFor(m => m.Accesslevel, new SelectList(PermissionList, "Id", "PermissionName"), "", new { @class = "select2 form-control required", placeholder = "Select Access Level" })
+                                    </label>
+                                </section>
+
+                                <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <div class="label">  &nbsp; </div>
+                                    <label class="checkbox">
+                                        @Html.CheckBoxFor(c => c.MFAEnabled)
+                                        <i></i>Enable Multifactor Authentication
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row smart-form">
+
+                                @if (Model.Id <= 0)
+                                {
+                                    <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                        <label class="label">Password <span class="hasbgcolor">*</span> : </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-lock txt-color-blue"></i>
+                                            @Html.TextBoxFor(c => c.Password, new { @class = "form-control required", autocomplete = "new-password", @minlength = 6, @maxlength = 8, placeholder = "Password", @type = "Password" })
+                                            <b class="tooltip tooltip-top-right">
+                                                <i class="fa fa-warning txt-color-teal"></i>
+                                                Enter Password
+                                            </b>
+                                        </label>
+                                    </section>
+                                }
+
+                            <section class="col col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                @if (Model.Id <= 0)
+                                {
+                                    <div class="label">  &nbsp; </div>
+                                }
+                                <label class="checkbox">
+                                    @Html.CheckBoxFor(c => c.Iscancel)
+                                    <i></i>Active
+                                </label>
+                            </section>
+                            </div>
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="clearfix"></div>
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" id="" class="Clsbcklist btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Back To List">
+                                                <span class="btn-label"><i class="fa fa-arrow-left"></i></span> Back To List
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSubmit" class="btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="@title">
+                                                <span class="btn-label"><i class="fa fa-save"></i></span> @text
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<footer>
+                                <button class="btn btn-primary" type="button" id="btnSubmit">
+                                    <i class="fa fa-save"></i>
+                                    @text
+                                </button>
+                                <a class="btn btn-primary Clsbcklist" href="@Url.Content("~/Master/ContentManagerList")"> <i class="fa fa-arrow-left"> </i>&nbsp;Back To List</a>
+                            </footer>*@
+                    }
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                // Rules for form validation
+                rules: {
+                },
+                // Messages for form validation
+                messages: {
+                },
+                // Do not change code below
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                $("#Iscancel").prop("checked", true);
+                $("#Username").blur(function (e) {
+                    if ($("#Username").val() == "") {
+                        return false;
+                    } else {
+                        if (@Model.Id== 0) {
+                            var strUrl = DomainName + '/Master/CheckDuplicateUser?Id=' + $(this).val();
+                            $.ajax({
+                                url: strUrl,
+                                success: function (data) {
+                                    if (data == 'False') {
+                                        $('#Username').val('');
+                                        $('#Username').focus();
+                                        TosterNotification("error", "This User Id Already exist..", "Oppps..!!");
+                                    }
+                                    else {
+                                        $('#Username').val($(this).val());
+                                        $('#Username').focusin();
+                                        $('#Username').select();
+                                    }
+                                    //App.unblockUI();
+                                    return data;
+                                },
+                                error: function (req, status, error) {
+                                    $('#Username').val('');
+                                    $('#Username').focus();
+                                    //App.unblockUI();
+                                    TosterNotification("error", 'Opration fail..!! There is some issue please try agian or Contact your administrator for more detail.', "Oppps..!!");
+                                    return false;
+                                }
+                            });
+                        }
+                    }
+                });
+
+                $('.Clsbcklist').click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/ContentManagerList";
+                });
+
+
+                $("#btnSubmit").on("click", function () {
+                    var form = $("#contact-form");
+                    if (form.valid() == false) {
+                        App.unblockUI();
+                        return false;
+                    } else {
+                        App.blockUI({ boxed: true });
+                        document.forms["contact-form"].submit();
+                    }
+
+                });
+                if ('@ViewBag.IsExpired' == 1) {
+                    $('#btnSubmit').hide();
+                }
+
+                if ('@Model.Id' == 0) {
+                    setTimeout(function () {
+                        $("#Username").val('');
+                        $("#Password").val('');
+                    }, 1000);
+                }
+            }
+        }
+    }();
+</script>

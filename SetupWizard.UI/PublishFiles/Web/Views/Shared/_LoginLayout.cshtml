@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title : XComms</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&amp;subset=all" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style-metronic.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style-responsive.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/plugins.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
+    <link href="~/assets/css/pages/login.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/SmartAdmin/css/smartadmin-production.min.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="~/assets/img/fevicon/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="~/assets/img/New_XComms_Logo/favicon_shortcut.ico" type="image/x-icon">
+    <link rel="icon" href="~/assets/img/New_XComms_Logo/favicon_shortcut.ico" type="image/x-icon">
+
+    <style>
+        h5 {
+            font-size: 15px !important;
+            font-weight: 300;
+            margin: 10px 0;
+            line-height: normal;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="login col-md-offset-4 col-md-4">
+        <div class="content" style="margin-top:30% !important;">
+            <a href="#">
+                <span class="center">
+                    @*<img src="~/assets/img/logos/LoginLogo.png" style="width:90%;margin-left: 5%;margin-top: 5%;" />*@
+                    <img src="~/assets/img/New_XComms_Logo/XComms_Full_Logo.png" style="width:90%;margin-left: 5%;margin-top: 5%;"/>
+                </span>
+            </a>
+            @RenderBody()
+        </div>
+        <div class="copyright">
+        </div>
+    </div>
+    <script src="~/assets/plugins/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
+    <script src="~/assets/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+    <script src="~/assets/plugins/jquery-validation/dist/jquery.validate.min.js" type="text/javascript"></script>
+
+    <script src="~/assets/scripts/core/app.js"></script>
+
+    <script>window.history.forward(0)</script>
+    <script>
+        jQuery(document).ready(function () {
+            App.init();
+            FormComponents.init();
+        });
+    </script>
+</body>
+</html>

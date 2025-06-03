@@ -1,0 +1,89 @@
+﻿@model XCommsWeb.Models.CreateQuizViewModel
+@{
+    var Title = Model.QuestionList.Select(c => c.AlertTitle).FirstOrDefault();
+}
+@using (Html.BeginForm("QuizSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "smart-form", enctype = "multipart/form-data" }))
+{
+    <div class="portlet-body flip-scroll">
+
+        @Html.Hidden("Title", Title)
+        @foreach (var itm in Model.QuestionList)
+        {
+            if (itm.QuestionType == "MCQ")
+            {
+                <section>
+                    <label class="label" style="overflow-wrap:break-word !important;"><strong>@itm.SrNo.@itm.Question</strong></label>
+                    <div class="row">
+                        <div class="col col-12">
+                            @foreach (var item in Model.AnswerList.Where(c => c.QuestId == itm.Id && itm.QuestionType == "MCQ"))
+                            {
+                                if (@item.CorrectAnswer == true)
+                                {
+                                    <label class="checkbox"><input type="checkbox" class="rb_@itm.SrNo" value="" checked disabled /><i></i>@item.Answer</label>
+                                }
+                                else
+                                {
+                                    <label class="checkbox"><input type="checkbox" class="rb_@itm.SrNo" value="" disabled /><i></i>@item.Answer</label>
+                                }
+                            }
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (itm.QuestionType == "SA")
+            {
+                <section>
+                    <label class="label" style="overflow-wrap:break-word !important;"><strong>@itm.SrNo.@itm.Question</strong></label>
+                    <label class="input">
+                        @foreach (var item in Model.AnswerList.Where(c => c.QuestId == itm.Id && itm.QuestionType == "SA"))
+                        {
+                            <input type="text" value="@item.Answer" class="form-control" readonly>
+                        }
+                    </label>
+                </section>
+            }
+            else if (itm.QuestionType == "SC")
+            {
+                <section>
+                    <label class="label" style="overflow-wrap:break-word !important;"><strong>@itm.SrNo.@itm.Question</strong></label>
+                    <div class="row">
+                        <div class="col col-12">
+                            @foreach (var item in Model.AnswerList.Where(c => c.QuestId == itm.Id && itm.QuestionType == "SC"))
+                            {
+                                if (@item.CorrectAnswer == true)
+                                {
+                                    <label class="radio"><input type="radio" class="rb_@itm.SrNo" value="" checked disabled /><i></i>@item.Answer</label>
+                                }
+                                else
+                                {
+                                    <label class="radio"><input type="radio" class="rb_@itm.SrNo" value="" disabled /><i></i>@item.Answer</label>
+                                }
+                            }
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (itm.QuestionType == "TF")
+            {
+                <section>
+                    <label class="label" style="overflow-wrap:break-word !important;"><strong>@itm.SrNo.@itm.Question</strong></label>
+                    <div class="row">
+                        <div class="col col-12">
+                            @foreach (var item in Model.AnswerList.Where(c => c.QuestId == itm.Id && itm.QuestionType == "TF"))
+                            {
+                                if (@item.CorrectAnswer == true)
+                                {
+                                    <label class="radio"><input type="radio" class="rb_@itm.SrNo" value="" checked disabled /><i></i>@item.Answer</label>
+                                }
+                                else
+                                {
+                                    <label class="radio"><input type="radio" class="rb_@itm.SrNo" value="" disabled /><i></i>@item.Answer</label>
+                                }
+                            }
+                        </div>
+                    </div>
+                </section>
+            }
+        }
+    </div>
+}

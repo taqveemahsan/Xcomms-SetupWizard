@@ -1,0 +1,223 @@
+﻿@model XCommsWeb.Models.UsersModel
+@{
+    ViewBag.Title = "Desktop Option Details";
+    Layout = "~/Views/Shared/_LayoutDesktop.cshtml";
+}
+<style>
+    .card-body-bg {
+        overflow-y: auto;
+    }
+
+    .card-body-bg {
+        overflow-y: auto;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey;
+        border-radius: 10px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #0d1723;
+        border-radius: 10px;
+    }
+
+    html {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .container-fluid {
+        padding: 0;
+    }
+    .card-body-bg{
+        padding-top:18px;
+    }
+</style>
+<div class="row col-md-12">
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+        <div class="well no-padding no-margin">
+            @using (Html.BeginForm("DesktopOptionDetailSubmit", "Desktop", FormMethod.Post, new { id = "contact-form", @class = "smart-form client-form", enctype = "multipart/form-data" }))
+            {
+                <fieldset>
+                    @if (string.IsNullOrEmpty(Model.DeskbarId) && Model.OrganizationCount > 1)
+                    {
+                        <div class="row">
+                            <section class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            </section>
+                            <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3">@Html.DisplayNameFor(c => c.OrganizationSecretKey)</label>
+                            <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                                <label class="input">
+                                    @Html.TextBoxFor(c => c.OrganizationSecretKey, new { @class = "form-control required", placeholder = @Html.DisplayNameFor(c => c.OrganizationSecretKey) })
+                                </label>
+                            </section>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(c => c.OrganizationSecretKey)
+                    }
+                    <div class="row">
+                        <section class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        </section>
+                        <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3">Computer Name</label>
+                        <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                            @if (string.IsNullOrEmpty(Model.DeskbarId))
+                            {
+                                <label class="input">
+                                    @Html.TextBoxFor(c => c.DisplayName, new { @class = "form-control required", placeholder = "Computer Name" })
+                                </label>
+                            }
+                            else
+                            {
+                                <label class="label">
+                                    @Html.DisplayFor(c => c.DisplayName)
+                                    @Html.HiddenFor(c => c.DisplayName)
+                                </label>
+                            }
+                        </section>
+                    </div>
+                    <div class="row">
+                        <section class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        </section>
+                        <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3">User Name</label>
+                        <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                            @if (string.IsNullOrEmpty(Model.DeskbarId))
+                            {
+                                <label class="input">
+                                    @Html.TextBoxFor(c => c.Name, new { @class = "form-control required", placeholder = "User Name" })
+                                </label>
+                            }
+                            else
+                            {
+                                <label class="label">
+                                    @Html.DisplayFor(c => c.Name)
+                                    @Html.HiddenFor(c => c.Name)
+                                </label>
+                            }
+                        </section>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.DeskbarId))
+                    {
+                        <div class="row">
+                            <section class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            </section>
+                            <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3" style="margin-top: 5px;">@Html.DisplayNameFor(c => c.Email)</label>
+                            <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                                <label class="input">
+                                    @Html.TextBoxFor(c => c.Email, new { @class = "form-control email", placeholder = @Html.DisplayNameFor(c => c.Email) })
+                                </label>
+                            </section>
+                            @*else
+                                {
+                                    <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3" style="margin-top: 5px;">@Html.DisplayNameFor(c => c.Password)</label>
+                                    <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                                        <label class="input">
+                                            @Html.PasswordFor(c => c.Password, new { @class = "form-control required", placeholder = @Html.DisplayNameFor(c => c.Password) })
+                                        </label>
+                                    </section>
+                                }*@
+                        </div>
+                        <div class="row">
+                            <section class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            </section>
+                            <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3" style="margin-top: 5px;">@Html.DisplayNameFor(c => c.mobile_phone)</label>
+                            <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                                <label class="input">
+                                    @Html.TextBoxFor(c => c.mobile_phone, new { @class = "form-control", placeholder = @Html.DisplayNameFor(c => c.mobile_phone) })
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            </section>
+                            <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3">Client ID</label>
+                            <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                                <label class="label">
+                                    @Html.DisplayFor(c => c.DeskbarId)
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            </section>
+                            <label class="label col-xs-4 col-sm-4 col-md-3 col-lg-3">Enable Audible Alert</label>
+                            <section class="col-xs-6 col-sm-6 col-md-7 col-lg-7">
+                                <label class="checkbox">
+                                    @Html.CheckBox("PlayAlertSoundDisplay", @Model.PlayAlertSound)
+                                    <i></i>
+                                </label>
+                            </section>
+                        </div>
+                    }
+                    @Html.HiddenFor(c => c.PlayAlertSound)
+                    @Html.HiddenFor(c => c.DeskbarId)
+                    @Html.HiddenFor(c => c.RowId)
+                    @Html.HiddenFor(c => c.EditFlag)
+                    @Html.HiddenFor(c => c.Password)
+                    @Html.HiddenFor(c => c.ParentCustID)
+                </fieldset>
+                <footer>
+                    <button type="button" id="btnOptionSubmit" class="btn btn-primary">
+                        <i class="fa fa-check"></i> Save
+                    </button>
+                    <button type="button" id="btnCancel" class="btn btn-primary">
+                        Cancel
+                    </button>
+                </footer>
+            }
+        </div>
+    </div>
+</div>
+<div class="row col-md-12">
+    <div class="col-xs-6 col-sm-6" style="padding-top: 5px;">
+        <span id="btnAppVersionNo" style="text-shadow: none !important; color: #595959; font-size: 14px;">
+        </span>
+    </div>
+    <div class="col-xs-6 col-sm-6 text-right">
+        <span>
+            <a href="javascript:;" id="btnSiteName" style="text-shadow: none !important; color: #FFF; font-size: 17px;">www.xcomms.com</a>
+        </span>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                // Rules for form validation
+                rules: {
+                },
+                // Messages for form validation
+                messages: {
+                },
+                // Do not change code below
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                $("#btnOptionSubmit").on("click", function () {
+                    if ($("#contact-form").valid())
+                        document.forms["contact-form"].submit();
+                    else
+                        return false;
+                });
+
+                $("#PlayAlertSoundDisplay").change(function () {
+                    $("#PlayAlertSound").val($(this).prop("checked"));
+                });
+            }
+        }
+    }();
+</script>

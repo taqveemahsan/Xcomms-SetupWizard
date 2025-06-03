@@ -1,0 +1,264 @@
+﻿@model XCommsWeb.Models.MFAVerificatoinModel
+
+@{
+    ViewBag.Title = "Log in";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+<style type="text/css">
+    .client-form header {
+        text-align: center;
+        background: rgba(255,255,255,0);
+        color: #fff;
+    }
+
+    .smart-form footer {
+        background: rgba(255,255,255,0);
+    }
+
+    .smart-form header {
+        display: block;
+        padding: 8px 0;
+        border-bottom: 1px dashed rgba(0,0,0,.2);
+        font-size: 15px !important;
+        font-weight: 300;
+        color: #fff;
+        margin: 10px 14px 0;
+    }
+
+    .smart-form footer .btn {
+        padding: 10px 16px;
+        font-size: 18px;
+        line-height: 1.33 !important;
+        border-radius: 6px;
+        margin: 0;
+        height: 2.33em;
+    }
+
+    fieldset {
+        background: rgba(255,255,255,0) !important;
+        border: 0 !important;
+    }
+
+    .smart-form .checkbox, .smart-form .radio {
+        color: #FFF;
+        padding-left: 0px;
+        font-size: 15px;
+    }
+
+    a, a:hover {
+        text-shadow: none !important;
+        color: #FFF;
+    }
+
+    .smart-form footer, .smart-form header {
+        border: 0;
+    }
+
+    .smart-form fieldset {
+        padding: 0px 50px 5px;
+    }
+
+    .smart-form footer {
+        padding: 7px 50px 15px;
+    }
+
+    .smart-form .input input {
+        height: 40px;
+        line-height: 40px;
+    }
+
+    .smart-form .icon-prepend {
+        padding-top: 5px;
+        font-size: 18px;
+        height: 24px;
+    }
+
+    .mrgtp8 {
+        margin-top: 8%;
+    }
+
+    .mrgbtm8 {
+        margin-bottom: 8%;
+    }
+
+    h5 {
+        color: #fff;
+    }
+
+    .btn-danger {
+        color: #fff;
+        background-color: #e23530;
+        border-color: #d43f3a;
+    }
+
+    .help-block {
+        color: #e23530;
+        font-size: 12px;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        padding: 10px 10px 10px 10px;
+        background-color: #cf5154;
+        color: #fff;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="no-padding">
+            @using (Html.BeginForm("MFAVerification", "Account", FormMethod.Post, new { @id = "submit_form", @class = "smart-form client-form login-form" }))
+            {
+                @Html.AntiForgeryToken()
+                <header>
+                    An email with your XComms verification code has been sent to your registered email address. 
+                </header>
+                <fieldset class="row">
+                    <section class="animate__animated animate__headShake col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <span style="color: #D82C29;font-size: 15px;">@Html.ValidationSummary(true)</span>
+                    </section>
+                    <section class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <label class="input">
+                            <i class="icon-prepend fa fa-key"></i>
+                            @Html.TextBoxFor(m => m.VerificationCode, new { value = "", @class = "required", @placeholder = @Html.DisplayNameFor(c => c.VerificationCode), @autocomplete = "off" })
+                            @*<b class="tooltip tooltip-top-left"><i class="fa fa-user txt-color-teal"></i> Please enter your username</b>*@
+                        </label>
+                    </section>
+                </fieldset>
+
+                <fieldset class="row">
+                    <section class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <button type="button" class="btn btn-lg col-xs-12 col-sm-12 col-md-12 col-lg-12 demo-loading-btn" style="background-color: #c79121 !important;color:#FFF !important;">
+                            <b>Verify and Continue to XComms</b>
+                        </button>
+                    </section>
+                </fieldset>
+
+                <h5 class="text-center mrgtp8 mrgbtm8">If you are not receiving a verification email, Please check your spam folder or reach out to your system administrator for assistance.</h5>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    var FormComponents = function () {
+        var Formvalidate = function (DomainName) {
+            var form1 = $('#submit_form');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
+
+            form1.validate({
+                doNotHideMessage: true,
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                // errorClass: 'validate-inline',
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",
+
+                rules: {
+                },
+
+                messages: {
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success1.hide();
+                    error1.show();
+                    App.scrollTo(error1, -200);
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+
+                submitHandler: function (form) {
+                    success1.show();
+                    error1.hide();
+                }
+            });
+        }
+        return {
+            init: function () {
+                Formvalidate();
+                $('input:text:first').focus();
+                $('input:text:first').select();
+                $('.demo-loading-btn').click(function () {
+                    if ($("#submit_form").valid()) {
+                        $(".form-control").attr("readonly", true);
+
+                        $("#UserName").parents("label").removeClass("state-error").change();
+                        $("#UserName").parents("label").addClass("state-success").change();
+
+                        $("#Password").parents("label").removeClass("state-error").change();
+                        $("#Password").parents("label").addClass("state-success").change();
+
+                        var btn = $(this);
+                        btn.button('Loading');
+                        setTimeout(function () {
+                            /*btn.text("Please wait, We are fetching your data.");*/
+                            btn.text("Loading ...");
+                        }, 500);
+                        document.forms["submit_form"].submit();
+                    }
+                    else {
+                        $("#UserName").parents("label").addClass("state-error").change();
+                        $("#UserName").parents("label").removeClass("state-success").change();
+
+                        $("#Password").parents("label").addClass("state-error").change();
+                        $("#Password").parents("label").removeClass("state-success").change();
+
+                        $(".form-control").attr("readonly", false);
+                        return false;
+                    }
+                });
+                $(".form-control").keydown(function (e) {
+                    if (e.keyCode == 13) {
+                        if ($("#submit_form").valid()) {
+                            $(".form-control").attr("readonly", true);
+                            var btn = $('.demo-loading-btn');
+                            btn.button('loading');
+                            document.forms["submit_form"].submit();
+                        }
+                        else {
+                            $(".form-control").attr("readonly", false);
+                            return false;
+                        }
+                    }
+                });
+                $(document).keydown(function (e) {
+                    if (e.keyCode == 13) {
+                        if (e.target.name == "UserName") {
+                            $("#Password").focus();
+                        }
+                        else {
+                            $('.demo-loading-btn').click();
+                        }
+                    }
+                });
+
+                if ('@ViewBag.Message' != "") {
+                    debugger
+                    TosterNotification("error", "No Data Found.", "error");
+                       }
+                if ('@ViewBag.ForgotPasswordMessage' != "") {
+                    debugger
+                    TosterNotification("success", "We just sent reset link on your mail,please check once! Thank you.", "success");
+                       }
+
+            }
+        }
+    }();
+</script>

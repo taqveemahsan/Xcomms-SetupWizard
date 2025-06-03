@@ -1,0 +1,865 @@
+﻿@model XCommsWeb.Models.AlertStep2ViewModel
+@using System.Configuration;
+@using XCommsWeb.Models;
+@{
+    ViewBag.Title = "Target Recipients For Ticker";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SelectListItem> AlertType = new List<SelectListItem>(){
+        new SelectListItem { Text = "Broadcast", Value = "BC"},
+        new SelectListItem { Text = "Recipients", Value = "SR"},
+        new SelectListItem { Text = "IP Groups", Value = "IG"}
+    };
+}
+<style type="text/css">
+    .table-bordered > thead > tr > th {
+        position: sticky;
+        top: 0;
+        background-color: #ebebeb;
+    }
+
+    .online {
+        /* background: #0f9f59;*/
+        -webkit-animation: pulse-animation 3s infinite linear;
+    }
+
+    .offline {
+        -webkit-animation: pulse-animation 3s infinite linear;
+    }
+
+    .indicator {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+    }
+
+    .icon-btn {
+        height: 60px;
+        padding: 12px 0px 0px 0px;
+        min-width: 80px;
+    }
+
+        .icon-btn > i {
+            font-size: 18px;
+        }
+
+    table.table-bordered td:last-child, table.table-bordered th:last-child {
+        border-right-width: 0;
+        z-index: 1;
+    }
+
+    .TxtValignMiddle {
+        vertical-align: middle !important;
+    }
+
+    .MainBox {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-sortable="false">
+            <header role="heading">
+                <span class="widget-icon"><i class="fa fa-ellipsis-h"></i></span>
+                <h2><b>@ViewBag.Title</b></h2>
+            </header>
+            <div class="MainBox">
+                <div class="widget-body">
+                    @using (Html.BeginForm("TickerStep2Submit", "Master", FormMethod.Post, new { id = "form_Template", @class = "form-horizontal", enctype = "multipart/form-data", novalidate = "novalidate" }))
+                    {
+                        <fieldset style="min-height: calc(70vh);">
+                            <div class="col-md-12 form-group">
+                                <div class="col-md-7">
+                                    <label><strong>Send to :</strong></label>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        @*<label class="btn btn-default icon-btn">
+                                                <input type="radio" name="SendtoType" value="BC" data-bv-field="SendtoType">
+                                                <i class="fa fa-users"></i>
+                                                <div>Broadcast</div>
+                                            </label>*@
+                                        <label class="btn btn-default icon-btn active">
+                                            <input type="radio" name="SendtoType" value="SR" data-bv-field="SendtoType">
+                                            <i class="fa fa-users"></i>
+                                            <div>Recipients</div>
+                                        </label>
+                                        @*<label class="btn btn-default icon-btn">
+                                                <input type="radio" name="SendtoType" value="IG" data-bv-field="SendtoType">
+                                                <i class="fa fa-send"></i>
+                                                <div>IP Groups</div>
+                                            </label>*@
+                                    </div>
+                                    @Html.HiddenFor(c => c.SA2.AlertType)
+                                    @Html.HiddenFor(m => m.SA2.AlertId2)
+                                    @Html.HiddenFor(m => m.SA2.Type)
+                                    @Html.HiddenFor(m => m.SA2.LicenceCnt)
+                                </div>
+                                <div class="col-md-5 clsSR">
+                                    <label><strong>Show :</strong></label>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-default icon-btn active" id="shUser">
+                                            @Html.CheckBoxFor(m => m.SA2.SRUsertpy, new { @class = "AlertSetting ", name = "UserType" })
+                                            <i class="fa fa-user"></i>
+                                            <div>Users</div>
+                                        </label>
+                                        <label class="btn btn-default icon-btn active" id="shGroup">
+                                            @Html.CheckBoxFor(m => m.SA2.SRGrouptyp, new { @class = "AlertSetting ", name = "UserType" })
+                                            <i class="fa fa-users"></i>
+                                            <div>Groups</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 form-group clsBC" style="display:none;">
+                                <div class="alert alert-block alert-warning no-margin">
+                                    <h4 class="alert-heading"><img src="~/assets/img/logos/BrodCastlogo.png" style="width:40px;height:40px;" /> NOTICE</h4>
+                                    <h6>
+                                        <b>
+                                            When selecting BrodCast be aware that your XComms communication will be delivered to All user/devices in your allowed targeting group.
+                                        </b>
+                                    </h6>
+                                    <ul>
+                                        <li>
+                                            If you wish to continue and would like All Users within your organzation to receive this XComms check I understand and proceed to click send.
+                                        </li>
+                                    </ul>
+                                    <div style="text-align:right;">
+                                        <input type="checkbox" id="check" value="false" />&nbsp;
+                                        <label>I UnderStand</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class=" form-group clsSR">
+                                <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        @*<label><strong>Show :</strong></label>
+                                            @Html.CheckBoxFor(m => m.SA2.SRUsertpy, new { @class = "AlertSetting  " }) Users
+                                            @Html.CheckBoxFor(m => m.SA2.SRGrouptyp, new { @class = "AlertSetting " }) Groups*@
+                                    </div>
+                                    <div class="col-md-offset-1 col-md-5">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                            <input class="form-control" id="tctSearchRecipients" placeholder="Search Recipients" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label id="lblerror" style="display:none;color:#da1515;z-index:1000;"></label>
+                                </div>
+                                <div class="col-md-12 custom-scroll table-responsive margin-top-10" style="max-height: calc(56vh); width:100%; overflow-y: scroll;">
+                                    <table class="table table-bordered sortable" id="containerTbl" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center"> <input type="checkbox" id="chkCheckAll" /></th>
+                                                <th id="sl" class="TxtValignMiddle text-center"> <i class="fa fa-user txt-color-blueDark fa-lg"></i> User Name <i class="fa fa-fw fa-sort"></i></th>
+                                                <th id="cn" class="TxtValignMiddle text-center"> <i class="fa fa-desktop txt-color-blueDark fa-lg"></i> Computer Name<i class="fa fa-fw fa-sort"></i></th>
+                                                <th id="nm" class="TxtValignMiddle text-center"> <i class="fa fa-envelope txt-color-blueDark fa-lg"></i> Email<i class="fa fa-fw fa-sort"></i></th>
+                                                <th id="mn" class="TxtValignMiddle text-center"> <i class="fa fa-mobile-phone txt-color-blueDark fa-lg"></i> Mobile Number<i class="fa fa-fw fa-sort"></i></th>
+                                                @*<th id="nm"><i class="fa fa-key text-warning"></i> Desktop Key<i class="fa fa-fw fa-sort"></i></th>*@
+                                                <th id="TY" class="TxtValignMiddle text-center"> <i class="fa fa-thumb-tack txt-color-blueDark fa-lg"></i> Type<i class="fa fa-fw fa-sort"></i></th>
+                                                <th id="ON" class="TxtValignMiddle text-center"> <i class="fa fa-check-circle-o txt-color-blueDark fa-lg"></i> Online<i class="fa fa-fw fa-sort"></i></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="containerTblSubItem">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-6 pull-left" id="ugt" style="text-align: left">
+                                        <i>
+                                            <b><span id="LblGUChk">0</span></b> Groups Selected &
+                                            <b><span id="lblUsecnt">0</span></b> Users Selected
+                                        </i>
+                                    </div>
+
+                                    <div class="col-md-6 pull-right">
+                                        <ul class="demo-btns">
+                                            <li>
+                                                <a href="javascript:void(0);" id="btnSubmit" class="btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Send Ticker">
+                                                    <span class="btn-label"><i class="fa fa-paper-plane"></i></span>Send Ticker
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                        @Html.HiddenFor(c => c.AM.SchedulePatternType)
+                        @Html.HiddenFor(c => c.AM.MessagingType)
+                        @Html.HiddenFor(c => c.AlertRecipients, new { id = "AlertRecipients" })
+                    }
+                    @Html.HiddenFor(c => c.AM.SchedulePatternType)
+                    @Html.HiddenFor(c => c.AM.AlertId)
+                    @Html.HiddenFor(c => c.AM.AlertTital)
+                    @Html.HiddenFor(c => c.AM.AlertBody)
+                    @Html.HiddenFor(c => c.AM.ThemeId)
+                    @Html.HiddenFor(c => c.AM.TickerPosition)
+                    @Html.HiddenFor(c => c.AM.TickerSpeed)
+                    @Html.HiddenFor(c => c.AM.AutoCloseInMin)
+                    @Html.HiddenFor(c => c.AM.AutoCloseIn)
+                    @Html.HiddenFor(c => c.AM.TrayNotification)
+                    @Html.HiddenFor(c => c.AM.AcknoledgrButton)
+                    @Html.HiddenFor(c => c.AM.CriticalAlert)
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var selectedUsers = [];
+        $(function () {
+            $('#btnSubmit').click(function () {
+                App.blockUI({ boxed: true });
+                var form = $("#form_Template");
+                if (form.valid() == false) {
+                    return false;
+                    App.unblockUI();
+                }
+                else {
+
+
+                    if (selectedUsers.length === 0) {
+                        App.unblockUI();
+                        alert("Please select at least one user/group.");
+                        return false;
+                    }
+
+                    $.ajax({
+                        url: $('#form_Template').attr('action'),
+                        cache: false,
+                        type: 'POST',
+                        data: $('#form_Template').serialize(),
+                        success: function (data) {
+                            if (data.Status == 1) {
+                                Swal.fire({
+                                    title: "Ticker has been sent successfully",
+                                    text: "",
+                                    icon: "success",
+                                    confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                    confirmButtonClass: "btn btn-success clsConfirmYes",
+                                    confirmButtonColor: '#7367f0',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false
+                                });
+
+                                $(".clsConfirmYes").on("click", function () {
+                                    App.unblockUI();
+                                    window.location = DomainName + "/Master/TickerHistory"
+                                });
+
+                                App.unblockUI();
+                            }
+                            else if (data.Message == "Fail") {
+                                //$('#lblerror').text("Please select atleast one recipient");
+                                //$('#lblerror').show();
+
+                                Swal.fire({
+                                    title: "Please select at least one recipient !",
+                                    text: "",
+                                    icon: "error",
+                                    confirmButtonText:
+                                        '<i class="fa fa-thumbs-up"></i> Okay !',
+                                    showCancelButton: false,
+                                    cancelButtonColor: '#d33'
+                                });
+                                App.unblockUI();
+                                return false;
+                            }
+                            else if (data.Message == "Email Send successfully") {
+                                //for send mail for alert
+                                /*TosterNotification("success", "Email Sent successfully..!!", "Success");*/
+
+                                Swal.fire({
+                                    title: "Email Sent successfully !",
+                                    text: "",
+                                    icon: "success",
+                                    confirmButtonText:
+                                        '<i class="fa fa-thumbs-up"></i> Okay !',
+                                    showCancelButton: false,
+                                    cancelButtonColor: '#d33'
+                                });
+
+                                setTimeout(function () {
+                                    window.location = DomainName + "/Master/TickerHistory"
+                                }, 1000);
+                            }
+                            else {
+                                TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                                App.unblockUI();
+                            }
+
+                        },
+                        error: function (jqXHR, exception) {
+                            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                            App.unblockUI();
+                        }
+                    });
+                }
+            });
+        });
+
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+
+        var FormComponents = function (DomainName) {
+            var FormValidate = function (DomainName) {
+
+                var form = $('#form_Template');
+                var error = $('.alert-danger', form);
+                var success = $('.alert-success', form);
+
+                $("#form_Template").validate({
+
+                    // Rules for form validation
+                    rules: {
+
+                    },
+
+                    // Messages for form validation
+                    messages: {
+
+                    },
+
+                    // Do not change code below
+                    errorPlacement: function (error, element) {
+                        error.insertAfter(element.parent());
+                    },
+                    submitHandler: function (form) {
+                        success.show();
+                        error.hide();
+                        //document.forms["form_Template"].submit();
+                    }
+                });
+            }
+
+
+            var isUsersSelected = true;
+            var usersAjaxConfig = {
+                url: "TaskDataListPaged",
+                type: 'POST',
+                data: function (d) {
+                    return {
+                        Usertpy: isUsersSelected,
+                        Grouptyp: !isUsersSelected,
+                        draw: d.draw,
+                        start: d.start,
+                        length: d.length,
+                        searchTerm: d.search.value // ✅ This is the correct search term
+                    };
+                },
+                beforesend: function () {
+                    App.blockUI({ boxed: true });
+                },
+                dataSrc: function () {
+                    return []; // Return empty so DataTables doesn't interfere
+                },
+                complete: function (xhr) {
+                    var json = xhr.responseJSON;
+
+                    $('#containerTblSubItem').html(json.data);
+                    //$('#OnlineCount').text(json.OnlineCount);
+
+                    //// Replace the table body with rendered HTML
+                    //// But we use raw JS so DataTables doesn't override
+                    //let tbody = $('#dt_SearchUser tbody');
+                    //tbody.html(json.data); // ✅ inject rows into DOM manually
+                    $('#containerTbl').css('width', '100%');
+                    App.unblockUI();
+
+                    $('.IsCheck').each(function () {
+                        var userId = $(this).data('userid');
+                        if (selectedUsers.some(x => x.UserId == userId)) {
+                            $(this).prop('checked', true);
+                        }
+                    });
+                    if (isUsersSelected) {
+                        $('#shGroup').removeClass('active');
+                        $('#shUser').addClass('active');
+                    }
+                    else {
+                        $('#shUser').removeClass('active');
+                        $('#shGroup').addClass('active');
+                    }
+                    if (window.Pace) {
+                        Pace.stop(); // ✅ forcefully stop the progress bar
+                    }
+                }
+            };
+
+            //var CallSubmitClick = function (DomainName) {
+            //    $("#btnSubmit").click(function (e) {
+
+            //        var form = $("#form_Template");
+            //        if (form.valid() == false) {
+            //            // App.unblockUI();
+            //            return false;
+            //        }
+            //        else {
+            //            $('#btnSubmit').click(function () {
+            //                var form = $("#form_Template");
+            //                if (form.valid() == false) {
+            //                    return false;
+            //                }
+            //                else {
+            //                    $.ajax({
+            //                        url: $('#form_Template').attr('action'),
+            //                        cache: false,
+            //                        type: 'POST',
+            //                        data: $('#form_Template').serialize(),
+            //                        success: function (data) {
+
+            //                            if (data.Status == 1) {
+            //                                TosterNotification("success", "Record has been updated successfully..!!", "Success");
+            //                                setTimeout(function () {
+            //                                    window.location = DomainName + "/Master/TickerHistory"
+            //                                }, 1500);
+
+            //                            }
+            //                            else {
+            //                                TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+            //                            }
+            //                        },
+            //                        error: function (jqXHR, exception) {
+            //                            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+            //                        }
+            //                    });
+            //                }
+            //            });
+            //        }
+            //    });
+            //}
+
+            //var GetData = function (DomainName, Usertpy, Grouptyp) {
+            //    App.blockUI({ target: "#containerTbl" });
+            //    var StrURL1 = DomainName + "/Master/TaskDataList?Usertpy=" + Usertpy + "&Grouptyp=" + Grouptyp;
+            //    $.ajax({
+            //        url: StrURL1,
+            //        cache: false,
+            //        data: {},
+            //        type: 'POST',
+            //        success: function (data) {
+            //            $("#containerTblSubItem").html(data);
+            //            $("[rel='tooltip']").tooltip();
+            //            var UserCount1 = 0;
+            //            var GroupCount1 = 0;
+            //            $('#lblUsecnt').text(0);
+            //            $('#lblchk').text(0);
+            //            $('#LblGUChk').text(0);
+            //            $('#lblGP').text($('#SendAlertUserList_1__Grp1').val());
+            //            $('#lblUser').text($('#SendAlertUserList_1__User1').val());
+            //            $('.IsCheck').change('on', function () {
+            //                var Ischeck = $(this).val();
+            //                if (jQuery(this).is(":checked")) {
+            //                    $('#lblerror').text("");
+            //                    $('#lblerror').hide();
+            //                    $(this).val("true");
+            //                    var Id = $(this).attr("id");
+            //                    var UserType = $('#UserType_' + Id).val();
+            //                    if (UserType == 'User') {
+            //                        UserCount1 = parseInt(UserCount1) + 1;
+            //                    }
+            //                    if (UserType == 'Group') {
+            //                        GroupCount1 = parseInt(GroupCount1) + 1;
+            //                    }
+            //                }
+            //                else {
+            //                    var Id = $(this).attr("id");
+            //                    var UserType = $('#UserType_' + Id).val();
+            //                    if (UserType == 'User') {
+            //                        UserCount1 = parseInt(UserCount1) - 1;
+            //                    }
+            //                    if (UserType == 'Group') {
+            //                        GroupCount1 = parseInt(GroupCount1) - 1;
+            //                    }
+            //                    $(this).val("false");
+            //                }
+            //                $('#LblGUChk').text(GroupCount1);
+            //                $('#lblUsecnt').text(UserCount1);
+            //            });
+
+
+            //            if (Usertpy == false && Grouptyp == false) {
+            //                var rowCount = $(".table tr").length - 1;
+            //                $('#lblDT').text(rowCount);
+            //                $('.IsCheck').change('on', function () {
+            //                    var Ischeck = $(this).val();
+            //                    if (jQuery(this).is(":checked")) {
+            //                        $(this).val("true");
+            //                    }
+            //                    else {
+            //                        $(this).val("false");
+            //                    }
+            //                    var chk = $('.IsCheck:checked').size();
+            //                    $('#lblchk').text(chk);
+            //                });
+
+            //                $('#shUser').removeClass('active');
+            //                $('#shGroup').removeClass('active');
+
+
+            //            }
+            //            else if (Usertpy == true && Grouptyp == true) {
+            //                var UserCount = 0;
+            //                var GroupCount = 0;
+
+            //                $('.IsCheck').change('on', function () {
+            //                    var Ischeck = $(this).val();
+            //                    if (jQuery(this).is(":checked")) {
+            //                        $(this).val("true");
+            //                        var Id = $(this).attr("id");
+            //                        var UserType = $('#UserType_' + Id).val();
+            //                        if (UserType == 'User') {
+
+            //                            UserCount = parseInt(UserCount) + 1;
+            //                        }
+            //                        if (UserType == 'Group') {
+            //                            GroupCount = parseInt(GroupCount) + 1;
+            //                        }
+            //                    }
+            //                    else {
+            //                        var Id = $(this).attr("id");
+            //                        var UserType = $('#UserType_' + Id).val();
+            //                        if (UserType == 'User') {
+            //                            UserCount1 = parseInt(UserCount1) - 1;
+            //                        }
+            //                        if (UserType == 'Group') {
+            //                            GroupCount1 = parseInt(GroupCount1) - 1;
+            //                        }
+            //                        $(this).val("false");
+            //                        return false;
+            //                    }
+            //                    $('#LblGUChk').text(GroupCount);
+            //                    $('#lblUsecnt').text(UserCount);
+            //                });
+
+            //                $('#ugt').show();
+            //                var rowCount = $(".table tr").length - 1;
+            //                $('#lblGP').text($('#SendAlertUserList_1__Grp1').val());
+            //                $('#lblUser').text($('#SendAlertUserList_1__User1').val());
+
+            //                $('#shGroup').addClass('active');
+            //                $('#shUser').addClass('active');
+
+            //            }
+            //            else if (Usertpy == false && Grouptyp == true) {
+
+            //                $('.IsCheck').change('on', function () {
+            //                    var Ischeck = $(this).val();
+            //                    if (jQuery(this).is(":checked")) {
+            //                        $(this).val("true");
+            //                    }
+            //                    else {
+            //                        $(this).val("false");
+            //                    }
+            //                    var chk = $('.IsCheck:checked').size();
+            //                    $('#lblchk').text(chk);
+            //                });
+
+            //                $('#ugt').show();
+            //                $('#lbluser_grp').text('Group');
+            //                var rowCount = $(".table tr").length - 1;
+            //                $('#lblDT').text(rowCount);
+            //                $('#lblGP').text($('#SendAlertUserList_1__Grp1').val());
+            //                $('#lblUser').text($('#SendAlertUserList_1__User1').val());
+
+            //                $('#shUser').removeClass('active');
+            //                $('#shGroup').addClass('active');
+
+            //            }
+            //            else if (Usertpy == true && Grouptyp == false) {
+
+            //                $('.IsCheck').change('on', function () {
+            //                    var Ischeck = $(this).val();
+            //                    if (jQuery(this).is(":checked")) {
+            //                        $(this).val("true");
+            //                    }
+            //                    else {
+            //                        $(this).val("false");
+            //                    }
+            //                    var chk = $('.IsCheck:checked').size();
+            //                    $('#lblchk').text(chk);
+            //                });
+
+            //                $('#ugt').show();
+            //                $('#lbluser_grp').text('User');
+            //                var rowCount = $(".table tr").length - 1;
+            //                $('#lblDT').text(rowCount);
+            //                $('#lblGP').text($('#SendAlertUserList_1__Grp1').val());
+            //                $('#lblUser').text($('#SendAlertUserList_1__User1').val());
+            //                $('#shGroup').removeClass('active');
+            //                $('#shUser').addClass('active');
+            //            }
+            //            App.unblockUI("#containerTbl");
+            //        },
+            //        error: function (req, status, error) {
+            //            App.unblockUI("#containerTbl");
+            //            alert("error " + req + " " + status + " " + error);
+            //        }
+            //    });
+            //}
+
+            return {
+                init: function (DomainName) {
+                    FormValidate(DomainName);
+                    pagedDataTableById("containerTbl", 2, "desc", true, usersAjaxConfig, 7);
+
+                    $(document).on('change', '.IsCheck', function () {
+                        var userId = $(this).data('userid');
+                        var userName = $(this).data('username');
+                        var userType = $(this).data('usertype');
+                        var email = $(this).data('email');
+
+                        if ($(this).is(':checked')) {
+                            if (!selectedUsers.some(x => x.UserId == userId)) {
+                                selectedUsers.push({ UserId: userId, UserName: userName, UserType: userType, Email: email });
+                            }
+                        } else {
+                            selectedUsers = selectedUsers.filter(x => x.UserId != userId);
+                        }
+
+                        // Update hidden field
+                        $('#AlertRecipients').val(JSON.stringify(selectedUsers));
+
+                        var groupCount = selectedUsers.filter(x => x.UserType === "Group").length;
+                        $('#LblGUChk').text(groupCount);
+                        var userCount = selectedUsers.filter(x => x.UserType === "User").length;
+                        $('#lblUsecnt').text(userCount);
+                    });
+
+                    $(document).on('change', '.AlertSetting', function () {
+                        if ($(this).is(':checked')) {
+                            // Uncheck other checkboxes
+                            $('.AlertSetting').not(this).prop('checked', false);
+
+                            var selectedName = $(this).attr('name');
+
+                            // Special: Check which checkbox it is
+                            if ($(this).attr('id').toLowerCase().includes('srusertpy')) {
+                                $('#shUser').addClass('active');
+                                $('#shGroup').removeClass('active');
+                                $('#SA2_SRGrouptyp').val(false);
+                                $('#SA2_SRUsertpy').val(true);
+                                isUsersSelected = true;
+                            } else if ($(this).attr('id').toLowerCase().includes('srgrouptyp')) {
+                                $('#shGroup').addClass('active');
+                                $('#shUser').removeClass('active');
+                                $('#SA2_SRGrouptyp').val(true);
+                                $('#SA2_SRUsertpy').val(false);
+                                isUsersSelected = false;
+                            }
+                            // 🔥 Finally reload the DataTable
+                            $('#containerTbl').DataTable().ajax.reload();
+                        }
+                    });
+
+
+                    $(document).on('click', '#chkCheckAll', function () {
+                        var isChecked = $(this).prop('checked');
+
+                        $('.IsCheck').each(function () {
+                            $(this).prop('checked', isChecked).trigger('change'); // this fires your existing logic
+                        });
+
+                    });
+
+                    //$(".clsBC").hide();
+                    //$(".clsSR").hide();
+
+                    //$('#SA2_AlertType').change(function () {
+
+                    //    if ($(this).val() == "BC") {
+
+                    //        $('#ugt').hide();
+                    //        $(".clsBC").show(1000);
+                    //        $(".clsSR").hide();
+                    //        $('#btnSubmit').hide();
+                    //    }
+                    //    if ($(this).val() == "SR") {
+
+                    //        $('#ugt').show();
+                    //        $(".clsBC").hide();
+                    //        $(".clsSR").show();
+                    //    }
+                    //    if ($(this).val() == "IG") {
+
+                    //        $('#ugt').hide();
+                    //        $(".clsBC").hide();
+                    //        $(".clsSR").hide();
+                    //    }
+
+                    //});
+
+                    //$(document).on('click', '#chkCheckAll', function () {
+                    //    $('.IsCheck').prop('checked', $(this).prop('checked'));
+                    //    if ($(this).prop('checked')) {
+                    //        $('.IsCheck').parent('span').addClass('checked');
+                    //        $('.IsCheck').val("true");
+                    //        $('#LblGUChk').text($('#SendAlertUserList_1__Grp1').val());
+                    //        $('#lblUsecnt').text($('#SendAlertUserList_1__User1').val());
+                    //        var rowCount = $(".table tr").length - 1;
+                    //        $('#lblchk').text(rowCount);
+                    //    }
+                    //    else {
+                    //        $('.IsCheck').parent('span').removeClass('checked');
+                    //        $('.IsCheck').val("false");
+                    //        $('#LblGUChk').text(0);
+                    //        $('#lblUsecnt').text(0);
+                    //        $('#lblchk').text(0);
+                    //    }
+                    //});
+
+                    //$('.IsCheck').change('on', function () {
+
+                    //    var Ischeck = $(this).val();
+                    //    if (jQuery(this).is(":checked")) {
+                    //        $(this).val("true");
+                    //    }
+                    //    else {
+                    //        $(this).val("false");
+                    //    }
+
+                    //});
+
+                    ////CallSubmitClick(DomainName);
+                    //$("#SA2_SRUsertpy").change(function () {
+                    //    if ($('#SA2_SRUsertpy').val() == "true") {
+                    //        GetData(DomainName, true, false);
+                    //    }
+
+                    //});
+
+                    //$("#SA2_SRGrouptyp").change(function () {
+                    //    if ($('#SA2_SRGrouptyp').val() == "true") {
+                    //        GetData(DomainName, false, true);
+                    //    }
+                    //});
+
+                    //$("#tctSearchRecipients").on("keyup", function () {
+                    //    var value = $(this).val().toLowerCase();
+                    //    $("#containerTblSubItem tr").filter(function () {
+                    //        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                    //        $("[rel='tooltip']").tooltip();
+                    //    });
+                    //});
+
+                    //$("input[name='SendtoType']").change(function () {
+                    //    $("#SA2_AlertType").val(this.value);
+                    //    $(".clsBC").hide();
+                    //    $(".clsSR").hide();
+                    //    if ($(this).val() == "BC") {
+
+                    //        $('#ugt').hide();
+                    //        $(".clsBC").show(1000);
+                    //        $(".clsSR").hide();
+                    //        $('#btnSubmit').hide();
+                    //    }
+                    //    if ($(this).val() == "SR") {
+
+                    //        $('#ugt').show();
+                    //        $(".clsBC").hide();
+                    //        $(".clsSR").show();
+                    //    }
+                    //    if ($(this).val() == "IG") {
+
+                    //        $('#ugt').hide();
+                    //        $(".clsBC").hide();
+                    //        $(".clsSR").hide();
+                    //    }
+                    //});
+                    //$("input[name=SendtoType][value=SR]").prop('checked', true).change();
+
+                    //function sortTable(f, n) {
+                    //    var rows = $('#containerTbl tbody  tr').get();
+
+                    //    rows.sort(function (a, b) {
+
+                    //        var A = getVal(a);
+                    //        var B = getVal(b);
+
+                    //        if (A < B) {
+                    //            return -1 * f;
+                    //        }
+                    //        if (A > B) {
+                    //            return 1 * f;
+                    //        }
+                    //        return 0;
+                    //    });
+
+                    //    function getVal(elm) {
+                    //        var v = $(elm).children('td').eq(n).text().toUpperCase();
+                    //        if ($.isNumeric(v)) {
+                    //            v = parseInt(v, 10);
+                    //        }
+                    //        return v;
+                    //    }
+
+                    //    $.each(rows, function (index, row) {
+                    //        $('#containerTbl').children('tbody').append(row);
+                    //    });
+                    //}
+                    //var f_sl = 1;
+                    //var f_nm = 1;
+                    //var f_cn = 1;
+                    //var f_ty = 1;
+                    //var f_on = 1;
+                    //var f_mn = 1;
+                    //$("#sl").click(function () {
+                    //    f_sl *= -1;
+                    //    var n = $(this).prevAll().length;
+                    //    sortTable(f_sl, n);
+                    //});
+                    //$("#nm").click(function () {
+                    //    f_nm *= -1;
+                    //    var n = $(this).prevAll().length;
+                    //    sortTable(f_nm, n);
+                    //});
+
+                    //$("#cn").click(function () {
+                    //    f_cn *= -1;
+                    //    var n = $(this).prevAll().length;
+                    //    sortTable(f_cn, n);
+                    //});
+                    //$("#TY").click(function () {
+                    //    f_ty *= -1;
+                    //    var n = $(this).prevAll().length;
+                    //    sortTable(f_ty, n);
+                    //});
+                    //$("#ON").click(function () {
+                    //    f_on *= -1;
+                    //    var n = $(this).prevAll().length;
+                    //    sortTable(f_on, n);
+                    //});
+                    //$("#mn").click(function () {
+                    //    f_mn *= -1;
+                    //    var n = $(this).prevAll().length;
+                    //    sortTable(f_mn, n);
+                    //});
+                    //$('#check').change(function () {
+                    //    if ($('#check').not(':checked').length) {
+                    //        $('#btnSubmit').hide();
+                    //    } else {
+                    //        $('#btnSubmit').show();
+                    //    }
+                    //})
+                }
+            }
+        }();
+    </script>
+}
+
+
+
+
+

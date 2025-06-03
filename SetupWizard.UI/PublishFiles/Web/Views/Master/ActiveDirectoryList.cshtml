@@ -1,0 +1,332 @@
+﻿@model XCommsWeb.Models.ADViewModel
+
+@{
+    ViewBag.Title = "AD List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    #dt_ADSyncList .dropdown-menu {
+        position: relative !important;
+        float: right !important;
+        width: auto !important;
+    }
+
+    .TxtVerticalAlign {
+        vertical-align: middle !important;
+    }
+
+    .jarviswidget .widget-body {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header role="heading">
+                    <span class="widget-icon"><i class="fa fa-list"></i></span>
+                    <h2 style="width: auto !important;">XComms Connections</h2>
+                </header>
+                <div class="widget-body">
+                    <div class="col-md-12">
+                        <table id="dt_ADSyncList" class="table table-striped table-bordered table-hover" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"><i class="fa fa-cog txt-color-blue fa-lg"></i> Sync Type</th>
+                                    <th class="text-center"><i class="fa fa-exclamation-circle txt-color-blue fa-lg"></i> Sync Name</th>
+                                    <th class="text-center"><i class="fa fa-user txt-color-blue fa-lg"></i> Created By</th>
+                                    <th class="text-center"><i class="fa fa-calendar txt-color-blue fa-lg"></i> Created On</th>
+                                    <th class="text-center"><i class="fa fa-user txt-color-blue fa-lg"></i> Last Sync By</th>
+                                    <th class="text-center"><i class="fa fa-calendar txt-color-blue fa-lg"></i> Recent Sync</th>
+                                    <th class="text-center"><i class="fa fa-play-circle-o txt-color-blue fa-lg"></i> Auto Sync</th>
+                                    <th class="text-center"><i class="fa fa-info-circle txt-color-blue fa-lg"></i> Schedule Type</th>
+                                    <th class="text-center"><i class="fa fa-pencil-square txt-color-blue fa-lg"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{Html.RenderPartial("_ADSyncListPartial", Model.ListAD);}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var Event = function (DomainName) {
+            $("#EditADSync").click(function () {
+                App.blockUI();
+                var ADSyncId = $(this).data('id');
+                setTimeout(function () {
+                    window.location = DomainName + "/Master/ADManagement?Id=" + ADSyncId;
+                }, 200);
+            });
+
+            $("#BtnSyncRunNow").click(function () {
+                var ADDomainName = $(this).data('domain');
+                var ADUserName = $(this).data('username');
+                var ADPassword = $(this).data('password');
+
+                Swal.fire({
+                    title: "You want to Sync RightNow For, " + ADDomainName + " ?",
+                    text: "",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: 'green',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Sync It !',
+                    footer: 'Please try again or Contact your administrator for more detail.'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        App.blockUI();
+                        var strurl = DomainName + "/Master/ADSyncRunNow?ADDomainName=" + ADDomainName + "&ADUserName=" + ADUserName + "&ADPassword=" + ADPassword;
+                        $.ajax({
+                            url: strurl,
+                            type: 'POST',
+                            data: {},
+                            success: function (data) {
+                                console.log("RunNow Result : " + data);
+
+                                if (data.Status == 1) {
+                                    Swal.fire({
+                                        title: "<i class='fa fa-user txt-color-blue fa-md'></i> " + data.ProfileName + " </br></br> Sync Run Now Successfully !",
+                                        text: "",
+                                        icon: "success",
+                                        confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                        confirmButtonClass: "btn btn-success clsConfirmYes",
+                                        confirmButtonColor: '#7367f0'
+                                    });
+
+                                    $(".clsConfirmYes").on("click", function () {
+                                        App.unblockUI();
+                                        window.location = DomainName + "/Master/ActiveDirectoryList";
+                                    });
+                                }
+                                else if (data.Status == 0 && data.Status == "Wrong Credential") {
+                                    Swal.fire({
+                                        title: "Oops ! </br>",
+                                        text: data.result + " Please check entered credential !",
+                                        icon: "error",
+                                        confirmButtonText: '<i class="fa fa-refresh"></i> Try again !',
+                                        confirmButtonClass: "btn btn-danger clsConfirmYes",
+                                        confirmButtonColor: '#7367f0',
+                                        showCancelButton: true,
+                                        cancelButtonColor: '#d33',
+                                        cancelButtonText: '<i class="fa fa-times-circle"></i> Dismiss !',
+                                        cancelButtonClass: "btn btn-brand clsConfirmNo",
+                                        footer: 'Please try again or Contact your administrator for more detail.'
+                                    });
+
+                                    $(".clsConfirmYes").on("click", function () {
+                                        App.blockUI();
+                                        window.location = DomainName + "/Master/ADManagement?Id=0";
+                                    });
+
+                                    $(".clsConfirmNo").on("click", function () {
+                                        App.unblockUI();
+                                    });
+                                }
+                                else {
+                                    Swal.fire('Oops ! <br/><br/>' + data.Message + ' <br/><br/> Please try again or Contact your administrator for more detail.', '', 'error');
+                                    App.unblockUI();
+                                    return false;
+                                }
+                            },
+                            error: function (req, status, error) {
+                                Swal.fire('Oops !', '<b><h3>' + error.toString() + '</h3></b> </br> Please try again or Contact your administrator for more detail.', 'error');
+                                App.unblockUI();
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        App.unblockUI();
+                        return false;
+                    }
+                })
+            });
+
+            $("#BtnStopSync").click(function () {
+                var ADDomainName = $(this).data('domain');
+                var ADUserName = $(this).data('username');
+                var ADPassword = $(this).data('password');
+
+                Swal.fire({
+                    title: "You want to Stop Sync For, " + ADDomainName + " ?",
+                    text: "",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: 'green',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Stop It !',
+                    footer: 'Please try again or Contact your administrator for more detail.'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        App.blockUI();
+                        var strurl = DomainName + "/Master/ADStopSyncNow?ADDomainName=" + ADDomainName + "&ADUserName=" + ADUserName + "&ADPassword=" + ADPassword;
+                        $.ajax({
+                            url: strurl,
+                            type: 'POST',
+                            data: {},
+                            success: function (data) {
+                                console.log("StopSync Result : " + data);
+
+                                if (data.Status == 1) {
+                                    Swal.fire({
+                                        title: "<i class='fa fa-user txt-color-blue fa-md'></i> " + data.ProfileName + " </br></br> Sync Stop Successfully !",
+                                        text: "",
+                                        icon: "success",
+                                        confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                        confirmButtonClass: "btn btn-success clsConfirmYes",
+                                        confirmButtonColor: '#7367f0'
+                                    });
+
+                                    $(".clsConfirmYes").on("click", function () {
+                                        App.unblockUI();
+                                        window.location = DomainName + "/Master/ActiveDirectoryList";
+                                    });
+                                }
+                                else if (data.Status == 0 && data.Status == "Wrong Credential") {
+                                    Swal.fire({
+                                        title: "Oops ! </br>",
+                                        text: data.result + " Please check entered credential !",
+                                        icon: "error",
+                                        confirmButtonText: '<i class="fa fa-refresh"></i> Try again !',
+                                        confirmButtonClass: "btn btn-danger clsConfirmYes",
+                                        confirmButtonColor: '#7367f0',
+                                        showCancelButton: true,
+                                        cancelButtonColor: '#d33',
+                                        cancelButtonText: '<i class="fa fa-times-circle"></i> Dismiss !',
+                                        cancelButtonClass: "btn btn-brand clsConfirmNo",
+                                        footer: 'Please try again or Contact your administrator for more detail.'
+                                    });
+
+                                    $(".clsConfirmYes").on("click", function () {
+                                        App.blockUI();
+                                        window.location = DomainName + "/Master/ADManagement?Id=0";
+                                    });
+
+                                    $(".clsConfirmNo").on("click", function () {
+                                        App.unblockUI();
+                                    });
+                                }
+                                else {
+                                    Swal.fire('Oops ! <br/><br/>' + data.Message + ' <br/><br/> Please try again or Contact your administrator for more detail.', '', 'error');
+                                    App.unblockUI();
+                                    return false;
+                                }
+                            },
+                            error: function (req, status, error) {
+                                Swal.fire('Oops !', '<b><h3>' + error.toString() + '</h3></b> </br> Please try again or Contact your administrator for more detail.', 'error');
+                                App.unblockUI();
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        App.unblockUI();
+                        return false;
+                    }
+                })
+            });
+
+            $("#BtnDeleteSync").click(function () {
+                var ADDomainName = $(this).data('domain');
+                var ADUserName = $(this).data('username');
+                var ADPassword = $(this).data('password');
+
+                Swal.fire({
+                    title: "You want to Delete AD : " + ADDomainName + " ?",
+                    text: "",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: 'green',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Remove It !',
+                    footer: 'Please try again or Contact your administrator for more detail.'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        App.blockUI();
+                        var strurl = DomainName + "/Master/DeleteAD?ADDomainName=" + ADDomainName + "&ADUserName=" + ADUserName + "&ADPassword=" + ADPassword;
+                        $.ajax({
+                            url: strurl,
+                            type: 'POST',
+                            data: {},
+                            success: function (data) {
+                                console.log("DeleteSync Result : " + data.status);
+
+                                if (data.Status == 1) {
+                                    Swal.fire({
+                                        title: "<i class='fa fa-user txt-color-blue fa-md'></i> " + data.ProfileName + " </br></br> AD Delete Successfully !",
+                                        text: "",
+                                        icon: "success",
+                                        confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                        confirmButtonClass: "btn btn-success clsConfirmYes",
+                                        confirmButtonColor: '#7367f0'
+                                    });
+
+                                    $(".clsConfirmYes").on("click", function () {
+                                        App.unblockUI();
+                                        window.location = DomainName + "/Master/ActiveDirectoryList";
+                                    });
+                                }
+                                else if (data.Status == 0 && data.Status == "Wrong Credential") {
+                                    Swal.fire({
+                                        title: "Oops ! </br>",
+                                        text: data.result + " Please check entered credential !",
+                                        icon: "error",
+                                        confirmButtonText: '<i class="fa fa-refresh"></i> Try again !',
+                                        confirmButtonClass: "btn btn-danger clsConfirmYes",
+                                        confirmButtonColor: '#7367f0',
+                                        showCancelButton: true,
+                                        cancelButtonColor: '#d33',
+                                        cancelButtonText: '<i class="fa fa-times-circle"></i> Dismiss !',
+                                        cancelButtonClass: "btn btn-brand clsConfirmNo",
+                                        footer: 'Please try again or Contact your administrator for more detail.'
+                                    });
+
+                                    $(".clsConfirmYes").on("click", function () {
+                                        App.blockUI();
+                                        window.location = DomainName + "/Master/ADManagement?Id=0";
+                                    });
+
+                                    $(".clsConfirmNo").on("click", function () {
+                                        App.unblockUI();
+                                    });
+                                }
+                                else {
+                                    Swal.fire('Oops ! <br/><br/>' + data.Message + ' <br/><br/> Please try again or Contact your administrator for more detail.', '', 'error');
+                                    App.unblockUI();
+                                    return false;
+                                }
+                            },
+                            error: function (req, status, error) {
+                                Swal.fire('Oops !', '<b><h3>' + error.toString() + '</h3></b> </br> Please try again or Contact your administrator for more detail.', 'error');
+                                App.unblockUI();
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        App.unblockUI();
+                        return false;
+                    }
+                })
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                Event(DomainName); 
+                dataTableById("dt_ADSyncList", 3, "desc", true);
+            }
+        }
+    }();
+</script>
+

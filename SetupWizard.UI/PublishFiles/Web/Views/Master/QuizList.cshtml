@@ -1,0 +1,636 @@
+﻿@model IEnumerable<XCommsWeb.Models.AlertModel>
+@{
+    ViewBag.Title = "Quiz List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .mrgleft5 {
+        margin-left: 5px
+    }
+
+    .mrgleft10 {
+        margin-left: 10px
+    }
+
+    .mrgtop10 {
+        margin-top: 10px
+    }
+
+    .mrgtop20 {
+        margin-top: 20px
+    }
+
+    .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+        text-decoration: none;
+        color: #fff;
+        background-color: #a90329 !important;
+    }
+
+    .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #a90329;
+        border-color: #a90329;
+    }
+
+    .modal-header .close {
+        margin-top: -20px;
+    }
+
+    .squarered {
+        height: 10px;
+        width: 10px;
+        background-color: #a90329;
+    }
+
+    .squaregreen {
+        height: 10px;
+        width: 10px;
+        background-color: #739e73;
+    }
+
+    .ifAlertPreview {
+        position: absolute !important;
+        /* top: 0px !important;
+            left: 350px !important;*/
+        z-index: 99999 !important;
+        border: 1px solid #CCC !important;
+        border-radius: 10px !important;
+        box-shadow: 8px 8px 5px grey !important;
+    }
+
+    .dt-toolbar {
+        padding: 6px 0px 1px;
+    }
+
+    .dt-toolbar-footer {
+        border-top: 0px;
+    }
+
+    .disabled-link {
+        pointer-events: none;
+        background-color: #b5aeaecc;
+        color: unset !important;
+    }
+
+    .TxtVerticalAlign {
+        vertical-align: middle !important;
+    }
+
+    .jarviswidget .widget-body {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+@using (Html.BeginForm("QuizEdit", "Master", FormMethod.Post, new { id = "form_sample" }))
+{
+    <div class="row">
+        <article class="col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-8" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-list"></i> </span>
+                    <h2>Quiz List</h2>
+                </header>
+                <div class="widget-body">
+                    <div class="col-md-12">
+                        <div class="pull-left">
+                            <ul class="demo-btns">
+                                <li>
+                                    <a href="javascript:void(0);" class="ClsAdd btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Add Quiz">
+                                        <span class="btn-label"><i class="fa fa-plus"></i></span>Add Quiz
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clearfix"></div>
+                        @*<a href="javascript:;" class="btn btn-primary ClsAdd"> <i class="fa fa-plus"></i> Add Quiz</a>*@
+                    </div>
+                    <div class="col-md-12 mrgtop10">
+                        <table id="dt_QuizList" class="table table-striped table-bordered table-hover" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"><i class="fa fa-question-circle txt-color-blueDark fa-lg"></i> Quiz Title</th>
+                                    <th class="text-center"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Sent Date/Time (EST)</th>
+                                    <th class="text-center"><i class="fa fa-user txt-color-blueDark fa-lg"></i> Sent By</th>
+                                    <th class="text-center"><i class="fa fa-pencil-square txt-color-blueDark fa-lg"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    Html.RenderPartial("_QuizListPartial", item);
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><strong><label id="AlertTitle"></label></strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="containerTblSubItem"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <ul class="demo-btns">
+                        <li>
+                            <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="#exampleModal" data-toggle="modal" id="exampleModals" style="display:none;"></a>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="pie-chart" class="chart"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <table class=" mrgtop20 table table-responsive table-bordered" id="tblData"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-close"></i><span class="mrgleft5">Close</span></button>
+                <a href="" class="btn btn-primary" id="exportpiedata"><i class="fa fa-download"></i><span class="mrgleft5">Export Details</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ConfirmationMessage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title"><strong>Confirmation</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="message">
+                    <h5>
+                        <span class="control-label">Are you sure you want to delete  </span><b><span id="DeleteSr"> </span></b> ?
+                        <br />
+                        <br />
+                        <span class="control-label">If yes then please press <b>"Confirm"</b> other wise kindly press "Close".</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:10px !important;">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="pull-right">
+                            <ul class="demo-btns">
+                                <li>
+                                    <a href="javascript:void(0);" id="DeleteRow" class="btn btn-labeled btn-primary DeleteRow" rel="tooltip" title="" data-placement="bottom" data-original-title="Confirm">
+                                        <span class="btn-label"><i class="fa fa-check-circle"></i></span>Confirm
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                        <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalTbl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-question-circle"></i></span>
+                                <h2>Quiz Analytics List</h2>
+                            </header>
+                            <div>
+                                <table class="mrgtop20 table table-responsive table-bordered" id="tblData2" width="100%"></table>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <ul class="demo-btns">
+                        <li>
+                            <a href="javascript:void(0);" id="exportPopAlert" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Export Data">
+                                <span class="btn-label"><i class="fa fa-download"></i></span>Export
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalQue" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><strong><label>Quiz Question</label></strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="containerQue"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <ul class="demo-btns">
+                        <li>
+                            <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModalAnswerUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-user"></i></span>
+                                <h2><label id="labelAns"></label></h2>
+                            </header>
+                            <div>
+                                <table class="mrgtop20 table table-responsive table-bordered" id="tblData3" width="100%"></table>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <ul class="demo-btns">
+                        <li>
+                            <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="~/assets/css/popup.css" rel="stylesheet" />
+@section scripts{
+    <script src="~/assets/plugins/easy-pie-chart/jquery.easy-pie-chart.min.js"></script>
+
+    @*<script src="~/assets/plugins/flot/jquery.flot.cust.min.js"></script>*@
+    @*<script src="~/assets/plugins/flot/jquery.flot.resize.min.js"></script>
+        <script src="~/assets/plugins/flot/jquery.flot.fillbetween.min.js"></script>
+        <script src="~/assets/plugins/flot/jquery.flot.orderBar.min.js"></script>
+        <script src="~/assets/plugins/flot/jquery.flot.pie.min.js"></script>
+        <script src="~/assets/plugins/flot/jquery.flot.time.min.js"></script>
+        <script src="~/assets/plugins/flot/jquery.flot.tooltip.min.js"></script>*@
+    <script src="~/assets/scripts/popup.js"></script>
+
+}
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+
+                $(".clsView").on("click", function () {
+                    App.blockUI({ boxed: true });
+                    var strUrl = DomainName + "/Master/QuizDisplay";
+                    $.ajax({
+                        type: 'POST',
+                        url: strUrl,
+                        data: { 'AlertId': $(this).data('alertid') },
+                        success: function (data) {
+                            $("#containerTblSubItem").html("");
+                            $("#containerTblSubItem").html(data);
+                            var title = $('#Title').val();
+                            $('#AlertTitle').text(title);
+                            $('#exampleModal').modal('show');
+                            App.unblockUI();
+                        },
+                        error: function (jqXHR, exception) {
+                            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                            App.blockUI();
+                        }
+                    });
+                });
+                $(".clsDelete").on("click", function () {
+                   var a = $(this).data('alertid');
+                   $('#ConfirmationMessage').modal('show');
+                    $(".DeleteRow").on("click", function () {
+                                var strUrl = DomainName + "/Master/QuizDelete";
+                                App.blockUI({ boxed: true });
+                                $.ajax({
+                                    type: 'POST',
+                                    url: strUrl,
+                                    data: { 'AlertId': a },
+                                    success: function (data) {
+                                        if (data.Status == 1) {
+                                            Swal.fire({
+                                                title: "Record has been deleted successfully !",
+                                                text: "",
+                                                icon: "success",
+                                                confirmButtonText:
+                                                    '<i class="fa fa-thumbs-up"></i> Okay !',
+                                                showCancelButton: false,
+                                                cancelButtonColor: '#d33'
+                                            });
+
+                                            setTimeout(function () {
+                                                window.location = DomainName + "/Master/QuizList"
+                                            }, 1500);
+                                        }
+                                        App.unblockUI();
+                                    },
+                                    error: function (jqXHR, exception) {
+                                        TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                                        App.blockUI();
+                                    }
+                                });
+                        });
+                });
+
+                //$(".clsDelete").on("click", function () {
+                //    var strUrl = DomainName + "/Master/QuizDelete";
+                //    App.blockUI({ boxed: true });
+                //    $.ajax({
+                //        async: false,
+                //        type: 'POST',
+                //        url: strUrl,
+                //        data: { 'AlertId': $(this).data('alertid') },
+                //        success: function (data) {
+                //            if (data.Status == 1) {
+                //                /*TosterNotification("success", "Record has been deleted successfully..!!", "Success");*/
+
+                //                Swal.fire({
+                //                    title: "Record has been deleted successfully !",
+                //                    text: "",
+                //                    icon: "success",
+                //                    confirmButtonText:
+                //                        '<i class="fa fa-thumbs-up"></i> Okay !',
+                //                    showCancelButton: false,
+                //                    cancelButtonColor: '#d33'
+                //                });
+
+                //                setTimeout(function () {
+                //                    window.location = DomainName + "/Master/QuizList"
+                //                }, 1500);
+                //            }
+                //            App.unblockUI();
+                //        },
+                //        error: function (jqXHR, exception) {
+                //            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                //            App.blockUI();
+                //        }
+                //    });
+                //});
+                $(".ClsAnalytics").on("click", function () {
+                    App.blockUI({ target: "#dt_QuizList" });
+                    //App.blockUI({ boxed: true });
+                    var strUrl = DomainName + "/Master/GetQuizAnalyticData";
+                    var strUrl1 = DomainName + "/Master/ExportDatadForQuizAnalytics";
+                    $('#exportPopAlert').attr("href", strUrl1 + "?AlertId=" + $(this).data('alertid'));
+                    $.ajax({
+                        type: 'POST',
+                        url: strUrl,
+                        data: { 'AlertId': $(this).data('alertid') },
+                        success: function (data) {
+                            if (data == "1") {
+                                Swal.fire('Quiz not attend by User!', '', 'error');
+                                //App.unblockUI();
+                                App.unblockUI('#dt_QuizList');
+
+                            } else {
+                                $("#tblData2").html(data);
+                                $('#exampleModalTbl').modal('show');
+                                dataTableById("tblData2");
+                                GetQuestion(DomainName);
+                                GetAnswerUserList(DomainName);
+                                App.unblockUI('#dt_QuizList');
+                            }
+                            //App.unblockUI();
+                        },
+                        error: function (jqXHR, exception) {
+                            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                            //App.unblockUI();
+                            App.unblockUI('#dt_QuizList');
+                        }
+                    });
+                });
+                var GetQuestion = function (DomainName) {
+                    $(".ClsshowQuestion").on("click", function () {
+                        //App.blockUI({ boxed: true });
+                        App.blockUI({ target: "#containerQue" });
+                        $("#containerQue").html("");
+                        var strUrl = DomainName + "/Master/QuizQuestionDisplay";
+                        $.ajax({
+                            type: 'POST',
+                            url: strUrl,
+                            data: { 'Id': $(this).data('id') },
+                            success: function (data) {
+                                $("#containerQue").html(data);
+                                $('#exampleModalQue').modal('show');
+                                //App.unblockUI();
+                                App.unblockUI('#containerQue');
+                            },
+                            error: function (jqXHR, exception) {
+                                TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                                //App.blockUI();
+                                App.unblockUI('#containerQue');
+                            }
+                        });
+                    });
+                }
+                var GetAnswerUserList = function (DomainName) {
+                    $(".ClsCorrectAnswer").on("click", function () {
+                        var type = $(this).data('type')
+                        App.blockUI({ boxed: true });
+                        var strUrl = DomainName + "/Master/QuizQuestionWiseTotalResult";
+                        $.ajax({
+                            type: 'POST',
+                            url: strUrl,
+                            data: { 'Id': $(this).data('id') , 'Type': $(this).data('type') },
+                            success: function (data) {
+                                if (data == "1") {
+                                    App.unblockUI();
+                                } else {
+                                    if (type == 'Correct') {
+                                        $("#labelAns").text('Correct Answer User List')
+                                    }
+                                    else {
+                                        $("#labelAns").text('Incorrect Answer User List')
+                                    }
+                                    $("#tblData3").html(data);
+                                    $('#exampleModalAnswerUser').modal('show');
+                                    dataTableById("tblData3");
+                                    App.unblockUI();
+                                }
+                            },
+                            error: function (jqXHR, exception) {
+                                TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                                App.unblockUI();
+                            }
+                        });
+                    });
+                }
+                @*$(".ClsAnalytics").on("click", function () {
+                    var strUrl = DomainName + "/Home/GetData";
+                    var parameters = {};
+                    parameters['Type'] = "6";
+                    parameters['AlertId'] = $(this).data('alertid');
+                    parameters['TenantId'] = '@ViewBag.TenantId';
+                    parameters['BaseUserName'] = '@ViewBag.UserName';
+                    parameters['ViewingType'] = '@ViewBag.ViewingType';
+
+                    var strUrl1 = DomainName + "/Home/ExportData";
+                    $('#exportpiedata').attr("href", strUrl1 + "?AlertId=" + $(this).data('alertid') + "&Status=" + "" + "&ModuleType=" + $(this).data('type'));
+                    App.blockUI({ boxed: true });
+                    $.ajax({
+                        async: false,
+                        type: 'POST',
+                        url: strUrl,
+                        dataType: 'json',
+                        data: {
+                            Method: 'USP_GetPopUpAnalyticsData',
+                            parameters: parameters
+                        },
+                        success: function (data) {
+                            console.log('Quiz Analytic : ' + data);
+                            //if (!$.trim(data)) {
+                            //    TosterNotification("error", 'No Record Found', "Oppps..!!");
+
+                            //} else {
+                                $("#exampleModals").click();
+                                setTimeout(function () {
+                                    if ($('#pie-chart').length) {
+                                        var data_pie = [];
+                                        //var series = 2;
+                                        //for (var i = 0; i < data.length; i++) {
+                                        //    data_pie[i] = {
+                                        //        label: "Series" + (i + 1),
+                                        //        data: Math.floor(Math.random() * 100) + 1
+                                        //    }
+                                        //}
+                                        data_pie[0] = {
+                                            label: "ND : " + data[0]["NotDelivered"],
+                                            data: data[0]["NotDelivered"],
+                                        }
+                                        data_pie[1] = {
+                                            label: "Delivered : " + data[0]["Delivered"],
+                                            data: data[0]["Delivered"]
+                                        }
+                                        $.plot($("#pie-chart"), data_pie, {
+                                            series: {
+                                                pie: {
+                                                    show: true,
+                                                    innerRadius: 0,
+                                                    radius: 1,
+                                                    label: {
+                                                        show: true,
+                                                        radius: 2 / 4,
+                                                        formatter: function (label, series) {
+                                                            return '<div style="font-size:11px;text-align:center;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                                        },
+                                                        threshold: 0.1
+                                                    }
+                                                }
+                                            },
+                                            legend: {
+                                                show: false,
+                                                noColumns: 1, // number of colums in legend table
+                                                labelFormatter: null, // fn: string -> string
+                                                labelBoxBorderColor: "#000", // border color for the little label boxes
+                                                container: null, // container (as jQuery object) to put legend in, null means default on top of graph
+                                                position: "ne", // position of default legend container within plot
+                                                margin: [5, 10], // distance from grid edge to default legend container within plot
+                                                backgroundColor: "#efefef", // null means auto-detect
+                                                backgroundOpacity: 1 // set to 0 to avoid background
+                                            },
+                                            grid: {
+                                                hoverable: true,
+                                                clickable: true
+                                            },
+                                        });
+                                        var tblString = "";
+                                        tblString += '<tr><td colspan="2"><b>Total Recepient : </b></td><td class="text-left" colspan="2"><b>' + data[0]["NoOfRecipientes"] + '</b></td></tr>';
+                                        tblString += '<tr class="success"><td><div class="squaregreen"></div></td><td><span class="mrgleft5">Delivered</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="Deliverd" data-type="' + data[0]["Type"] + '"><span class="mrgleft10">' + data[0]["Delivered"] + '</span></a></td><td><a href="javascript:;"><span class="mrgleft10">' + data[0]["Delivered_Per"] + '</span></a></td></tr>';
+                                        tblString += '<tr class="danger"><td><div class="squarered"></div></td><td><span class="mrgleft5">Not Delivered</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="NotDeliverd" data-type="' + data[0]["Type"] + '"><span class="mrgleft10">' + data[0]["NotDelivered"] + '</span></a></td><td><a href="javascript:;"><span class="mrgleft10">' + data[0]["NotDelivered_Per"] + '</span></a></td></tr>';
+                                        tblString += '<tr class="warning"><td><div></div></td><td><span class="mrgleft5">Acknowleged</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="Acknowleged" data-type="' + data[0]["Type"] + '"><span class="mrgleft10">' + data[0]["Acknowledged"] + '</span></a></td><td><a href="javascript:;"><span class="mrgleft10">' + data[0]["Acknowledged_Per"] + '</span></a></td></tr>';
+                                        $("#tblData").html(tblString);
+                                        GetAnalyticDetail(DomainName);
+                                    }
+                                }, 500);
+                            //}
+                            App.unblockUI();
+                        },
+                        error: function (jqXHR, exception) {
+                            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                            App.unblockUI();
+                        }
+                    });
+                });*@
+                $('.ClsAdd').click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/CreateQuiz";
+                });
+                 if ('@ViewBag.IsExpired' == 1) {
+                     $('.ClsAdd ').hide();
+                     $('.clsDelete').addClass('disabled-link');
+
+                }
+                dataTableById("dt_QuizList", 1, "desc", true);
+            }
+        }
+    }();
+</script>

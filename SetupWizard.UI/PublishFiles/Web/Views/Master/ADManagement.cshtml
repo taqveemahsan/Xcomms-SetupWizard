@@ -1,0 +1,715 @@
+﻿@model XCommsWeb.Models.ADViewModel
+@{
+    ViewBag.Title = "AD Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+
+    .hasbgcolor {
+        color: red;
+    }
+
+    .smart-form fieldset {
+        display: block;
+        padding: 6px 5px 5px;
+        border: none;
+        background: rgba(255, 255, 255, .9);
+        position: relative;
+    }
+
+    .jarviswidget .widget-body {
+        min-height: 10px;
+        position: relative;
+        padding-bottom: 13px;
+    }
+
+    .bootstrap-select {
+        width: 100%;
+    }
+
+
+
+    .tabletr {
+        background-color: #efefef;
+        font-weight: bold;
+    }
+
+    .dropdown-menu > li > a {
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+        font-size: 12px !important;
+    }
+
+        .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+            text-decoration: none;
+            color: #fff;
+            background-color: #a90329 !important;
+        }
+
+    .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #a90329;
+        border-color: #a90329;
+    }
+
+    .modal-header .close {
+        margin-top: -20px;
+    }
+
+    .squarered {
+        height: 10px;
+        width: 10px;
+        background-color: #a90329;
+    }
+
+    .squaregreen {
+        height: 10px;
+        width: 10px;
+        background-color: #739e73;
+    }
+
+    .dt-toolbar {
+        padding: 6px 1px 1px;
+    }
+
+
+
+    .dt-toolbar {
+        padding: 6px 0px 1px;
+    }
+
+    .dt-toolbar-footer {
+        border-top: 0px;
+    }
+</style>
+
+<section id="widget-grid">
+    <div class="row">
+        <article class="xol-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="widget-body">
+                <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+                    <ul id="myTab1" class="nav nav-tabs bordered">
+                        <li class="active">
+                            <a data-toggle="tab" href="#tab1" aria-expanded="true" rel="tooltip" title="" data-placement="bottom" data-original-title="Local Active Directory Sync Management">
+                                <i class="fa fa-lg fa-sitemap"></i>&nbsp;<span class="hidden-mobile hidden-tablet">Local Active Directory Sync</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a data-toggle="tab" href="#tab2" aria-expanded="false" rel="tooltip" title="" data-placement="bottom" data-original-title="Azure Active Directory Sync Management">
+                                <i class="fa fa-lg fa-sitemap"></i>&nbsp;<span class="hidden-mobile hidden-tablet">Azure Active Directory Sync</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content col-md-12" id="myTabContent1" style="padding:0px;">
+                        <div class="tab-pane DivCustomBorder fade in active table-responsive" id="tab1">
+                            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                                <header role="heading">
+                                    <span class="widget-icon"><i class="fa fa-lock"></i></span>
+                                    <h2 style="width: auto !important;">Local Active Directory Sync Management</h2>
+                                </header>
+                                <div class="widget-body">
+                                    @using (Html.BeginForm("", "Master", FormMethod.Post, new { id = "FormDerectory", @class = "", enctype = "multipart/form-data" }))
+                                    {
+                                        <fieldset>
+                                            <div class="row">
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2 smart-form">
+                                                    <label class="label">Domain Name <span class="hasbgcolor">*</span> : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-globe txt-color-blue"></i>
+                                                        @Html.TextBoxFor(c => c.ADM.DomainName, new { @class = "form-control required", placeholder = "Domain Name", autocomplete = "off" })
+                                                        <b class="tooltip tooltip-top-right">
+                                                            <i class="fa fa-warning txt-color-teal"></i>
+                                                            Enter Domain Name
+                                                        </b>
+                                                        @Html.HiddenFor(Model => Model.ADM.Id)
+                                                    </label>
+                                                </section>
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2 smart-form">
+                                                    <label class="label">User Id <span class="hasbgcolor">*</span> : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-user txt-color-blue"></i>
+                                                        @Html.TextBoxFor(c => c.ADM.ADUserName, new { @class = "form-control required", placeholder = "UserId", autocomplete = "new-password" })
+                                                        <b class="tooltip tooltip-top-right">
+                                                            <i class="fa fa-warning txt-color-teal"></i>
+                                                            Enter User Id
+                                                        </b>
+                                                    </label>
+                                                </section>
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2 smart-form">
+                                                    <label class="label">Password <span class="hasbgcolor">*</span> : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-lock txt-color-blue"></i>
+                                                        @Html.PasswordFor(c => c.ADM.ADPassword, new { @class = "form-control required", placeholder = "Password", autocomplete = "new-password" })
+                                                        <b class="tooltip tooltip-top-right">
+                                                            <i class="fa fa-warning txt-color-teal"></i>
+                                                            Enter Password
+                                                        </b>
+                                                        @Html.HiddenFor(C => C.ADM.ADPassword)
+                                                    </label>
+                                                </section>
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                                                    <button type="button" id="btnConnectAD" class="btn btn-labeled btn-primary" style="margin-top: 25px !important;" rel="tooltip" title="" data-placement="bottom" data-original-title="Connect">
+                                                        <span class="btn-label"><i class="fa fa-circle-o-notch"></i></span> Connect
+                                                    </button>
+                                                </section>
+                                            </div>
+                                            <hr style="border-top: 1px solid #CCC;" />
+                                            <div class="row">
+                                                <section class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                    <div id="ResultData"></div>
+                                                </section>
+                                            </div>
+                                        </fieldset>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane DivCustomBorder fade table-responsive" id="tab2">
+                            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                                <header role="heading">
+                                    <span class="widget-icon"><i class="fa fa-lock"></i></span>
+                                    <h2 style="width: auto !important;">Azure Active Directory Sync Management</h2>
+                                </header>
+                                <div class="widget-body">
+                                    @using (Html.BeginForm("", "Master", FormMethod.Post, new { id = "FormAzureDerectory", @class = "", enctype = "multipart/form-data" }))
+                                    {
+                                        <fieldset>
+                                            <div class="row">
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2 smart-form">
+                                                    <label class="label">App Id <span class="hasbgcolor">*</span> : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-globe txt-color-blue"></i>
+                                                        @Html.TextBoxFor(c => c.ADM.AzureADAppId, new { @class = "form-control required", placeholder = "App Id", autocomplete = "off" })
+                                                        <b class="tooltip tooltip-top-right">
+                                                            <i class="fa fa-warning txt-color-teal"></i>
+                                                            Enter Azure App Id
+                                                        </b>
+                                                        @Html.HiddenFor(Model => Model.ADM.Id)
+                                                    </label>
+                                                </section>
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2 smart-form">
+                                                    <label class="label">App Secret <span class="hasbgcolor">*</span> : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-user txt-color-blue"></i>
+                                                        @Html.PasswordFor(c => c.ADM.AzureADAppSecret, new { @class = "form-control required", placeholder = "App Secret", autocomplete = "new-password" })
+                                                        <b class="tooltip tooltip-top-right">
+                                                            <i class="fa fa-warning txt-color-teal"></i>
+                                                            Enter Azure App Secret
+                                                        </b>
+                                                    </label>
+                                                </section>
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2 smart-form">
+                                                    <label class="label">Tenant Id <span class="hasbgcolor">*</span> : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-lock txt-color-blue"></i>
+                                                        @Html.TextBoxFor(c => c.ADM.AzureADAppTenantId, new { @class = "form-control required", placeholder = "Tenant Id", autocomplete = "new-password" })
+                                                        <b class="tooltip tooltip-top-right">
+                                                            <i class="fa fa-warning txt-color-teal"></i>
+                                                            Enter Tenant Id
+                                                        </b>
+                                                    </label>
+                                                </section>
+                                                <section class="col col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                                                    <button type="button" id="btnConnectAzureAD" class="btn btn-labeled btn-primary" style="margin-top: 25px !important;" rel="tooltip" title="" data-placement="bottom" data-original-title="Connect">
+                                                        <span class="btn-label"><i class="fa fa-circle-o-notch"></i></span> Connect
+                                                    </button>
+                                                </section>
+                                            </div>
+                                            <hr style="border-top: 1px solid #CCC;" />
+                                            <div class="row">
+                                                <section class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                    <div id="ResultData"></div>
+                                                </section>
+                                            </div>
+                                        </fieldset>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#FormDerectory").validate({
+                rules: {},
+                messages: {},
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+        var GetListData = function (DomainName) {
+            App.blockUI({});
+            var strurl = DomainName + "/Master/SearchActiveDerectory";
+            $.ajax({
+                url: strurl,
+                cache: false,
+                data: $("#FormDerectory").serialize(),
+                type: 'POST',
+                success: function (data) {
+                    setTimeout(function () {
+                        App.unblockUI();
+                    }, 200);
+
+                    Swal.fire('Success!', '<b><h3> Local AD Information is saved successfully.', 'success');
+
+
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    Swal.fire('Some error occurred!', '<b><h3>' + error.toString() + '</h3></b> </br> Please try again or Contact your administrator for more detail.', 'error');
+                    App.unblockUI('#main');
+                }
+            });
+        }
+
+        var DirectoryTreeView = function (DomainName) {
+            $('.tree > ul').attr('role', 'tree').find('ul').attr('role', 'group');
+            $('.tree').find('li:has(ul)').addClass('parent_li').attr('role', 'treeitem').find(' > span').attr('title', 'Collapse this branch').on('click', function (e) {
+                var children = $(this).parent('li.parent_li').find(' > ul > li');
+                if (children.is(':visible')) {
+                    children.hide('fast');
+                    $(this).attr('title', 'Expand this branch').find(' > i').removeClass().addClass('fa fa-lg fa-plus-circle txt-color-green');
+                } else {
+                    children.show('fast');
+                    $(this).attr('title', 'Collapse this branch').find(' > i').removeClass().addClass('fa fa-lg fa-minus-circle txt-color-redLight');
+                }
+                e.stopPropagation();
+            });
+        }
+
+        var SubmitSyncData = function (DomainName) {
+            $("#BtnSaveRunSyncData").click(function () {
+
+                if ($('#FormDerectory').valid()) {
+                    App.blockUI({});
+
+                    if ($("#ADM_ADSyncName").val() == "") {
+                        Swal.fire({
+                            title: "Please Enter AD Sync Name !",
+                            text: "",
+                            icon: "info",
+                            confirmButtonText: '<i class="fa fa-refresh"></i> Okay !',
+                            confirmButtonClass: "btn btn-danger",
+                            confirmButtonColor: '#7367f0',
+                            footer: 'Please try again or Contact your administrator for more detail.'
+                        });
+
+                        App.unblockUI();
+                        return false;
+                    }
+
+                    if ($("#ADSyncSchedule_ScheduleType").val() == "Weekly") {
+
+                        var SelectCount = 0;
+                        $(".ScheduleOpetion").each(function () {
+                            if (this.checked) {
+                                SelectCount = SelectCount + 1;
+                            }
+                        });
+
+                        if (SelectCount == 0) {
+                            Swal.fire({
+                                title: "Please select at least one </br></br> <i class='fa fa-calendar fa-sm'></i> Day of week !",
+                                text: "",
+                                icon: "error",
+                                confirmButtonText: '<i class="fa fa-thumbs-up"></i> Okay',
+                                confirmButtonClass: "btn btn-success",
+                                confirmButtonColor: '#7367f0',
+                                showCancelButton: false,
+                                footer: 'Please try again or Contact your administrator for more detail.'
+                            });
+                            $(".ScheduleOpetion").parents("label").removeClass("state-success").change();
+                            $(".ScheduleOpetion").parents("label").addClass("state-error").change();
+
+                            App.unblockUI();
+                            return false;
+                        }
+                        else {
+                            $(".ScheduleOpetion").parents("label").removeClass("state-error").change();
+                            $(".ScheduleOpetion").parents("label").addClass("state-success").change();
+
+                            App.unblockUI();
+                        }
+
+
+                        var myDate = new Date($("#ADSyncSchedule_SyncStartDate").val());
+                        var today = new Date();
+                        if (myDate < today) {
+                            Swal.fire({
+                                title: "Start Sync Date must be grater than or equal to today's date !",
+                                text: "",
+                                icon: "error",
+                                confirmButtonText: '<i class="fa fa-refresh"></i> Try again !',
+                                confirmButtonClass: "btn btn-danger",
+                                confirmButtonColor: '#7367f0',
+                                footer: 'Please try again or Contact your administrator for more detail.'
+                            });
+                            App.unblockUI();
+                            return false;
+                        }
+
+                    }
+
+                    App.blockUI({});
+                    $.ajax({
+                        url: DomainName + "/Master/SubmitActiveDerectory",
+                        cache: false,
+                        type: 'POST',
+                        data: $('#FormDerectory').serialize(),
+                        success: function (data) {
+                            if (data.Status == 1) {
+                                Swal.fire({
+                                    title: "<i class='fa fa-user txt-color-blue fa-md'></i> " + data.ProfileName + " </br></br> Sync Saved and Executed Successfully !",
+                                    text: "",
+                                    icon: "success",
+                                    confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                    confirmButtonClass: "btn btn-success clsConfirmYes",
+                                    confirmButtonColor: '#7367f0'
+                                });
+
+                                $(".clsConfirmYes").on("click", function () {
+                                    App.blockUI({});
+                                    window.location = DomainName + "/Master/ActiveDirectoryList";
+                                });
+                            }
+                            else {
+                                Swal.fire('Oops ! <br/><br/> Please try again or Contact your administrator for more detail.', '', 'error');
+                                App.unblockUI();
+                                return false;
+                            }
+                        },
+                        error: function (req, status, error) {
+                            Swal.fire('Oops !', '<b><h3>' + error.toString() + '</h3></b> </br> Please try again or Contact your administrator for more detail.', 'error');
+                            App.unblockUI();
+                            return false;
+                        }
+                    });
+                }
+                else {
+                    return false;
+                }
+
+            });
+        }
+
+        var SchedulerEvent = function (DomainName) {
+
+            $("#ADSyncSchedule_OnceStartDateTime").on("change", function () {
+                $(".DayOfWeek_StartSyncDateTime").datetimepicker('remove');
+                $('.DayOfWeek_StartSyncDateTime').datetimepicker({
+                    rtl: App.isRTL(),
+                    format: "M dd yyyy HH:ii P",
+                    showMeridian: true,
+                    minuteStep: 2,
+                    autoclose: true,
+                    pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                    startDate: new Date($("#ADSyncSchedule_OnceStartDateTime").val()),
+                    todayBtn: true
+                });
+                $("#ADSyncSchedule_OnceEndDateTime").val($("#ADSyncSchedule_OnceStartDateTime").val())
+            });
+
+            if ($("#ADSyncSchedule_AD_Header_Id").val() > 0) {
+                if ($("#ADSyncSchedule_ScheduleType").val() == "Weekly") {
+                    $(".clsWeekly").show();
+                    $(".clsComman").show();
+                }
+                else {
+                    $(".clsWeekly").hide();
+                    $(".clsComman").hide();
+                }
+            }
+            else {
+                $("#Now").attr("checked", "checked").click();
+
+                $(".clsWeekly").hide();
+                $(".clsComman").hide();
+            }
+
+            $("input[name='RadioSchedulePattern']").click(function () {
+                if (this.value == "Now") {
+                    $("#ADSyncSchedule_ScheduleType").val("Now");
+                    $(".clsWeekly").hide();
+                    $(".clsComman").hide();
+                    $("#ADSyncSchedule_SyncStartDate").removeClass("required");
+                }
+
+                if (this.value == "Weekly") {
+                    $("#ADSyncSchedule_ScheduleType").val("Weekly");
+                    $(".clsWeekly").show();
+                    $(".clsComman").show();
+                    $("#ADSyncSchedule_SyncStartDate").addClass("required");
+
+                    //$(".ScheduleOpetion").prop("checked", false);
+                    //$(".ScheduleOpetion").attr("value", false);
+                }
+            });
+        }
+
+        var Event = function (DomainName) {
+
+            $('.clsChkOU').change('on', function () {
+                var Ischeck = $(this).val();
+                if (jQuery(this).is(":checked")) {
+                    $(this).val("true");
+                }
+                else {
+                    $(this).val("false");
+                }
+            });
+
+            $('.clsChkADGroup').change('on', function () {
+                var Ischeck = $(this).val();
+                if (jQuery(this).is(":checked")) {
+                    $(this).val("true");
+                }
+                else {
+                    $(this).val("false");
+                }
+            });
+
+            /*---------- Start : OU Search & CheckAll ----------*/
+            $(".ClsOUSearchInput").keyup(function () {
+                var searchString = $(this).val();
+                $('#jstree').jstree('search', searchString);
+            });
+            $('#chkOUSelectAll').change(function () {
+                if ($('#chkOUSelectAll').is(":checked")) {
+                    $("#jstree").jstree().check_all(true);
+                }
+                else {
+                    $("#jstree").jstree().uncheck_all(true);
+                }
+            });
+            /*---------- End : OU Search & CheckAll ----------*/
+
+            /*---------- Start : Group Search & CheckAll ----------*/
+            $(".ClsGroupSearchInput").keyup(function () {
+                var searchString = $(this).val();
+                $('#Groupjstree').jstree('search', searchString);
+            });
+
+            $('#chkGroupSelectAll').change(function () {
+                if ($('#chkGroupSelectAll').is(":checked")) {
+                    $("#Groupjstree").jstree().check_all(true);
+                }
+                else {
+                    $("#Groupjstree").jstree().uncheck_all(true);
+                }
+            });
+            /*---------- End : Group Search & CheckAll ----------*/
+
+            $(".DayOfWeek_StartSyncDateTime").datetimepicker({
+                rtl: App.isRTL(),
+                format: "M dd yyyy HH:ii P",
+                showMeridian: true,
+                minuteStep: 2,
+                autoclose: true,
+                pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                startDate: new Date(),
+                todayBtn: true
+            });
+        }
+
+        var SaveSyncDataEvent = function (DomainName) {
+            $("#BtnSaveSyncData").click(function () {
+
+                if ($('#FormDerectory').valid()) {
+                    App.blockUI();
+
+                    if ($("#ADM_ADSyncName").val() == "") {
+                        Swal.fire({
+                            title: "Please Enter AD Sync Name !",
+                            text: "",
+                            icon: "info",
+                            confirmButtonText: '<i class="fa fa-refresh"></i> Okay !',
+                            confirmButtonClass: "btn btn-danger",
+                            confirmButtonColor: '#7367f0',
+                            footer: 'Please try again or Contact your administrator for more detail.'
+                        });
+
+                        App.unblockUI();
+                        return false;
+                    }
+
+                    if ($("#ADSyncSchedule_ScheduleType").val() == "Weekly") {
+
+                        var SelectCount = 0;
+                        $(".ScheduleOpetion").each(function () {
+                            if (this.checked) {
+                                SelectCount = SelectCount + 1;
+                            }
+                        });
+
+                        if (SelectCount == 0) {
+                            Swal.fire({
+                                title: "Please select at least one </br></br> <i class='fa fa-calendar fa-sm'></i> Day of week !",
+                                text: "",
+                                icon: "error",
+                                confirmButtonText: '<i class="fa fa-thumbs-up"></i> Okay',
+                                confirmButtonClass: "btn btn-success",
+                                confirmButtonColor: '#7367f0',
+                                showCancelButton: false,
+                                footer: 'Please try again or Contact your administrator for more detail.'
+                            });
+                            $(".ScheduleOpetion").parents("label").removeClass("state-success").change();
+                            $(".ScheduleOpetion").parents("label").addClass("state-error").change();
+
+                            App.unblockUI();
+                            return false;
+                        }
+                        else {
+                            $(".ScheduleOpetion").parents("label").removeClass("state-error").change();
+                            $(".ScheduleOpetion").parents("label").addClass("state-success").change();
+
+                            App.unblockUI();
+                        }
+
+
+                        var myDate = new Date($("#ADSyncSchedule_SyncStartDate").val());
+                        var today = new Date();
+                        if (myDate < today) {
+                            Swal.fire({
+                                title: "Start Sync Date must be grater than or equal to today's date !",
+                                text: "",
+                                icon: "error",
+                                confirmButtonText: '<i class="fa fa-refresh"></i> Try again !',
+                                confirmButtonClass: "btn btn-danger",
+                                confirmButtonColor: '#7367f0',
+                                footer: 'Please try again or Contact your administrator for more detail.'
+                            });
+                            App.unblockUI();
+                            return false;
+                        }
+                    }
+
+                    App.blockUI();
+                    $.ajax({
+                        url: DomainName + "/Master/SaveADSyncData",
+                        cache: false,
+                        type: 'POST',
+                        data: $('#FormDerectory').serialize(),
+                        success: function (data) {
+                            if (data.Status == 1) {
+                                Swal.fire({
+                                    title: "<i class='fa fa-user txt-color-blue fa-md'></i> " + data.ProfileName + " </br></br> Sync Saved Successfully !",
+                                    text: "",
+                                    icon: "success",
+                                    confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                    confirmButtonClass: "btn btn-success clsConfirmYes",
+                                    confirmButtonColor: '#7367f0'
+                                });
+
+                                $(".clsConfirmYes").on("click", function () {
+                                    App.blockUI({});
+                                    window.location = DomainName + "/Master/ActiveDirectoryList";
+                                });
+                            }
+                            else {
+                                Swal.fire('Oops ! <br/><br/> Please try again or Contact your administrator for more detail.', '', 'error');
+                                App.unblockUI();
+                                return false;
+                            }
+                        },
+                        error: function (req, status, error) {
+                            Swal.fire('Oops !', '<b><h3>' + error.toString() + '</h3></b> </br> Please try again or Contact your administrator for more detail.', 'error');
+                            App.unblockUI();
+                            return false;
+                        }
+                    });
+                }
+                else {
+                    return false;
+                }
+
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                Event(DomainName);
+
+                $("#btnConnectAD").click(function () {
+                    if ($('#FormDerectory').valid()) {
+                        GetListData(DomainName);
+                    }
+                    else {
+                        return false;
+                    }
+                });
+
+                $("#btnConnectAzureAD").click(function () {
+                    if ($('#FormAzureDerectory').valid()) {
+                        App.blockUI({});
+                        var strurl = DomainName + "/Master/SaveAzureActiveDirectory";
+                        $.ajax({
+                            url: strurl,
+                            cache: false,
+                            data: $("#FormAzureDerectory").serialize(),
+                            type: 'POST',
+                            success: function (data) {
+                                setTimeout(function () {
+                                    App.unblockUI();
+                                }, 200);
+
+                                Swal.fire('Success!', '<b><h3> Azure AD Information is saved successfully.', 'success');
+
+                                //Swal.fire({
+                                //    title: "Oops ! </br>",
+                                //    text: data.result + " Please check entered credential !",
+                                //    icon: "error",
+                                //    confirmButtonText: '<i class="fa fa-refresh"></i> Try again !',
+                                //    confirmButtonClass: "btn btn-danger clsConfirmYes",
+                                //    confirmButtonColor: '#7367f0',
+                                //    showCancelButton: true,
+                                //    cancelButtonColor: '#d33',
+                                //    cancelButtonText: '<i class="fa fa-times-circle"></i> Dismiss !',
+                                //    cancelButtonClass: "btn btn-brand clsConfirmNo",
+                                //    footer: 'Please try again or Contact your administrator for more detail.'
+                                //});
+
+                                App.unblockUI();
+
+                            },
+                            error: function (req, status, error) {
+                                Swal.fire('Oops!', '<b><h3>' + error.toString() + '</h3></b> </br> Please try again or Contact your administrator for more detail.', 'error');
+                                App.unblockUI('#main');
+                            }
+                        });
+                    }
+                    else {
+                        return false;
+                    }
+                });
+
+                $(".form-control").keydown(function (e) {
+                    if (e.keyCode == 13) {
+                        if ($("#FormDerectory").valid()) {
+                            GetListData(DomainName);
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+    }();
+</script>
+

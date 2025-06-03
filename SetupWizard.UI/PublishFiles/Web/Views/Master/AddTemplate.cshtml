@@ -1,0 +1,341 @@
+﻿@model XCommsWeb.Models.TamlpateModel
+@using System.Configuration;
+
+@{
+    ViewBag.Title = "AddTemplate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var Text = "Submit"; var type = "Add";
+    if (Model.EditFlag == "true")
+    {
+        Text = "Update";
+        type = "Edit";
+    }
+}
+<style type="text/css">
+    .note-editable {
+        font-size: 14px !important;
+    }
+
+    .note-editor.note-frame {
+        border: 1px solid #a9a9a9 !important;
+    }
+
+    .hasbgcolor {
+        color: red;
+    }
+</style>
+
+<div class="row">
+    <article class="col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+        <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header role="heading">
+                <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                <h2>Add Template</h2>
+            </header>
+            <div>
+                <div class="widget-body">
+                    @using (Html.BeginForm("AddTemplateSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        <fieldset>
+
+                            @*<section class="col-md-12">
+                                    <label class="label">Template Name</label>
+                                    <label class="input">
+                                        @Html.TextBoxFor(c => c.TemplateName, new { @class = "form-control required", @placeholder = "Template Name" })
+                                        @Html.HiddenFor(m => m.ID)
+                                    </label>
+                                </section>
+                                <section>
+                                    <label class="label">Template Text</label>
+                                    <label class="input">
+                                        @Html.TextBoxFor(c => c.TemplateBody, new { @class = "form-control" })
+                                    </label>
+                                </section>*@
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label><b>Template Name <span class="hasbgcolor">*</span> : </b></label>
+                                    <div>
+                                        @Html.TextBoxFor(c => c.TemplateName, new { @class = "form-control required", @placeholder = "Template Name" })
+                                        @Html.HiddenFor(m => m.ID)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    @*<label><b>Template Title<span class="hasbgcolor">*</span></b></label>*@
+                                    <label><b>Template Title <span class="hasbgcolor">*</span> : </b></label>   <label id="AlertT" style="color:red;display:none"><b>This Field Is Required</b></label>
+                                    <div class="widget-body no-padding">
+                                        @Html.TextBoxFor(c => c.TemplateTitle, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    @*<label><b>Template Body<span class="hasbgcolor">*</span></b></label>*@
+                                    <label><b>Template Body <span class="hasbgcolor">*</span> : </b></label>   <label id="AlertB" style="color:red;display:none"><b>This Field Is Required</b></label>
+                                    <div class="widget-body no-padding">
+                                        @Html.TextBoxFor(c => c.TemplateBody, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="@Url.Content("~/Master/TemplateList")" class="bthbktolst btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Back To List">
+                                                <span class="btn-label"><i class="fa fa-arrow-left"></i></span>Back To List
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSubmit" class="btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="@Text">
+                                                <span class="btn-label"><i class="fa fa-check"></i></span>@Text
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+
+                            @*<div class="row">
+                                    <div class="col-md-12">
+                                        <a class="btn btn-primary bthbktolst" href="@Url.Content("~/Master/TemplateList")">
+                                            <i class="fa fa-arrow-left"></i>
+                                            Back To List
+                                        </a>
+                                        <button type="button" id="btnSubmit" class="btn btn-primary">
+                                            <i class="fa fa-check"></i> @Text
+                                        </button>
+                                    </div>
+                                </div>*@
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+@*<div class="row">
+        <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
+            <div class="jarviswidget jarviswidget-sortable" id="wid-id-8" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-custombutton="false">
+                <header role="heading">
+                    <div class="jarviswidget-ctrls" role="menu">
+                        <a href="javascript:void(0);" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse"><i class="fa fa-minus "></i></a> <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Fullscreen"><i class="fa fa-expand "></i></a>
+                    </div>
+                    <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                    <h2>Add Template</h2>
+                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                </header>
+
+                <div>
+                    <div class="widget-body">
+                        @using (Html.BeginForm("AddTemplateSubmit", "Master", FormMethod.Post, new { id = "form_Template", @class = "smart-form", enctype = "multipart/form-data", novalidate = "novalidate" }))
+                        {
+                            <fieldset>
+                                <section>
+                                    <label class="label">Template Name</label>
+                                    <label class="input">
+                                        @Html.TextBoxFor(c => c.TemplateName, new { @class = "form-control required" ,@placeholder = "Template Name" })
+                                        @Html.HiddenFor(m => m.ID)
+                                    </label>
+                                </section>
+                                <section>
+                                    <label class="label">Template Text</label>
+                                    <label class="input">
+                                        @Html.TextBoxFor(c => c.TemplateBody, new { @class = "form-control" })
+                                    </label>
+                                </section>
+                            </fieldset>
+                            <footer>
+                                <button type="button" id="btnSubmit" class="btn btn-primary">
+                                    <i class="fa fa-check"></i> @Text
+                                </button>
+                                <a class="btn btn-primary btnAddEdit" href="@Url.Content("~/Master/TemplateList")">
+                                    <i class="fa fa-arrow-left"></i>
+                                    Back To List
+                                </a>
+                            </footer>
+                        }
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>*@
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function () {
+            $("#contact-form").validate({
+                rules: { },
+                messages: { },
+                errorPlacement: function (error, element) { error.insertAfter(element.parent()); }
+            });
+        }
+
+        var CallSubmitClick = function (DomainName) {
+            $("#btnSubmit").click(function (e) {
+
+                $("#TemplateBody").val($("#TemplateBody").summernote('code'));
+                $("#TemplateTitle").val($("#TemplateTitle").summernote('code'));
+                var form = $("#contact-form");
+                if (form.valid() == false) {
+                    $("#AlertT").hide();
+                    $("#AlertB").hide();
+                    return false;;
+                }
+
+                if ($("#TemplateTitle").summernote('isEmpty')) {
+                    Swal.fire('Please add template title ..!', '', 'error');
+                    $("#AlertT").show();
+                    $("#AlertB").hide();
+                    return false;
+                }
+                else if ($("#TemplateBody").summernote('isEmpty')) {
+                    Swal.fire('Please add template text ..!', '', 'error');
+                    $("#AlertB").show();
+                    $("#AlertT").hide();
+                    return false;
+                }
+                else {
+                    $("#AlertT").hide();
+                    $("#AlertB").hide();
+                    App.blockUI({ boxed: true });
+                    $.ajax({
+                        url: $('#contact-form').attr('action'),
+                        cache: false,
+                        type: 'POST',
+                        data: $('#contact-form').serialize(),
+                        success: function (data) {
+                            if (data.Result == true) {
+                                /*TosterNotification("success", "Record has been updated successfully..!!", "Success");*/
+
+                                Swal.fire({
+                                    title: "Template data has been added successfully !",
+                                    text: "",
+                                    icon: "success",
+                                    confirmButtonText:
+                                        '<i class="fa fa-thumbs-up"></i> Okay !',
+                                    showCancelButton: false,
+                                    cancelButtonColor: '#d33'
+                                });
+
+                                setTimeout(function () {
+                                    window.location = DomainName + "/Master/TemplateList";
+                                }, 1500);
+                            }
+                            else {
+                                TosterNotification("error", 'Opration fail..!!' + data.ErrMsg + ' ', "Oppps..!!");
+                                App.unblockUI();
+                            }
+                        },
+                        error: function (req, status, error) {
+                            TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                            App.unblockUI();
+                        }
+                    });
+                }
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate();
+                if (@Model.EditFlag == true) {
+                    $('#TemplateBody').summernote({
+                        height: 400,
+                        toolbar: [
+                            /* ["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                            /*['table', ['table']],*/
+                            ['insert', ['link', 'picture', 'video']],
+                            ['view', ['fullscreen', 'codeview']],
+                        ],
+                        focus: true,
+                        codemirror: { // codemirror options
+                            theme: 'journal'
+                        }
+                    });
+                    $('#TemplateTitle').summernote({
+                        height: 50,
+                        focus: true,
+                        toolbar: [
+                            /*["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                        ],
+                        codemirror: { // codemirror options
+                            theme: 'journal'
+                        },
+                    });
+                    $("#TemplateBody").summernote('code', '@Html.Raw(@Model.TemplateBody)');
+                    $("#TemplateTitle").summernote('code', '@Html.Raw(@Model.TemplateTitle)');
+                }
+                else {
+                    $('#TemplateBody').summernote({
+                        height: 400,
+                        toolbar: [
+                            /* ["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                            /*['table', ['table']],*/
+                            ['insert', ['link', 'picture', 'video']],
+                            ['view', ['fullscreen', 'codeview']],
+                        ],
+                        codemirror: { // codemirror options
+                            theme: 'journal'
+                        },
+                        placeholder: 'Add Template Text Here ...',
+                    });
+
+                    $('#TemplateTitle').summernote({
+                        height: 50,
+                        toolbar: [
+                            /* ["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                        ],
+                        codemirror: { // codemirror options
+                            theme: 'journal'
+                        },
+                        placeholder: 'Add Template Title ...',
+                    });
+                }
+                CallSubmitClick(DomainName);
+                $('.bthbktolst').click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/TemplateList";
+                });
+                if ('@ViewBag.IsExpired' == 1) {
+                    $('#btnSubmit').hide();
+                }
+                //$("#TemplateBody").live('change', function (e) {
+                //    $("#TemplateBody").val($("#TemplateBody").summernote('code'));
+                //});
+                $(".link-dialog").find(".checkbox").remove();
+            }
+        }
+    }();
+</script>
+
+
+
+
+

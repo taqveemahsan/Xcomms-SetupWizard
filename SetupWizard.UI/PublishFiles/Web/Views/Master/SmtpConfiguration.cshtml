@@ -1,0 +1,289 @@
+﻿@model XCommsWeb.Models.SmtpConfigurationModel
+@{
+    ViewBag.Title = "Smtp Configuration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var Text = "Submit";
+    if (Model.Id > 0)
+    {
+        Text = "Update";
+    }
+}
+
+<style type="text/css">
+    button[disabled] {
+        background-color: #CCC;
+    }
+
+    .hasbgcolor {
+        color: red;
+    }
+
+    .TxtVerticalAlign {
+        vertical-align: middle !important;
+    }
+
+    .jarviswidget .widget-body {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header role="heading">
+                    <div class="jarviswidget-ctrls" role="menu"></div>
+                    <span class="widget-icon"><i class="fa fa-envelope"></i></span>
+                    <h2 style="width:auto !important;">Mail SMTP Configuration</h2>
+                </header>
+                <div class="widget-body">
+                    <div class="no-padding">
+                        @using (Html.BeginForm("SmtpConfigurationSubmit", "Master", FormMethod.Post, new { id = "form_smtp", @class = "", enctype = "multipart/form-data" }))
+                        {
+                            @Html.HiddenFor(Model => Model.Id)
+                            @Html.HiddenFor(Model => Model.CustomerId)
+
+                            <fieldset>
+                                <!--<div class="row smart-form">
+                                    <section class="col col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                                        <label class="toggle">-->
+                                            @*<input type="checkbox" name="checkbox-toggle" checked="checked">*@
+                                            <!--@Html.CheckBoxFor(Model => Model.EmailSupport, new { name = "chkEmailSupport", @checked = "checked" })
+                                            <i data-swchon-text="ON" data-swchoff-text="OFF"></i>
+                                            @Html.HiddenFor(Model => Model.EmailSupport)
+                                        </label>
+                                    </section>
+                                    <section class="col col-xs-11 col-sm-11 col-md-11 col-lg-11" style="margin-top: 4px;">
+                                        <label class="label">
+                                            <strong>
+                                                Email Support - Provides and additional delivery channel whereby content can be sent to users via Email using the email address synchronized from Active Directory.
+                                            </strong>
+                                        </label>
+                                    </section>
+                                </div>-->
+
+                                @*<div class="row smart-form">
+                                    <section class="col col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                                        <label class="toggle">
+                                            @Html.CheckBoxFor(Model => Model.SmtpSetting, new { name = "chkSmtpSetting", @checked = "checked" })
+                                            <i data-swchon-text="ON" data-swchoff-text="OFF"></i>
+                                            @Html.HiddenFor(Model => Model.SmtpSetting)
+                                        </label>
+                                    </section>
+                                    <section class="col col-xs-11 col-sm-11 col-md-11 col-lg-11" style="margin-top: 4px;">
+                                        <label class="label">
+                                            <strong>
+                                                Use your SMTP settings.
+                                            </strong>
+                                        </label>
+                                    </section>
+                                </div>*@
+
+                                <div class="row smart-form">
+                                    <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label">SMTP Server <span class="hasbgcolor">*</span> : </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-question-circle txt-color-blue"></i>
+                                            @Html.TextBoxFor(Model => Model.SmtpServer, new { @class = "required", @placeholder = "Enter Mail SMTP Server Address", autocomplete = "off" })
+                                            <b class="tooltip tooltip-top-right">
+                                                <i class="fa fa-warning txt-color-teal"></i>
+                                                Enter Mail SMTP Server Address
+                                            </b>
+                                        </label>
+                                    </section>
+                                    <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label">SMTP Port <span class="hasbgcolor">*</span> : </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-question-circle txt-color-blue"></i>
+                                            @Html.TextBoxFor(Model => Model.SmtpPort, new { @class = "required", @placeholder = "Enter Mail SMTP Port", autocomplete = "off" })
+                                            <b class="tooltip tooltip-top-right">
+                                                <i class="fa fa-warning txt-color-teal"></i>
+                                                Enter Mail SMTP Server Port
+                                            </b>
+                                        </label>
+                                    </section>
+                                </div>
+
+                                <div class="row smart-form">
+                                    <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label">SMTP Mail UserName <span class="hasbgcolor">*</span> : </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-envelope txt-color-blue"></i>
+                                            @Html.TextBoxFor(Model => Model.SmtpUserName, new { @class = "required", @placeholder = "Enter SMTP Mail Address", autocomplete = "off" })
+                                            <b class="tooltip tooltip-top-right">
+                                                <i class="fa fa-warning txt-color-teal"></i>
+                                                Enter SMTP Mail Address
+                                            </b>
+                                        </label>
+                                    </section>
+                                    <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label">SMTP Mail Password <span class="hasbgcolor">*</span> : </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-lock txt-color-blue"></i>
+                                            @Html.TextBoxFor(Model => Model.SmtpPassword, new { @class = "required", @type = "password", @placeholder = "Enter SMTP Mail Password" })
+                                            <b class="tooltip tooltip-top-right">
+                                                <i class="fa fa-warning txt-color-teal"></i>
+                                                Enter SMTP Mail Address
+                                            </b>
+                                        </label>
+                                    </section>
+                                </div>
+
+                                @*<div class="row smart-form">
+                                    <section class="col col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                                        <label class="toggle">
+                                            @Html.CheckBoxFor(Model => Model.TLSSL, new { name = "chkTLSSL", @checked = "checked" })
+                                            <i data-swchon-text="ON" data-swchoff-text="OFF"></i>
+                                            @Html.HiddenFor(Model => Model.TLSSL)
+                                        </label>
+                                    </section>
+                                    <section class="col col-xs-11 col-sm-11 col-md-11 col-lg-11" style="margin-top: 4px;">
+                                        <label class="label">
+                                            <strong>
+                                                SMTP TLS/SSL
+                                            </strong>
+                                        </label>
+                                    </section>
+                                </div>*@
+
+                                <div class="row smart-form">
+                                    <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label">From Address <span class="hasbgcolor">*</span> : </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-envelope txt-color-blue"></i>
+                                            @Html.TextBoxFor(Model => Model.FromAddress, new { @class = "required", @placeholder = "Enter From Mail Address", autocomplete = "off" })
+                                            <b class="tooltip tooltip-top-right">
+                                                <i class="fa fa-warning txt-color-teal"></i>
+                                                Enter From Mail Address
+                                            </b>
+                                        </label>
+                                    </section>
+                                </div>
+                            </fieldset>
+
+                            <div class="form-actions">
+                                <div class="clearfix"></div>
+                                <div class="col-md-12">
+                                    <div class="pull-right">
+                                        <ul class="demo-btns">
+                                            <li>
+                                                <a href="javascript:void(0);" id="btnSubmit" class="btn btn-labeled btn-@Html.Raw(Model.Id == 0 ? "success" : "primary")" rel="tooltip" title="" data-placement="bottom" data-original-title="@Text SMTP">
+                                                    <span class="btn-label"><i class="fa fa-@Html.Raw(Model.Id == 0 ? "save" : "pencil")"></i></span> @Text
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*<div class="clearfix"></div>
+                                <div class="smart-form">
+                                    <header>
+                                        Testing E-Mail Configuration
+                                    </header>
+                                </div>
+                                <div class="clearfix"></div>
+
+
+                                    <div class="row">
+                                        <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="label">Test Recipient Address <span class="hasbgcolor">*</span> : </label>
+                                            <label class="input">
+                                                <i class="icon-append fa fa-envelope txt-color-blue"></i>
+                                                @Html.TextBoxFor(Model => Model.RecepientAddress, new { @class = "required", @placeholder = "Enter Test Recipient Address", autocomplete = "off" })
+                                                <b class="tooltip tooltip-top-right">
+                                                    <i class="fa fa-warning txt-color-teal"></i>
+                                                    Enter Test Recipient Address
+                                                </b>
+                                            </label>
+                                        </section>
+                                    </div>
+                            *@
+                        }
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            var form = $('#form_Template');
+            var error = $('.alert-danger', form);
+            var success = $('.alert-success', form);
+
+            $("#form_smtp").validate({
+                rules: { },
+                messages: { },
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                },
+                submitHandler: function (form) {
+                    success.show();
+                    error.hide();
+                }
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+
+                $('#btnSubmit').click(function () {
+                    var form = $("#form_smtp");
+                    if (form.valid() == false) {
+                        return false;
+                    }
+                    else {
+                        App.blockUI({ boxed: true });
+                        var StrUrl = DomainName + "/Master/SmtpConfigurationSubmit";
+                        $.ajax({
+                            url: StrUrl,
+                            cache: false,
+                            type: 'POST',
+                            data: $('#form_smtp').serialize(),
+                            success: function (data) {
+                                if (data == 1) {
+
+                                    Swal.fire({
+                                        title: "Configuration Data has been saved successfully !",
+                                        text: "",
+                                        icon: "success",
+                                        confirmButtonText:
+                                            '<i class="fa fa-thumbs-up"></i> Okay !',
+                                        showCancelButton: false,
+                                        cancelButtonColor: '#d33'
+                                    });
+
+                                    setTimeout(function () {
+                                        window.location = DomainName + "/Master/SmtpConfiguration";
+                                    }, 1500);
+
+                                    App.unblockUI();
+                                }
+                                else {
+                                    Swal.fire('Operation fail..!! There is some issue please try again or Contact your administrator for more detail.', '', 'error');
+                                    App.unblockUI();
+                                }
+                            },
+                            error: function (jqXHR, exception) {
+                                Swal.fire(errorResult(jqXHR, exception), '', 'error');
+                                App.unblockUI();
+                            }
+                        });
+                    }
+                });
+
+                  if ('@ViewBag.IsExpired' == 1) {
+                      $('button').addClass('disabled');
+                      $('#btnSubmit').hide();
+                }
+            }
+        }
+    }();
+</script>

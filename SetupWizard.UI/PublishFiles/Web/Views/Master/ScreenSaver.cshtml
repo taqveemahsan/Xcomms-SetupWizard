@@ -1,0 +1,944 @@
+﻿
+@model XCommsWeb.Models.ScreenSaverrModel
+@using XCommsWeb.Models;
+
+@{
+    ViewBag.Title = "ScreenSaver";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    List<CYGNUS_Master_General> ScreenSaverTypeList = MS.GetGeneralMasterobject("ScreenSaverType");
+    if (String.IsNullOrEmpty(Model.Timeinterval))
+    {
+        Model.Timeinterval = "3";
+    }
+    if (String.IsNullOrEmpty(Model.Opacity))
+    {
+        Model.Opacity = "0.1";
+    }
+    if (Model.Id == 0)
+    {
+        Model.FromDate = DateTime.Now;
+        Model.EndDate = DateTime.Now;
+    }
+    if (Model.Id > 0)
+    {
+        if (Model.EndDate == null || Model.FromDate == null || Model.EndDate == DateTime.MinValue || Model.FromDate == DateTime.MinValue)
+        {
+            Model.FromDate = DateTime.Now;
+            Model.EndDate = DateTime.Now;
+        }
+    }
+
+}
+
+<style type="text/css">
+    .files input {
+        outline: 2px dashed #92b0b3;
+        outline-offset: -10px;
+        -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        padding: 120px 0px 85px 35%;
+        text-align: center !important;
+        margin: 0;
+        width: 65% !important;
+    }
+
+        .files input:focus {
+            outline: 2px dashed #92b0b3;
+            outline-offset: -10px;
+            -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            border: 1px solid #92b0b3;
+        }
+
+    .files {
+        position: relative
+    }
+
+        .files:after {
+            pointer-events: none;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 50px;
+            right: 0;
+            height: 56px;
+            content: "";
+            background-image: url(https://image.flaticon.com/icons/png/128/109/109612.png);
+            display: block;
+            margin: 0 auto;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+    .color input {
+        background-color: #f1f1f1;
+    }
+
+    .files:before {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        pointer-events: none;
+        width: 100%;
+        right: 0;
+        height: 57px;
+        content: " Upload or drag & drop a file here. ";
+        display: block;
+        margin: 0 auto;
+        color: #2ea591;
+        font-weight: 600;
+        text-transform: capitalize;
+        text-align: center;
+    }
+
+    .profile-pic {
+        height: calc(100vh - 253px);
+        min-height: 535px;
+    }
+
+    .Mp3files input {
+        outline: 2px dashed #92b0b3;
+        outline-offset: -10px;
+        -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        padding: 20px 0px 20px 35%;
+        text-align: center !important;
+        margin: 0;
+        width: 65% !important;
+    }
+
+    .Mp3files, .Watermark input:focus {
+        outline: 2px dashed #92b0b3;
+        outline-offset: -10px;
+        -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        border: 1px solid #92b0b3;
+    }
+
+    .Mp3files, .Watermark {
+        position: relative
+    }
+
+        .Watermark input {
+            outline: 2px dashed #92b0b3;
+            outline-offset: -10px;
+            -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            padding: 20px 0px 20px 35%;
+            text-align: center !important;
+            margin: 0;
+            width: 65% !important;
+        }
+
+    .img-list {
+        width: 23%;
+        margin-bottom: 1.2rem;
+        display: inline-block;
+        cursor: pointer;
+        text-align: center;
+        box-shadow: 0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%);
+    }
+
+        .img-list.selected {
+            border: none;
+            /*box-shadow: 0px 0px 6px 7px #2b2b2b;*/
+            box-shadow: 0px 12px 22px 1px #333;
+            z-index: 1;
+            /*transform: scale(1.2);*/
+            margin: 0 10px 0 10px;
+        }
+
+        .img-list > img {
+            width: 100%
+        }
+
+    .popover.bottom > .arrow:after {
+        border-bottom-color: #000;
+    }
+
+    .smart-form .tooltip {
+        opacity: 1 !important;
+        padding: 0px 2px 0px;
+    }
+
+    .smart-accordion-default .panel-default > .panel-heading {
+        background-color: #3c3a39;
+        color: #FFF;
+        margin-bottom: 5px;
+    }
+
+    .smart-accordion-default.panel-group .panel-title a {
+        font-weight: 700;
+        padding: 5px 10px;
+    }
+
+    .smart-accordion-default.panel-group .panel + .panel {
+        margin-top: 5px;
+    }
+
+    .smart-accordion-default .panel-default {
+        border-color: #c3c3c300;
+    }
+
+    .txt-color-yellow {
+        color: #ffb848 !important;
+    }
+
+    .bgcolor {
+        background-color: #333 !important;
+        border-radius: 10px;
+    }
+
+    .checkbox {
+        color: #a1a1a1 !important;
+    }
+
+    .hasbgcolor {
+        color: red;
+    }
+
+    button[disabled] {
+        background-color: #CCC;
+    }
+</style>
+
+<section id="widget-grid" class="">
+    <!-- row -->
+    <div class="row">
+        <article class="col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header>
+                    <span class="widget-icon"><i class="fa fa-desktop"></i></span>
+                    <h2>Add Screensaver </h2>
+                </header>
+                <div>
+                    <div class="">
+                        @using (Html.BeginForm("ScreenSaverUpload", "Master", FormMethod.Post, new { id = "contact-form", @class = "", enctype = "multipart/form-data" }))
+                        {
+                            <div class="clearfix"></div>
+
+                            <article class="col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable smart-form">
+                                <fieldset>
+                                    <section>
+                                        <label class="label"><b>Screensaver Title <span class="hasbgcolor">*</span> : </b></label>
+                                        <label class="input">
+                                            @Html.TextBoxFor(m => m.ScreenSaverTital, new { @class = "form-control required", @placeholder = "Screen Saver Title", autocomplete = "off" })
+                                            @Html.HiddenFor(Model => Model.ScreenSaverTital)
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Description : (optional) </label>
+                                        <label class="textarea">
+                                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control ", @placeholder = "Description" })
+                                            @Html.HiddenFor(Model => Model.Description)
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label"><b>Screensaver Type <span class="hasbgcolor">*</span> : </b></label>
+                                        <label class="select">
+                                            @Html.DropDownListFor(m => m.ScreenSaverType, new SelectList(ScreenSaverTypeList, "CodeId", "CodeDesc"), "", new { @class = "select2 required", @placeholder = "Select Screen Saver Type" })
+                                            @Html.HiddenFor(Model => Model.ScreenSaverType)
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label"><b>Upload File <span class="hasbgcolor">*</span> : </b></label>
+                                        <div class="files">
+                                            @Html.TextBoxFor(model => model.files, new { type = "file", @class = "form-control required ", @id = "Files", name = "files[]", multiple = "multiple" })
+                                        </div>
+                                    </section>
+                                    @*<section id="sizeError" style="display: none;">
+            <div class="alert alert-danger fade in">
+                <button class="close" data-dismiss="alert">
+                    ×
+                </button>
+                <i class="fa-fw fa fa-times"></i>
+                <label id="txtError" />
+            </div>
+        </section>*@
+                                    <section class="form-inline">
+                                        <b>Time interval between images</b>
+                                        @Html.TextBoxFor(c => c.Timeinterval, new { @class = "form-control input-xs", style = "width: 50px;", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                        <b>second(s)</b>
+                                        @Html.HiddenFor(Model => Model.Timeinterval)
+                                    </section>
+
+                                    @* As per @Frank Cofirmation hide portion for particular customer is : Centra Health *@
+                                    @if (ViewBag.TenantId != 23)
+                                    {
+                                        <section class="form-inline">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                Wait :
+                                                @Html.TextBoxFor(Model => Model.ScreenWaitMinutes, new { @class = "form-control input-xs", style = "width:30px;", @onkeypress = "javascript:return validInt(event,this.getAttribute('id'))" })
+                                                @Html.HiddenFor(Model => Model.ScreenWaitMinutes)
+                                                Minute(s) &nbsp;&nbsp;
+                                                @Html.CheckBoxFor(Model => Model.IsOnResumeDisplay, new { @class = "clschkIsOnResumeDisplay" })
+                                                @Html.HiddenFor(Model => Model.IsOnResumeDisplay)
+                                                On resume, display logon screen.
+                                            </div>
+                                        </section>
+                                    }
+
+                                    <fieldset>
+                                        <section>
+                                            <div class="row col-md-12">
+                                                <label class="checkbox pull-left">
+                                                    <input type="checkbox" name="RadioWallPaper" id="Once" value="Once" class="" />
+                                                    <i></i>&nbsp;<span>Schedule your screensaver delivery (optional) </span>
+                                                    @Html.HiddenFor(c => c.SchedulePatternType)
+                                                    @Html.HiddenFor(c => c.Id)
+                                                    @Html.HiddenFor(c => c.Type)
+                                                    @Html.HiddenFor(c => c.Function)
+                                                </label>
+                                            </div>
+                                        </section>
+                                        <section>
+                                            <div class="col-md-2"><label></label></div>
+                                        </section>
+                                        <section>
+                                            <div class="row col-md-12">
+                                                <div class="col-md-5">
+                                                    <label class="label">Start Date : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-calendar"></i>
+                                                        @Html.TextBoxFor(c => c.FromDate, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.FromDate), new { @class = "form-control startdate-picker", @readonly = true })
+                                                        @Html.HiddenFor(c => c.FromDate)
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-2"><label></label></div>
+                                                <div class="col-md-5">
+                                                    <label class="label">Last Delivery Attempt : </label>
+                                                    <label class="input">
+                                                        <i class="icon-append fa fa-calendar"></i>
+                                                        @Html.TextBoxFor(c => c.EndDate, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.EndDate), new { @class = "form-control enddate-picker", @readonly = true })
+                                                        @Html.HiddenFor(c => c.EndDate)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </fieldset>
+                                </fieldset>
+                            </article>
+                            <article class="col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable smart-form" style="margin: 16px 0px 0px 0px;">
+                                <div>
+                                    <div class="widget-body no-padding ">
+                                        <div class="panel-group smart-accordion-default" id="accordion-2">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse1" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Optional Animation (PPT & Images Only)
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse1" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;text-align:center;">
+                                                        <fieldset>
+                                                            <section class="col-md-12" style="margin: -12px 0px 0px 0px;">
+                                                                <div class="row smart-form">
+                                                                    <div class="img-list" data-themename="wipeleft" id="wipeleft">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wipeleft.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wipeleft.gif">
+                                                                        <label><b>wipe left</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="wiperight" id="wiperight">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wiperight.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wiperight.gif">
+                                                                        <label><b>wipe right</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="wipeup" id="wipeup">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wipeup.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wipeup.gif">
+                                                                        <label><b>wipe up</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="wipedown" id="wipedown">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wipedown.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wipedown.gif">
+                                                                        <label><b>wipe down</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="circlecrop" id="circlecrop">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/circlecrop.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/circlecrop.gif">
+                                                                        <label><b>circlecrop</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="dissolve" id="dissolve">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/dissolve.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/dissolve.gif">
+                                                                        <label><b>dissolve</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="distance" id="distance">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/distance.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/distance.gif">
+                                                                        <label><b>distance</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="hblur" id="hblur">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/hblur.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/hblur.gif">
+                                                                        <label><b>hblur</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="wipetl" id="wipetl">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wipetl.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wipetl.gif">
+                                                                        <label><b>wipetl</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="wipetr" id="wipetr">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wipetr.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wipetr.gif">
+                                                                        <label><b>wipe lwipetreft</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="wipebl" id="wipebl">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wipebl.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wipebl.gif">
+                                                                        <label><b>wipebl</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="wipebr" id="wipebr">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/wipebr.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/wipebr.gif">
+                                                                        <label><b>wipebr</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="hlslice" id="hlslice">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/hlslice.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/hlslice.gif">
+                                                                        <label><b>hl slice</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="hrslice" id="hrslice">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/hrslice.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/hrslice.gif">
+                                                                        <label><b>hr slice</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="vuslice" id="vuslice">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/vuslice.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/vuslice.gif">
+                                                                        <label><b>vu slice</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="vdslice" id="vdslice">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/vdslice.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/vdslice.gif">
+                                                                        <label><b>vd slice</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="smoothdown" id="smoothdown">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/smoothdown.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/smoothdown.gif">
+                                                                        <label><b>smooth down</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="smoothup" id="smoothup">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/smoothup.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/smoothup.gif">
+                                                                        <label><b>smooth up</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="smoothright" id="smoothright">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/smoothright.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/smoothright.gif">
+                                                                        <label><b>smooth right</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="smoothleft" id="smoothleft">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/smoothleft.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/smoothleft.gif">
+                                                                        <label><b>smooth left</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="pixelize" id="pixelize">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/pixelize.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/pixelize.gif">
+                                                                        <label><b>pixelize</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="radial" id="radial">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/radial.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/radial.gif">
+                                                                        <label><b>radial</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="rectcrop" id="rectcrop">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/rectcrop.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/rectcrop.gif">
+                                                                        <label><b>rectcrop</b></label>
+                                                                    </div>
+                                                                    <div class="img-list" data-themename="squeezeh" id="squeezeh">
+                                                                        <img src="~/ScreenSaver/ScreenSaverStyle/squeezeh.gif" data-toggle="popover-hover" data-img="./../ScreenSaver/ScreenSaverStyle/squeezeh.gif">
+                                                                        <label><b>squeezeh</b></label>
+                                                                    </div>
+                                                                    <div class="superbox ">
+                                                                        @Html.HiddenFor(m => m.ThemeId)
+                                                                    </div>
+                                                                </div>
+                                                            </section>
+
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse2" aria-expanded="true" class="">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Optional Sound (PPT & Image Screensavers Only)
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse2" class="panel-collapse collapse" aria-expanded="true">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <fieldset class="bgcolor">
+                                                            <section>
+                                                                <label class="checkbox">
+                                                                    @Html.CheckBoxFor(m => m.Sound, new { @class = "clsSound" })
+                                                                    <i></i>Play Sound
+                                                                </label>
+                                                            </section>
+                                                            <section class="clsIsSound">
+                                                                <label><b>Select Sound (mp3/wav)</b></label>
+                                                                <div class="Mp3files">
+                                                                    @Html.TextBoxFor(model => model.Mp3files, new { type = "file", @class = "form-control  ", @id = "Mp3files" })
+                                                                </div>
+                                                            </section>
+                                                            @*<section id="SoundError">
+                                                <div class="alert alert-danger fade in">
+                                                    <button class="close" data-dismiss="alert">
+                                                        ×
+                                                    </button>
+                                                    <i class="fa-fw fa fa-times"></i>
+                                                    <label id="txtErrorSound" />
+                                                </div>
+                                            </section>*@
+                                                            <section class="clsIsSound">
+                                                                <label><b>Volume</b></label>
+                                                                <div class="slidecontainer">
+                                                                    <input type="text" class="slider" value="50" id="slider"
+                                                                           data-slider-min="1"
+                                                                           data-slider-max="100"
+                                                                           data-slider-step="1"
+                                                                           data-slider-value="50"
+                                                                           data-slider-selection="before"
+                                                                           data-slider-orientation="horizontal"
+                                                                           data-slider-handle="round"
+                                                                           data-slider-tooltip="show">
+                                                                </div>
+                                                                @Html.HiddenFor(m => m.VolumeSpeed)
+                                                            </section>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse3" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Optional Watermark (PPT & Image Screensavers Only)
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse3" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <fieldset class="bgcolor">
+                                                            <section>
+                                                                <label><b>Select Watermark</b></label>
+                                                                <div class="Watermark">
+                                                                    @Html.TextBoxFor(model => model.Watermark, new { type = "file", @class = "form-control   ", @id = "Watermark" })
+                                                                </div>
+                                                            </section>
+                                                            <section id="sizeErrorWM">
+                                                                <div class="alert alert-danger fade in">
+                                                                    <button class="close" data-dismiss="alert">
+                                                                        ×
+                                                                    </button>
+                                                                    <i class="fa-fw fa fa-times"></i>
+                                                                    <strong>Error!</strong> File is Big, please select a file less than 2Mb.
+                                                                </div>
+                                                            </section>
+                                                            <section class="form-inline">
+                                                                <b>Opacity </b>
+                                                                @Html.TextBoxFor(c => c.Opacity, new { @class = "form-control input-xs", style = "width: 50px;", @max = 1, @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                            </section>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="alert alert-block" style="background-color: #3c3a39;color:#FFF;">
+                                                    <h4 class="alert-heading" style="color: #c79121 !important"> <i class="fa fa-warning"></i> Note : </h4>
+                                                    <dl class="">
+                                                        <dt>1 . Larger or multiple files may take longer to process.  Please do not click stop or back after clicking "Next".</dt>
+                                                        <dt>2 . Max number of images / PPT slides should not exceed 25.</dt>
+                                                        <dt>3 . Max individual or combined file size(s) should not exceed 15MB.</dt>
+                                                    </dl>
+                                                </div>
+
+                                                @*<div class="">
+                                    <div class="hasbgcolor">
+                                        <h5><strong><i class="fa fa-exclamation-triangle" style="color: #f90;"></i> Note :</strong></h5>  Larger or multiple files may take longer to process.  Please do not click stop or back after clicking “Next”.
+                                    </div>
+                                    <div class="hasbgcolor">
+                                        Max number of images / PPT slides should not exceed 25.
+                                    </div>
+                                    <div class="hasbgcolor">
+                                        Max individual or combined file size(s) should not exceed 15MB.
+                                    </div>
+                                </div>*@
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <div class="clearfix"></div>
+                            <br />
+                            <hr />
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" class="btnSubmit btn btn-labeled btn-primary" id="btnSubmit" rel="tooltip" title="" data-placement="bottom" data-original-title="Go To Next">
+                                                <span class="btn-label"><i class="fa fa-arrow-right"></i></span> Next
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+
+                            @*<footer style="float: right;margin-right: -15px;" class="col-sm-12 col-md-12 col-lg-12">
+                                <button type="button" class="btn btn-labeled btn-success btnSubmit" id="btnSubmit" rel="tooltip" title="" data-placement="bottom" data-original-title="Go To Next">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </button>
+                            </footer>*@
+                        }
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                // Rules for form validation
+                rules: {
+                },
+                // Messages for form validation
+                messages: {
+                },
+                // Do not change code below
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+        var handleStartDatePicker = function () {
+            $('.startdate-picker').datetimepicker({
+                isRTL: App.isRTL(),
+                format: "dd MM yyyy HH:ii P",
+                showMeridian: true,
+                autoclose: true,
+                pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                todayBtn: true,
+                startDate: new Date($('#FromDate').val())
+            });
+            $('body').removeClass("modal-open");
+        }
+
+        var handleEndDatePicker = function () {
+            $('.enddate-picker').datetimepicker({
+                isRTL: App.isRTL(),
+                format: "dd MM yyyy HH:ii P",
+                showMeridian: true,
+                autoclose: true,
+                pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                todayBtn: true,
+                startDate: ($('#FromDate').val() ? new Date($('#FromDate').val()) : new Date()),
+            });
+            $('body').removeClass("modal-open");
+        }
+
+        return {
+            init: function (DomainName) {
+                var contentSize = 15360;
+                FormValidate(DomainName);
+                handleStartDatePicker();
+                handleEndDatePicker();
+                $("#sizeError").hide();
+                $("#SoundError").hide();
+                $(".btnSubmit").hide();
+                $('#Sound').prop('checked', true);
+                $(".clsIsSound").show();
+                $("#Mp3files").addClass("required");
+                $("#FromDate").attr("disabled", "disabled");
+                $("#EndDate").attr("disabled", "disabled");
+                $('#SchedulePatternType').val(0);
+                $("#sizeErrorWM").hide();
+
+                $("#FromDate").on("change", function () {
+                    $('.enddate-picker').datetimepicker('remove');
+                    handleEndDatePicker();
+
+                    if (new Date($("#FromDate").val()) > new Date($("#EndDate").val())) {
+                        $("#EndDate").val($("#FromDate").val());
+                    }
+                });
+
+                $('#Sound').change(function () {
+                    if ($('#Sound').is(':checked') == true) {
+                        $(this).val(true);
+                        $(".clsIsSound").show();
+                        $("#Mp3files").addClass("required");
+
+                    } else {
+
+                        $(this).val(false);
+                        $(".clsIsSound").hide();
+                        $("#Mp3files").removeClass("required");
+                    }
+                });
+                $("#Files").attr("disabled", true);
+                $("input[type='file']").on("change", function () {
+
+                    var numFiles = $(this).get(0).files.length
+
+                    if ($('#ScreenSaverType').val() == "1") {
+                        var allowedFiles = [".jpeg", ".jpg", ".png"];
+                        var fileUpload = document.getElementById("Files");
+                        var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
+                        if (!regex.test(fileUpload.value.toLowerCase())) {
+
+                            //$("#txtError").text("Please Select .jpeg/.jpg/.png Files !");
+                            Swal.fire('Please upload only .png, .jpg, .jpeg images file !', '', 'error');
+
+                            $("#sizeError").show();
+                            $(".btnSubmit").hide();
+                            this.value = "";
+                        }
+                        else {
+                            var file = 0;
+                            for (let i = 0; i < numFiles; i++)
+                            {
+                                file += $(this)[0].files[i].size;
+                            }
+                            if (file != undefined) {
+                                var fsize = Math.round((file / 1024));
+                                if (fsize > contentSize) {
+
+                                    //$("#txtError").text("File is Big, please select a file less than 15Mb ");
+                                    Swal.fire('Maximum single file size allowed : 15 MB <br/><br/> Maximum number of files allowed : 25', '', 'error');
+
+                                    $("#sizeError").show();
+                                    $(".btnSubmit").hide();
+                                    this.value = "";
+                                    return false;
+                                }
+                            }
+                            $("#sizeError").hide();
+                            $(".btnSubmit").show();
+                        }
+
+                    }
+                    if ($('#ScreenSaverType').val() == "2") {
+                        if (numFiles > 1) {
+                            $("#sizeError").show();
+
+                            //$("#txtError").text("Please Select Single file ");
+                            Swal.fire('Please select single file!', '', 'error');
+
+                            $(".btnSubmit").hide();
+                            this.value = "";
+                        }
+                        else {
+                            var allowedFiles = [".ppt", ".pptx"];
+                            var fileUpload = document.getElementById("Files");
+                            var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
+                            if (!regex.test(fileUpload.value.toLowerCase())) {
+
+                                //$("#txtError").text("Please Select .ppt/.pptx Files");
+                                Swal.fire('Please upload only .ppt, .pptx file !', '', 'error');
+
+                                $("#sizeError").show();
+                                $(".btnSubmit").hide();
+                                this.value = "";
+                            }
+                            else {
+                                var file = $(this)[0].files[0];
+                                if (file != undefined) {
+                                    var fsize = Math.round((file.size / 1024));
+                                    if (fsize > contentSize) {
+
+                                        //$("#txtError").text("File is Big, please select a file less than 15Mb ");
+                                        Swal.fire('Maximum single file size allowed : 15 MB <br/><br/> Maximum number of files allowed : 25', '', 'error');
+
+                                        $("#sizeError").show();
+                                        $(".btnSubmit").hide();
+                                        this.value = "";
+                                        return false;
+                                    }
+                                }
+                                $("#sizeError").hide();
+                                $(".btnSubmit").show();
+                            }
+                        }
+                    }
+                    if ($('#ScreenSaverType').val() == "3") {
+                        if (numFiles > 1) {
+                            $("#sizeError").show();
+
+                            //$("#txtError").text("Please Select Single file ");
+                            Swal.fire('Please select single file!', '', 'error');
+
+                            $(".btnSubmit").hide();
+                            this.value = "";
+                        }
+                        else {
+                            var file = $(this)[0].files[0];
+                            if (file != undefined) {
+                                var fsize = Math.round((file.size / 1024));
+                                if (fsize > contentSize) {
+
+                                    //$("#txtError").text("File is Big, please select a file less than 15Mb ");
+                                    Swal.fire('Maximum single file size allowed : 15 MB <br/><br/> Maximum number of files allowed : 25', '', 'error');
+
+                                    $("#sizeError").show();
+                                    $(".btnSubmit").hide();
+                                    this.value = "";
+                                    return false;
+                                }
+                            }
+                            $("#sizeError").hide();
+                            $(".btnSubmit").show();
+                        }
+                    }
+                });
+
+                $('#Mp3files').change(function () {
+                    if ($("#Sound").val() == "true") {
+                        var allowedFiles = [".mp3", ".wav"];
+                        var fileUpload = document.getElementById("Mp3files");
+                        var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
+                        if (!regex.test(fileUpload.value.toLowerCase())) {
+
+                            //$("#txtErrorSound").text("Please Select .mp3/.wav Files ");
+                            Swal.fire('Please upload only .mp3, .wav file !', '', 'error');
+
+                            $("#SoundError").show();
+                            $(".btnSubmit").hide();
+                            $("#Mp3files").val(null);
+                        }
+                        else {
+                            $("#SoundError").hide();
+                            $(".btnSubmit").show();
+                        }
+                    }
+                });
+                if ($("#ThemeId").val() == "") {
+                    $("#ThemeId").val("wipeleft");
+                }
+
+                $('.superbox-list').click(function () {
+                    $("#ThemeId").val($(this).attr("id"))
+                });
+
+                $('.img-list').click(function () {
+                    $("#ThemeId").val($(this).data("themename"));
+                    $('.img-list').removeClass('selected');
+                    $(this).addClass('selected');
+                });
+
+                $("#" + $("#ThemeId").val().replace(" ", "").trim()).addClass("selected");
+
+                $('#ScreenSaverType').change(function () {
+                    var acceptType = "";
+                    $("#Files").attr("disabled", false);
+                    if ($(this).val() == "1") {
+                        $("#sizeError").hide();
+                        $("#Files").val(null);
+                        acceptType = "image/*";
+                    }
+                    if ($(this).val() == "2") {
+                        $("#sizeError").hide();
+                        $("#Files").val(null);
+                        acceptType = ".ppt,.pptx";
+                    }
+                    if ($(this).val() == "3") {
+                        $("#sizeError").hide();
+                        $("#Files").val(null);
+                        acceptType = "video/*";
+                    }
+                    $("#Files").attr("accept", acceptType);
+                });
+
+                $('[data-toggle="popover-hover"]').popover({
+                    html: true,
+                    trigger: 'hover',
+                    placement: 'bottom',
+                    content: function () { return '<img src="' + $(this).data('img') + '" style="width: 300px" />'; }
+                });
+                $(".btnSubmit").click(function (e) {
+                    $("#VolumeSpeed").val($("#slider").val());
+                });
+                setTimeout(function () { $(".tooltip").attr("style", "top: -14px;left: 47%;"); }, 200);
+                $("input[name='RadioWallPaper']").click(function () {
+                    if (this.value == "Once") {
+                        if ($('#Once').prop('checked') == true) {
+                            $("#FromDate").removeAttr("disabled");
+                            $("#EndDate").removeAttr("disabled");
+                            $('#SchedulePatternType').val(1);
+                        }
+                        else {
+                            $("#FromDate").attr("disabled", "disabled");
+                            $("#EndDate").attr("disabled", "disabled");
+                            $('#SchedulePatternType').val(0);
+                        }
+                    }
+                });
+
+                $('#Watermark').change(function () {
+                    $("#sizeErrorWM").hide();
+                    var ext = $('#Watermark').val().split('.').pop().toLowerCase();
+                    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) == -1) {
+                        $('#Watermark').val("");
+                        TosterNotification("error", 'You can only Upload png ,jpg,jpeg images', "Oppps..!!");
+                    } else {
+                        var file = $(this)[0].files[0];
+                        if (file != undefined) {
+                            var fsize = Math.round((file.size / 2048));
+                            if (fsize > 2048) {
+                                $("#sizeErrorWM").show();
+                                this.value = "";
+                                return false;
+                            }
+                        }
+                    }
+                });
+                $("#btnSubmit").click(function () {
+                    if ($('#contact-form').valid()) {
+                        App.blockUI({ boxed: true });
+                        document.forms["contact-form"].submit();
+                    }
+                    else {
+                        return false
+                    }
+                });
+
+                $("#BtnListSS").click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/ScreenSaverHistory?Typ=4";
+                });
+
+                if ('@Model.Id' > 0)
+                {
+                    $("#Files").attr("disabled", false);
+                    if ('@Model.Function' == "E") {
+                        $('#Timeinterval').val('@Model.Timeinterval');
+                        $('input#Files').removeClass('required');
+                        //$("#Files").val(null);
+
+                        //$('input#Files').prop('disabled', true);
+                        /*$('input#Watermark').prop('disabled', true);*/
+                        //$('#Timeinterval').prop('disabled', true);
+                        //$('#ScreenSaverType').attr("disabled", true);
+                        //$("#ScreenSaverTital").prop("readonly", false);
+                        //$("#Description").prop("readonly", true);
+                        /*$("#Opacity").prop("readonly", true);*/
+                    }
+                    if ('@Model.Function' == "C") {
+                        $('input#Files').removeClass('required');
+                        //$("#Files").val(null);
+                    }
+                    $('#btnSubmit').show();
+                }
+                if ('@Model.IsExpired' == 1) {
+                    $('button').addClass('disabled');
+                    $('#btnSubmit').hide();
+                }
+
+                $('.clschkIsOnResumeDisplay').change('on', function () {
+                    if (jQuery(this).is(":checked")) {
+                        $(this).val("true");
+                        $(this).prop('checked', true);
+                    }
+                    else {
+                        $(this).val("false");
+                        $(this).prop('checked', false);
+                    }
+                });
+            }
+        }
+    }();
+</script>

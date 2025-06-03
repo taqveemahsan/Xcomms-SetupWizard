@@ -1,0 +1,41 @@
+﻿@model IEnumerable<XCommsWeb.Models.UsersModel>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+@foreach (var item in Model)
+{
+    <tr class="@Html.Raw(item.IsOnline == true ? "success" : item.IsActive == true ? "danger" : "")">
+        <td class="col-md-4">
+            <span>
+                @item.Name
+            </span>
+            @if (item.Is_AD_User == true && item.IsADSync == true)
+            {
+                <span class="pull-right" rel="tooltip" data-placement="top" data-original-title="<i class='fa fa-check text-success fa-lg'></i> Synched With AD <br/> Domain : @item.AD_DomainName" data-html="true">
+                    <i class="fa fa-refresh fa-spin fa-lg txt-color-green"></i>
+                </span>
+            }
+        </td>
+        <td class="col-md-4">@item.DisplayName</td>
+        <td class="text-center col-md-1">
+            @if (item.IsOnline)
+            {
+                <span class="indicator online">
+                    <img src="~/assets/img/online.png" />
+                </span>
+            }
+            else
+            {
+                <span class="indicator offline"><img src="~/assets/img/offline.png" /></span>
+            }
+            @Html.HiddenFor(M => item.IsOnline)
+        </td>
+        <td class="text-center col-md-1">
+            <div class="badge bg-color-@Html.Raw(item.IsActive == false ? "green" : "red") txt-color-white">
+                <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.IsActive == false ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                <small> @Html.Raw(item.IsActive == false ? "Yes" : "No") </small>
+            </div>
+            @*<span class="label @Html.Raw(item.IsActive == false ? "label-success" : "label-danger")"> @Html.Raw(item.IsActive == false ? "Yes" : "No")</span>*@
+        </td>
+    </tr>
+}

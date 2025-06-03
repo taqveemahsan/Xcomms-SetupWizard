@@ -1,0 +1,73 @@
+﻿@model XCommsWeb.Models.SendAlertUser
+@using ServerWeb.Helper;
+
+@foreach (var item in Model.ListUser)
+{
+    <tr class="editorRow">
+        @using (Html.BeginCollectionItem("PermissionUserList", item.SrNo.ToString()))
+        {
+            @Html.Hidden("SrNo", item.SrNo)
+            <td class="text-center">
+                @Html.CheckBoxFor(m => m.Newchacked, new { @class = "IsCheck" })
+                @Html.Hidden("UserId", Convert.ToInt64(item.UserId).ToString())
+                @Html.Hidden("chackedId", item.Newchacked)
+            </td>
+            <td>
+                @item.UserName
+                @Html.Hidden("UserName", item.UserName)
+                @Html.Hidden("UserType", item.UserType)
+            </td>
+            <td>
+                @item.DeskbarId
+                @Html.Hidden("DeskbarId", item.DeskbarId)
+            </td>
+        }
+    </tr>
+}
+
+<script type="text/javascript">
+    @foreach (var item in Model.ListUser)
+    {
+        var chacked = "PermissionUserList_" + item.SrNo + "__Newchacked";
+        var chackedId = "PermissionUserList_" + item.SrNo + "__chackedId";
+
+        <text>
+        if ($("#@chackedId").val() == "True") {
+                $("#@chacked").prop('checked', true);
+            }
+        else {
+            $("#@chacked").prop('checked', false);
+            }
+        </text>
+    }
+
+    $(function () {
+        $("#userListTypeSelection").show();
+        @if(Model.HasGroupSelected && Model.ListUser.Any(x=>x.UserType == "Group"))
+            {
+             <text>
+        $("#rbtTargetlistType2").prop('checked', true);
+        $("#allowmembertargetingdiv").show();
+       
+
+ </text>
+            if(Model.HasUserSelected)
+                {
+                            <text>
+        $("#AddGroupMembersToList").prop('checked', true);
+
+</text>
+
+            }
+        }
+        else if(Model.HasUserSelected && ViewBag.IsFristTime)
+            {
+                                        <text>
+        $("#rbtTargetlistType").click();
+
+
+</text>
+            }
+    });
+
+</script>

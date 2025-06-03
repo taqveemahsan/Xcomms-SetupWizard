@@ -1,0 +1,38 @@
+﻿@model XCommsWeb.Models.CYGNUS_Master_General
+@using ServerWeb.Helper;
+
+@foreach (var item in Model.ListCMG)
+{
+    <tr class="editorRow">
+        @using (Html.BeginCollectionItem("PermissionAlertList", item.CodeId.ToString()))
+        {
+            <td class="text-center">
+                @Html.Hidden("SrNo", item.CodeId)
+                @Html.CheckBoxFor(m => m.chacked, new { @class = "clsCHK" })
+                @Html.Hidden("CodeId", Convert.ToInt64(item.CodeId).ToString())
+                @Html.Hidden("chackedId", item.chacked)
+            </td>
+            <td>
+                @item.CodeDesc
+                @Html.Hidden("CodeDesc", item.CodeDesc)
+            </td>
+        }
+    </tr>
+}
+
+<script type="text/javascript">
+    @foreach (var item in Model.ListCMG)
+    {
+        var chacked = "PermissionAlertList_" + item.CodeId + "__chacked";
+        var chackedId = "PermissionAlertList_" + item.CodeId + "__chackedId";
+
+        <text>
+        if ($("#@chackedId").val() == "True") {
+                $("#@chacked").prop('checked', true);
+            }
+        else {
+            $("#@chacked").prop('checked', false);
+            }
+        </text>
+    }
+</script>

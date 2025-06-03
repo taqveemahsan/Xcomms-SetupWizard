@@ -1,0 +1,46 @@
+﻿@model XCommsWeb.Models.AlertModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+@{
+    string AlertTital = !string.IsNullOrEmpty(Model.AlertTital) ? Model.AlertTital.StripHTML() : "";
+    int rowNo = 0; 
+}
+
+<tr class="editorRow">
+    @using (Html.BeginCollectionItem("ListHistoryDelete", Model.AlertId.ToString()))
+    {
+
+        @*<td class="text-center">   </td>*@
+        <input type="hidden" value="@(rowNo += 1)"/>
+        <td class="">
+            @if (@Model.AlertParentId == 0)
+            {
+                @AlertTital
+            }
+            else
+            {
+                <i class="fa fa-share-square"></i> @AlertTital
+            }
+        </td>
+        @*<td class="text-center">Popup</td>*@
+        <td class="text-center col-md-2">
+            @Model.EntryDate.FormateDateWithFullYearUS()
+        </td>
+        <td class="text-center col-md-2">@Model.EntryBy</td>
+        <td class="col-md-1">
+            <div class="btn-group center-block">
+                <center>
+                    <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" style="min-width:auto !important;">
+                        <li><a href="javascript:;" data-alertid="@Model.AlertId" data-alertTitle="@Model.AlertTital" class="clsView" rel="tooltip" title="" data-placement="left" data-original-title="View Quiz"><i class="fa fa-eye"></i><span class="mrgleft5">View</span></a></li>
+                        <li><a href="javascript:;" data-alertid="@Model.AlertId" data-alertTitle="@Model.AlertTital" class="clsDelete" rel="tooltip" title="" data-placement="left" data-original-title="Delete Quiz"><i class="fa fa-close"></i><span class="mrgleft5">Delete</span></a></li>
+                        <li><a href="javascript:;" data-alertid="@Model.AlertId" class="ClsAnalytics" rel="tooltip" title="" data-placement="left" data-original-title="Quiz Analytics"><i class="fa fa-bar-chart-o"></i><span class="mrgleft5">Analytics</span></a></li>
+                    </ul>
+                </center>
+            </div>
+        </td>
+    }
+</tr>

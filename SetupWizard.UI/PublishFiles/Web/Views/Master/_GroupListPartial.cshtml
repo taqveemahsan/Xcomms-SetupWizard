@@ -1,0 +1,89 @@
+﻿@model IEnumerable<XCommsWeb.Models.NewGroupModel>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@{
+
+    int GroupRowId = 1;
+    int GrowNo = 0;
+}
+@foreach (var item in Model)
+{
+    <tr class="@Html.Raw(item.IsActive == false ? "danger" : "")">
+        <input type="hidden" value="@(GrowNo += 1)" />
+        <td class="text-center col-md-1">
+            @if (item.Is_AD_Group)
+            {
+                <div class="badge bg-color-@Html.Raw(item.Is_AD_Group == true && item.IsActive == true ? "green" : "red") txt-color-white" rel="popover-hover" data-placement="right" data-original-title="AD User" data-content="Domain : @item.AD_DomainName">
+                    <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.Is_AD_Group == true && item.IsActive == true ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                    <small> @Html.Raw(item.Is_AD_Group == true && item.IsActive == true ? "Yes" : "No") </small>
+                </div>
+            }
+            else
+            {
+                <div class="badge bg-color-@Html.Raw(item.Is_AD_Group == true && item.IsActive == true ? "green" : "red") txt-color-white">
+                    <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.Is_AD_Group == true && item.IsActive == true ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                    <small> @Html.Raw(item.Is_AD_Group == true && item.IsActive == true ? "Yes" : "No") </small>
+                </div>
+            }
+        </td>
+        <td class="col-md-3">
+            <span>
+                <small> @item.GroupName </small>
+            </span>
+            @if (item.Is_AD_Group == true && item.IsADGroupSync == true)
+            {
+                <span class="pull-right" rel="tooltip" data-placement="top" data-original-title="<i class='fa fa-check text-success fa-lg'></i> Synched With AD <br/> Domain : @item.AD_DomainName" data-html="true">
+                    <i class="fa fa-refresh fa-spin fa-lg txt-color-green"></i>
+                </span>
+            }
+        </td>
+        <td class="text-center col-md-1 text-ValignMiddle">
+            <small> @item.EntryBy </small>
+        </td>
+        <td class="text-center col-md-2 text-ValignMiddle">
+            <small> @item.EntryDate.FormateDateWithFullYearUS() </small>
+        </td>
+        <td class="text-center col-md-2 text-ValignMiddle">
+            <small> @item.UpdateDate.FormateDateWithFullYearUS() </small>
+        </td>
+        <td class="text-center col-md-1 text-ValignMiddle">
+            @*<span class="label @Html.Raw(item.IsActive == true ? "label-success" : "label-danger")"> @Html.Raw(item.IsActive == true ? "Yes" : "No")</span>*@
+            <div class="badge bg-color-@Html.Raw(item.IsActive == true ? "green" : "red") txt-color-white">
+                <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.IsActive == true ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                <small> @Html.Raw(item.IsActive == true ? "Yes" : "No") </small>
+            </div>
+        </td>
+        <td class="col-md-1">
+            <div class="btn-group center-block">
+                <center>
+                    <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" style="min-width:auto !important;">
+                        <li>
+                            <a href="javascript:;" class="tooltips ClsEditGroup" data-id="@item.Id" rel="tooltip" title="" data-placement="left" data-original-title="Edit Group">
+                                <i class="fa fa-pencil"></i> Edit
+                            </a>
+                        </li>
+                        <li>
+                            @*<a href="javascript:;" id="i_@item.Id" class="deletegroup tooltips" title="Delete User"><i class="fa fa-trash-o"></i><span class="mrgleft5"> Delete</span></a>*@
+                            @if (item.IsActive == true)
+                            {
+                                <a href="javascript:;" id="i_@item.Id" class="EnableDisbaleGroup" data-id="@item.Id" data-type="D" rel="tooltip" title="" data-placement="left" data-original-title="De-Activate Group">
+                                    <i class="fa fa-ban"></i> De-Activate Group
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="javascript:;" id="i_@item.Id" class="EnableDisbaleGroup" data-id="@item.Id" data-type="E" title="" data-placement="left" data-original-title="Activate Group">
+                                    <i class="fa fa-check-circle"></i> Activate Group
+                                </a>
+                            }
+                        </li>
+                    </ul>
+                </center>
+            </div>
+        </td>
+    </tr>
+    GroupRowId++;
+}

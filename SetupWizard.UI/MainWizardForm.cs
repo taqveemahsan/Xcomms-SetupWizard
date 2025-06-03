@@ -3,6 +3,7 @@ using SetupWizard.Core;
 using System.Configuration;
 using System.Text;
 using static SetupWizard.Core.ConfigurationManager;
+using Application = System.Windows.Forms.Application;
 using ConfigurationManager = SetupWizard.Core.ConfigurationManager;
 
 namespace SetupWizard.UI;
@@ -20,6 +21,68 @@ public partial class MainWizardForm : Form
     {
         InitializeComponent();
         InitializeWizard();
+        EnsurePublishDirectoriesExist();
+    }
+
+    private void EnsurePublishDirectoriesExist()
+    {
+        try
+        {
+            // Create the main PublishFiles directory if it doesn't exist
+            string publishFilesDir = Path.Combine(Application.StartupPath, "PublishFiles");
+            if (!Directory.Exists(publishFilesDir))
+            {
+                Directory.CreateDirectory(publishFilesDir);
+            }
+
+            // Create API directory if it doesn't exist
+            string apiDir = Path.Combine(publishFilesDir, "API");
+            if (!Directory.Exists(apiDir))
+            {
+                Directory.CreateDirectory(apiDir);
+            }
+
+            // Create Web directory if it doesn't exist
+            string webDir = Path.Combine(publishFilesDir, "Web");
+            if (!Directory.Exists(webDir))
+            {
+                Directory.CreateDirectory(webDir);
+            }
+
+            // Create a placeholder for the SQL script if it doesn't exist
+            string sqlScriptPath = Path.Combine(publishFilesDir, "XComms.sql");
+            if (!File.Exists(sqlScriptPath))
+            {
+                // Create an empty file as a placeholder
+                File.WriteAllText(sqlScriptPath, "-- XComms SQL Script placeholder\n-- Replace this file with the actual XComms.sql script");
+            }
+
+            // Add a README file to explain the directory structure
+            string readmePath = Path.Combine(publishFilesDir, "README.txt");
+            if (!File.Exists(readmePath))
+            {
+                string readmeContent = @"PublishFiles Directory Structure
+============================
+
+This directory contains the files needed for the XComms setup:
+
+1. API/ - Place the published API files here
+   - Required files: SetupWizard.API.dll, appsettings.json, web.config
+
+2. Web/ - Place the published Web application files here
+   - Required files: SetupWizard.Web.dll, appsettings.json, web.config, wwwroot/
+
+3. XComms.sql - The SQL script to create and populate the database
+
+Please ensure all required files are present before running the setup wizard.
+";
+                File.WriteAllText(readmePath, readmeContent);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to create publish directories: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void InitializeWizard()
@@ -66,9 +129,13 @@ public partial class MainWizardForm : Form
         var apiGroupBox = new GroupBox { Text = "API Deployment", Location = new Point(20, 20), Size = new Size(450, 150) };
 
         var apiPathLabel = new Label { Text = "API Source Path:", Location = new Point(10, 30) };
-        var apiPathTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "APISourcePath" };
-        var apiBrowseButton = new Button { Text = "Browse", Location = new Point(330, 30), Width = 80 };
-        apiBrowseButton.Click += (s, e) => BrowseForFolder("APISourcePath");
+        var apiPathTextBox = new TextBox { 
+            Location = new Point(120, 30), 
+            Width = 300, 
+            Name = "APISourcePath", 
+            Text = Path.Combine(Application.StartupPath, "PublishFiles", "API"),
+            ReadOnly = true 
+        };
 
         var apiPortLabel = new Label { Text = "API Port:", Location = new Point(10, 70) };
         var apiPortTextBox = new TextBox { Location = new Point(120, 70), Width = 100, Name = "APIPort", Text = "5001" };
@@ -77,10 +144,10 @@ public partial class MainWizardForm : Form
         apiValidateButton.Click += (s, e) => ValidateAPIFiles();
 
         var apiTargetLabel = new Label { Text = "Deploy To:", Location = new Point(10, 110) };
-        var apiTargetTextBox = new TextBox { Location = new Point(120, 110), Width = 200, Name = "APITargetPath", Text = @"C:\inetpub\wwwroot\MyAPI" };
+        var apiTargetTextBox = new TextBox { Location = new Point(120, 110), Width = 300, Name = "APITargetPath", Text = @"C:\inetpub\wwwroot\MyAPI" };
 
         apiGroupBox.Controls.AddRange(new Control[] {
-            apiPathLabel, apiPathTextBox, apiBrowseButton,
+            apiPathLabel, apiPathTextBox,
             apiPortLabel, apiPortTextBox, apiValidateButton,
             apiTargetLabel, apiTargetTextBox
         });
@@ -89,9 +156,13 @@ public partial class MainWizardForm : Form
         var webGroupBox = new GroupBox { Text = "Web Application Deployment", Location = new Point(20, 180), Size = new Size(450, 150) };
 
         var webPathLabel = new Label { Text = "Web Source Path:", Location = new Point(10, 30) };
-        var webPathTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "WebSourcePath" };
-        var webBrowseButton = new Button { Text = "Browse", Location = new Point(330, 30), Width = 80 };
-        webBrowseButton.Click += (s, e) => BrowseForFolder("WebSourcePath");
+        var webPathTextBox = new TextBox { 
+            Location = new Point(120, 30), 
+            Width = 300, 
+            Name = "WebSourcePath", 
+            Text = Path.Combine(Application.StartupPath, "PublishFiles", "Web"),
+            ReadOnly = true 
+        };
 
         var webPortLabel = new Label { Text = "Web Port:", Location = new Point(10, 70) };
         var webPortTextBox = new TextBox { Location = new Point(120, 70), Width = 100, Name = "WebPort", Text = "5002" };
@@ -100,10 +171,10 @@ public partial class MainWizardForm : Form
         webValidateButton.Click += (s, e) => ValidateWebFiles();
 
         var webTargetLabel = new Label { Text = "Deploy To:", Location = new Point(10, 110) };
-        var webTargetTextBox = new TextBox { Location = new Point(120, 110), Width = 200, Name = "WebTargetPath", Text = @"C:\inetpub\wwwroot\MyWeb" };
+        var webTargetTextBox = new TextBox { Location = new Point(120, 110), Width = 300, Name = "WebTargetPath", Text = @"C:\inetpub\wwwroot\MyWeb" };
 
         webGroupBox.Controls.AddRange(new Control[] {
-            webPathLabel, webPathTextBox, webBrowseButton,
+            webPathLabel, webPathTextBox,
             webPortLabel, webPortTextBox, webValidateButton,
             webTargetLabel, webTargetTextBox
         });
@@ -137,9 +208,10 @@ public partial class MainWizardForm : Form
         try
         {
             var sourcePath = GetControlValue("APISourcePath");
-            if (string.IsNullOrEmpty(sourcePath))
+            if (!Directory.Exists(sourcePath))
             {
-                MessageBox.Show("Please select API source path first!", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"API source directory not found at: {sourcePath}\nPlease ensure the PublishFiles/API folder exists and contains the required files.", 
+                    "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -157,7 +229,7 @@ public partial class MainWizardForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Validation error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"API validation failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -166,9 +238,10 @@ public partial class MainWizardForm : Form
         try
         {
             var sourcePath = GetControlValue("WebSourcePath");
-            if (string.IsNullOrEmpty(sourcePath))
+            if (!Directory.Exists(sourcePath))
             {
-                MessageBox.Show("Please select Web source path first!", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Web source directory not found at: {sourcePath}\nPlease ensure the PublishFiles/Web folder exists and contains the required files.", 
+                    "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -186,7 +259,7 @@ public partial class MainWizardForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Validation error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Web validation failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -208,15 +281,37 @@ public partial class MainWizardForm : Form
             var webTargetPath = GetControlValue("WebTargetPath");
             var webPort = int.Parse(GetControlValue("WebPort"));
 
+            // Validate source paths exist
+            if (!Directory.Exists(apiSourcePath))
+            {
+                MessageBox.Show($"API source directory not found at: {apiSourcePath}\nPlease ensure the PublishFiles/API folder exists and contains the required files.", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                progressForm.Close();
+                return;
+            }
+
+            if (!Directory.Exists(webSourcePath))
+            {
+                MessageBox.Show($"Web source directory not found at: {webSourcePath}\nPlease ensure the PublishFiles/Web folder exists and contains the required files.", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                progressForm.Close();
+                return;
+            }
+
             var connectionString = $"Server={currentConfig.Database.ServerName};Database={currentConfig.Database.DatabaseName};User Id={currentConfig.Database.Username};Password={currentConfig.Database.Password};TrustServerCertificate=true;";
+
+            // Generate unique app pool names with timestamp to avoid conflicts
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string apiAppPoolName = $"XCommsAPIPool_{timestamp}";
+            string webAppPoolName = $"XCommsWebPool_{timestamp}";
 
             // Deploy API
             progressForm.UpdateProgress(30, "Deploying API...");
-            var apiResult = deploymentManager.DeployPreBuiltAPI(apiSourcePath, apiTargetPath, apiPort, "MyAPIPool", connectionString);
+            var apiResult = deploymentManager.DeployPreBuiltAPI(apiSourcePath, apiTargetPath, apiPort, apiAppPoolName, connectionString);
 
             // Deploy Web with the actual API URL
             progressForm.UpdateProgress(70, "Deploying Web Application...");
-            var webResult = deploymentManager.DeployPreBuiltWeb(webSourcePath, webTargetPath, webPort, "MyWebPool", connectionString, apiResult.Url);
+            var webResult = deploymentManager.DeployPreBuiltWeb(webSourcePath, webTargetPath, webPort, webAppPoolName, connectionString, apiResult.Url);
 
             progressForm.UpdateProgress(100, "Deployment completed!");
 
@@ -296,54 +391,54 @@ public partial class MainWizardForm : Form
     {
         var tab = new TabPage("Database Setup");
 
-        // Server Connection Section
-        var connectionGroupBox = new GroupBox
-        {
-            Text = "Database Connection",
-            Location = new Point(20, 20),
-            Size = new Size(450, 120)
-        };
+        // Database connection group
+        var dbGroupBox = new GroupBox { Text = "Database Connection", Location = new Point(20, 20), Size = new Size(450, 150) };
 
         var serverLabel = new Label { Text = "Server Name:", Location = new Point(10, 30) };
         var serverTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "ServerName", Text = "localhost" };
 
-        var userLabel = new Label { Text = "Username:", Location = new Point(10, 60) };
-        var userTextBox = new TextBox { Location = new Point(120, 60), Width = 200, Name = "Username", Text = "sa" };
+        var usernameLabel = new Label { Text = "Username:", Location = new Point(10, 70) };
+        var usernameTextBox = new TextBox { Location = new Point(120, 70), Width = 200, Name = "Username", Text = "sa" };
 
-        var passLabel = new Label { Text = "Password:", Location = new Point(10, 90) };
-        var passTextBox = new TextBox { Location = new Point(120, 90), Width = 200, UseSystemPasswordChar = true, Name = "Password" };
+        var passwordLabel = new Label { Text = "Password:", Location = new Point(10, 110) };
+        var passwordTextBox = new TextBox { Location = new Point(120, 110), Width = 200, Name = "Password", UseSystemPasswordChar = true };
 
-        var testButton = new Button { Text = "Test Connection", Location = new Point(330, 60), Width = 100 };
-        testButton.Click += async (s, e) => await TestDatabaseConnection();
+        var testConnectionButton = new Button { Text = "Test Connection", Location = new Point(330, 70), Width = 100 };
+        testConnectionButton.Click += async (s, e) => await TestDatabaseConnection();
 
-        connectionGroupBox.Controls.AddRange(new Control[] {
-            serverLabel, serverTextBox, userLabel, userTextBox, passLabel, passTextBox, testButton
+        dbGroupBox.Controls.AddRange(new Control[] {
+            serverLabel, serverTextBox,
+            usernameLabel, usernameTextBox,
+            passwordLabel, passwordTextBox,
+            testConnectionButton
         });
 
-        // Database Setup Section  
-        var setupGroupBox = new GroupBox
-        {
-            Text = "Database Setup",
-            Location = new Point(20, 160),
-            Size = new Size(450, 120)
-        };
+        // Database setup group
+        var setupGroupBox = new GroupBox { Text = "Database Setup", Location = new Point(20, 180), Size = new Size(450, 150) };
 
         var dbNameLabel = new Label { Text = "Database Name:", Location = new Point(10, 30) };
-        var dbNameTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "DatabaseName", Text = "MyAppDB" };
+        var dbNameTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "DatabaseName", Text = "XCommsDB" };
 
         var scriptPathLabel = new Label { Text = "SQL Script:", Location = new Point(10, 60) };
-        var scriptPathTextBox = new TextBox { Location = new Point(120, 60), Width = 200, Name = "ScriptPath" };
-        var scriptBrowseButton = new Button { Text = "Browse", Location = new Point(330, 60), Width = 80 };
-        scriptBrowseButton.Click += (s, e) => BrowseForScriptFile();
+        var scriptPathTextBox = new TextBox { 
+            Location = new Point(120, 60), 
+            Width = 300, 
+            Name = "ScriptPath", 
+            Text = Path.Combine(Application.StartupPath, "PublishFiles", "XComms.sql"),
+            ReadOnly = true 
+        };
 
-        var setupButton = new Button { Text = "Setup Database", Location = new Point(120, 90), Width = 150, BackColor = Color.Green, ForeColor = Color.White };
+        var setupButton = new Button { Text = "Setup Database", Location = new Point(200, 100), Width = 120 };
         setupButton.Click += async (s, e) => await SetupDatabaseFromScript();
 
         setupGroupBox.Controls.AddRange(new Control[] {
-            dbNameLabel, dbNameTextBox, scriptPathLabel, scriptPathTextBox, scriptBrowseButton, setupButton
+            dbNameLabel, dbNameTextBox,
+            scriptPathLabel, scriptPathTextBox,
+            setupButton
         });
 
-        tab.Controls.AddRange(new Control[] { connectionGroupBox, setupGroupBox });
+        tab.Controls.AddRange(new Control[] { dbGroupBox, setupGroupBox });
+
         return tab;
     }
 
@@ -383,9 +478,10 @@ public partial class MainWizardForm : Form
             var databaseName = GetControlValue("DatabaseName");
             var scriptPath = GetControlValue("ScriptPath");
 
-            if (string.IsNullOrEmpty(scriptPath))
+            if (!File.Exists(scriptPath))
             {
-                MessageBox.Show("Please select SQL script file(s) first!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"SQL script file not found at: {scriptPath}\nPlease ensure the PublishFiles/XComms.sql file exists.", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -394,40 +490,7 @@ public partial class MainWizardForm : Form
             progressForm.Show();
             progressForm.UpdateProgress(30, "Setting up database from script...");
 
-            bool result;
-            
-            // Check if multiple script files were selected
-            if (scriptPath.Contains(";"))
-            {
-                string[] scriptPaths = scriptPath.Split(';');
-                
-                // Verify all files exist
-                foreach (var path in scriptPaths)
-                {
-                    if (!File.Exists(path))
-                    {
-                        MessageBox.Show($"SQL script file not found: {path}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        progressForm.Close();
-                        return;
-                    }
-                }
-                
-                // Execute multiple scripts
-                result = await dbManager.CreateDatabaseFromScript(serverName, username, password, databaseName, scriptPaths);
-            }
-            else
-            {
-                // Single script file
-                if (!File.Exists(scriptPath))
-                {
-                    MessageBox.Show("SQL script file not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    progressForm.Close();
-                    return;
-                }
-                
-                // Execute single script
-                result = await dbManager.SetupDatabaseFromScript(serverName, username, password, databaseName, scriptPath);
-            }
+            bool result = await dbManager.SetupDatabaseFromScript(serverName, username, password, databaseName, scriptPath);
 
             progressForm.UpdateProgress(100, "Database setup completed!");
             progressForm.Close();

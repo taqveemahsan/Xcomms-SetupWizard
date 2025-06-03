@@ -1,0 +1,105 @@
+﻿
+@model IEnumerable<XCommsWeb.Models.AlertModel>
+    @{
+        ViewBag.Title = "AlertPopUpList";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <article class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+        <div class="jarviswidget jarviswidget-sortable" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-togglebutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-list"></i> </span>
+                <h2>Alert Pop Up List</h2>
+                <div class="widget-toolbar" role="menu">
+                    <a class="btn btn-sm btn-primary btnAddEdit" href="@Url.Content("~/Master/CreateAlert?AlertId=0")">
+                        <i class="fa fa-plus"></i>
+                        Add Alert PopUp
+                    </a>
+
+                </div>
+            </header>
+            <div class="widget-body no-padding">
+                <table id="TemplateList" class="table table-striped table-bordered table-hover" width="100%">
+                    <thead>
+                        <tr>
+                            <th>
+                                Id
+                            </th>
+                            <th>
+                                Alert Title
+                            </th>
+                            <th>
+                                Display Position
+                            </th>
+                            <th>
+                                Display Width(px)
+                            </th>
+                            <th>
+                                Display Height(px)
+                            </th>
+                            <th>
+                                Add By
+                            </th>
+                            <th>
+                                Add Date
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <td>
+                                @item.AlertId
+                            </td>
+                            <td>
+                                @item.AlertTital
+                            </td>
+                            <td>
+                                @item.AlertPosition
+                            </td>
+                            <td>
+                                @item.DesktopSizeWidth
+                            </td>
+                            <td>
+                                @item.DesktopSizeHeight
+                            </td>
+                            <td>
+                                @item.EntryBy
+                            </td>
+                            <td>
+                                @item.EntryDate.ToString("dd MMM yyyy")
+                            </td>
+                            <td>
+                                <a href="@Url.Content("~/Master/CreateAlert?AlertId=" + item.AlertId)" class="btn default btn-xs blue-stripe tooltips"><i class="fa fa-pencil"></i>&nbsp;Edit</a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <script>
+        var FormComponents = function (DomainName) {
+
+            var Events = function (DomainName) {
+                $("#TemplateList a , .btnAddEdit").on("click", function (e) {
+                    App.blockUI({ boxed: true });
+                });
+            }
+            return {
+                //main function to initiate the module
+                init: function (DomainName) {
+                    Events(DomainName);
+                    dataTableById('TemplateList');
+                    $("#TemplateList").parents('.row').show(500);
+                }
+            }
+        }();
+    </script>
+
+
+

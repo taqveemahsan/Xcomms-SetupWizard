@@ -1,0 +1,420 @@
+﻿@model XCommsWeb.Models.ADViewModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@using System.Linq;
+@using XCommsWeb.Models;
+
+@{
+    if (Model.ADSyncSchedule.SyncStartDate == DateTime.MinValue || Model.ADSyncSchedule.SyncStartDate == null)
+    {
+        Model.ADSyncSchedule.SyncStartDate = DateTime.Now;
+    }
+
+    int BaseTenantId = ViewBag.BaseTenantId;
+}
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header>
+                <span class="widget-icon"><i class="fa fa-list"></i></span>
+                <h2 style="width:auto;">Sync OU & Group List</h2>
+            </header>
+            <div class="widget-body">
+                <div class="col-md-12">
+                    <div class="pull-left col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                        <div class="form-group smart-form">
+                            <label class="col-md-3 control-label">AD Name <span class="hasbgcolor">*</span> : </label>
+                            <div class="col-md-9">
+                                @Html.TextBoxFor(Model => Model.ADM.ADSyncName, new { @class = "form-control", placeholder = "Enter AD Sync Name", autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pull-right col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        <ul class="demo-btns pull-right">
+                            <li>
+                                <a href="javascript:void(0);" id="BtnSaveRunSyncData" class="btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Sync Directory">
+                                    <span class="btn-label"><i class="fa fa-play-circle-o"></i></span> Save & Run Now
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-12"></div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                    <div class="row">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="clearfix"></div>
+                            <div class="smart-form">
+                                <header class="row">
+                                    <div class="col col-xs-11 col-sm-11 col-md-11 col-lg-11">
+                                        <div class="alert alert-info no-margin" style="font-size:14px;">
+                                            <i class="fa-fw fa fa-sitemap"></i>
+                                            Organizational Unit <b>(@Model.ADOUList.Count())</b>
+                                        </div>
+                                    </div>
+                                </header>
+                                <br /><br />
+                                <div class="row">
+                                    <div class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <div class="smart-form">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="chkSelectAll" id="chkOUSelectAll">
+                                                    <i></i> Select OU
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="input">
+                                                <i class="icon-append fa fa-search txt-color-blue"></i>
+                                                <input id="jsTreeSearchInput" class="ClsOUSearchInput form-control" placeholder="Search Organizational Units" autocomplete="off" />
+                                                <b class="tooltip tooltip-bottom-right">Search Organizational Units</b>
+                                            </label>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="clearfix"></div>
+                            <div class="widget-body">
+                                @if (Model.ADOUList.Count > 0)
+                                {
+                                    <div id="jstree"></div>
+                                    @Html.Hidden("selectedItems");
+                                }
+                                else
+                                {
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger fade in">
+                                            <i class="fa-fw fa fa-info"></i>
+                                            <strong>Info !</strong>AD Organizational Unit Data Not Found.
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="row">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="clearfix"></div>
+                            <div class="smart-form">
+                                <header class="row">
+                                    <div class="col col-xs-11 col-sm-11 col-md-11 col-lg-11">
+                                        <div class="alert alert-info no-margin" style="font-size:14px;">
+                                            <i class="fa-fw fa fa-users"></i>
+                                            Group List <b>(@Model.ADGroupList.Count())</b>
+                                        </div>
+                                    </div>
+                                </header>
+                                <br /><br />
+                                <div class="row">
+                                    <div class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <div class="smart-form">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="chkGroupSelectAll" id="chkGroupSelectAll">
+                                                    <i></i> Select Groups to Sync
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <label class="input">
+                                                <i class="icon-append fa fa-search txt-color-blue"></i>
+                                                <input id="jsTreeSearchGroupInput" class="ClsGroupSearchInput form-control" placeholder="Search Groups" autocomplete="off" />
+                                                <b class="tooltip tooltip-bottom-right">Search Groups</b>
+                                            </label>
+                                        </section>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="clearfix"></div>
+                                <div class="widget-body">
+                                    @if (Model.ADGroupList.Count > 0)
+                                    {
+                                        <div id="Groupjstree"></div>
+                                        @Html.Hidden("selectedGroupItems");
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-12">
+                                            <div class="alert alert-danger fade in">
+                                                <i class="fa-fw fa fa-info"></i>
+                                                <strong>Info !</strong> AD Group's Data Not Found.
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-2" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header>
+                <span class="widget-icon"><i class="fa fa-calendar"></i></span>
+                <h2>Schedule Setting</h2>
+            </header>
+            <div class="widget-body">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="col-md-5">
+                            <label class="row col-md-12">
+                                <input type="radio" name="RadioSchedulePattern" id="Now" value="Now" class="radiobox" />
+                                <span>Manual Sync <b>(Now)</b></span>
+                            </label>
+                            <label class="row col-md-12">
+                                <input type="radio" name="RadioSchedulePattern" id="Weekly" value="Weekly" class="radiobox" />
+                                <span>Specific Day Of Week</span>
+                            </label>
+
+                            @Html.HiddenFor(Model => Model.ADSyncSchedule.ScheduleType)
+                            @Html.HiddenFor(Model => Model.ADSyncSchedule.AD_Header_Id)
+                            @Html.HiddenFor(Model => Model.ADM.SubmitSyncDate)
+                            @Html.HiddenFor(Model => Model.ADM.SaveDraftSyncDate)
+                        </div>
+                        <div class="col-md-7">
+                            <div class="row clsWeekly">
+                                <fieldset class="smart-form">
+                                    <div class="row">
+                                        <div class="col col-4">
+                                            <label class="checkbox state-success">
+                                                @Html.CheckBoxFor(Model => Model.ADSyncSchedule.WeeklydaySunday, new { @class = "ScheduleOpetion" })
+                                                <i></i>Sunday
+                                            </label>
+                                            <label class="checkbox state-success">
+                                                @Html.CheckBoxFor(Model => Model.ADSyncSchedule.WeeklydayWednesday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" })
+                                                <i></i>Wednesday
+                                            </label>
+                                            <label class="checkbox state-success">
+                                                @Html.CheckBoxFor(Model => Model.ADSyncSchedule.WeeklydaySaturday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" })
+                                                <i></i>Saturday
+                                            </label>
+                                        </div>
+                                        <div class="col col-4">
+                                            <label class="checkbox state-success">
+                                                @Html.CheckBoxFor(Model => Model.ADSyncSchedule.WeeklydayMonday, new { @class = "ScheduleOpetion" })
+                                                <i></i>Monday
+                                            </label>
+                                            <label class="checkbox state-success">
+                                                @Html.CheckBoxFor(Model => Model.ADSyncSchedule.WeeklydayThursday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" })
+                                                <i></i>Thursday
+                                            </label>
+                                        </div>
+                                        <div class="col col-4">
+                                            <label class="checkbox state-success">
+                                                @Html.CheckBoxFor(Model => Model.ADSyncSchedule.WeeklydayTuesday, new { @class = "ScheduleOpetion" })
+                                                <i></i>Tuesday
+                                            </label>
+
+                                            <label class="checkbox state-success">
+                                                @Html.CheckBoxFor(Model => Model.ADSyncSchedule.WeeklydayFriday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" })
+                                                <i></i>Friday
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clsComman">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <hr />
+                                <div class="form-group">
+                                    <label class="col-md-4">Start Sync On: </label>
+                                    <div class="col-md-8">
+                                        <div class="input-group date DayOfWeek_StartSyncDateTime">
+                                            @Html.TextBoxFor(Model => Model.ADSyncSchedule.SyncStartDate, String.Format("{0:MMM dd yyyy hh:mm tt}", Model.ADSyncSchedule.SyncStartDate), new { @class = "form-control timepicker-default required", @readonly = true })
+                                            <span class="input-group-btn">
+                                                <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                            </span>
+                                            @Html.HiddenFor(Model => Model.ADSyncSchedule.SyncStartDate)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-actions">
+                    <div class="clearfix"></div>
+                    <div class="col-md-12">
+                        <div class="pull-right col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                            <ul class="demo-btns pull-right">
+                                <li>
+                                    <a href="javascript:void(0);" id="BtnSaveSyncData" class="btn btn-labeled btn-warning" rel="tooltip" title="" data-placement="bottom" data-original-title="Save Sync Data">
+                                        <span class="btn-label"><i class="fa fa-save"></i></span> Save
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //console.log(@Html.Raw(ViewBag.Json));
+    $('#jstree').jstree({
+        "core":
+        {
+            "themes": { "variant": "large", 'icons': true, "responsive": true, 'stripes': true },
+            "data": @Html.Raw(ViewBag.Json),
+            "attr": { "class": "jstree-checked" }
+        },
+        "checkbox":
+        {
+            "keep_selected_style": false,
+            "three_state": false,
+            "cascade": 'down'
+        },
+        "plugins": ["defaults", "checkbox", "search"],
+        "search":
+        {
+            "case_sensitive": false,
+            "show_only_matches": true
+        },
+        'expand_selected_onload': true
+    }).on("check_node.jstree uncheck_node.jstree", function (e, data)
+    {
+        if (e.type == "uncheck_node")
+        {
+            $("#chkSelectAll").prop("checked", false);
+        }
+        else if (e.type == "check_node")
+        {
+            if ($(this).jstree().get_json('#', { flat: true }).length === $(this).jstree().get_checked(true).length)
+                $("#chkSelectAll").prop("checked", true);
+        }
+    }).bind("loaded.jstree", function (event, data)
+    {
+        $(this).jstree("close_all");
+    }).bind("select_node.jstree", function (e, data)
+    {
+        if (data.event)
+        {
+            data.instance.select_node(data.node);
+        }
+    }).bind('deselect_node.jstree', function (e, data)
+    {
+        if (data.event)
+        {
+            data.instance.deselect_node(data.node);
+        }
+    });
+
+    $('#jstree').on('changed.jstree', function (e, data)
+    {
+        var i, j;
+        var selectedItems = [];
+        for (i = 0, j = data.selected.length; i < j; i++) {
+            var id = data.selected[i]; //Fetch the Id.
+
+            if (id.indexOf('-') != -1) {
+                id = id.split("-")[1]; //Remove the ParentId.
+            }
+
+            //Add the Node to the JSON Array.
+            selectedItems.push({
+                id: id,
+                text: data.instance.get_node(data.selected[i]).text,
+                parent: data.instance.get_node(data.selected[i]).original.parent,
+                parentName: data.instance.get_node(data.selected[i]).original.OU_ParentName,
+                UniqueID: data.instance.get_node(data.selected[i]).original.UniqueID,
+                OU_Count: data.instance.get_node(data.selected[i]).original.OU_Count
+            });
+        }
+
+        //Serialize the JSON Array and save in HiddenField.
+        console.log("OU Selected : " + JSON.stringify(selectedItems));
+        $("#selectedItems").val(JSON.stringify(selectedItems));
+
+    }).jstree();
+</script>
+
+<script type="text/javascript">
+
+    @*var jsonNew = @Html.Raw(ViewBag.GroupJson);
+    console.log('Group Data : ' + jsonNew);*@
+
+    $('#Groupjstree').jstree({
+        "core": {
+            "themes": { "variant": "large", 'icons': true, "responsive": true, 'stripes': true },
+            "data": @Html.Raw(ViewBag.GroupJson),
+            "attr": { "class": "jstree-checked" }
+        },
+        "checkbox": {
+            "keep_selected_style": false,
+            "three_state": false,
+            "cascade": 'down'
+        },
+        "plugins": ["defaults", "checkbox", "search"],
+        "search": {
+            "case_sensitive": false,
+            "show_only_matches": true
+        },
+        'expand_selected_onload': true
+    }).on("check_node.jstree uncheck_node.jstree", function (e, data)
+    {
+        if (e.type == "uncheck_node")
+        {
+            $("#chkGroupSelectAll").prop("checked", false);
+        }
+        else if (e.type == "check_node")
+        {
+            if ($(this).jstree().get_json('#', { flat: true }).length === $(this).jstree().get_checked(true).length)
+                $("#chkGroupSelectAll").prop("checked", true);
+        }
+    }).bind("loaded.jstree", function (event, data)
+    {
+        $(this).jstree("close_all");
+    }).bind("select_node.jstree", function (e, data)
+    {
+        if (data.event)
+        {
+            data.instance.select_node(data.node);
+        }
+    }).bind('deselect_node.jstree', function (e, data)
+    {
+        if (data.event)
+        {
+            data.instance.deselect_node(data.node);
+        }
+    });
+
+    $('#Groupjstree').on('changed.jstree', function (e, data) {
+        var i, j;
+        var selectedGroup = [];
+        for (i = 0, j = data.selected.length; i < j; i++) {
+            var id = data.selected[i]; //Fetch the Id.
+            if (id.indexOf('-') != -1) {
+                id = id.split("-")[1]; //Remove the ParentId.
+            }
+
+            //Add the Node to the JSON Array.
+            selectedGroup.push({
+                id: id,
+                text: data.instance.get_node(data.selected[i]).text,
+                parent: data.instance.get_node(data.selected[i]).original.parent,
+                parentName: data.instance.get_node(data.selected[i]).original.OU_ParentName,
+                UniqueID: data.instance.get_node(data.selected[i]).original.UniqueID,
+                OU_Count: data.instance.get_node(data.selected[i]).original.OU_Count
+            });
+        }
+
+        //Serialize the JSON Array and save in HiddenField.
+        console.log("Group Selected : " + JSON.stringify(selectedGroup));
+        $("#selectedGroupItems").val(JSON.stringify(selectedGroup));
+    }).jstree();
+</script>

@@ -1,0 +1,1003 @@
+﻿@model XCommsWeb.Models.CreateQuizViewModel
+@using System.Linq;
+@using XCommsWeb.Models;
+@{
+    ViewBag.Title = "Create Quiz";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    if (Model.AM.OnceStartDateTime == DateTime.MinValue || Model.AM.OnceStartDateTime == null)
+    {
+        Model.AM.OnceStartDateTime = DateTime.Now;
+    }
+
+    if (Model.AM.OnceEndDateTime == DateTime.MinValue || Model.AM.OnceEndDateTime == null)
+    {
+        Model.AM.OnceEndDateTime = DateTime.Now;
+    }
+    if (Model.AM.StartDateComman == DateTime.MinValue || Model.AM.StartDateComman == null)
+    {
+        Model.AM.StartDateComman = DateTime.Now;
+    }
+
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    int BaseTenantId = ViewBag.BaseTenantId;
+    List<CYGNUS_Master_General> GeneralMasterObject = MS.GetGeneralMasterObject(0,BaseTenantId);
+    List<CYGNUS_Master_General> ListLifeTimeType = GeneralMasterObject.Where(c => c.CodeType.ToUpper() == "LIFETIMETYPE").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListScheduleDaily = GeneralMasterObject.Where(c => c.CodeType.ToUpper() == "SCHEDULEDAILY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListMonthDay = GeneralMasterObject.Where(c => c.CodeType.ToUpper() == "MONTHDAY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListWeekinMontly = GeneralMasterObject.Where(c => c.CodeType.ToUpper() == "WEEKINMONTLY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListWeekDay = GeneralMasterObject.Where(c => c.CodeType.ToUpper() == "WEEKDAY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListYearlMonth = GeneralMasterObject.Where(c => c.CodeType.ToUpper() == "YEARLMONTH").OrderBy(c => c.EntryDate).ToList();
+
+    List<SelectListItem> BlankList = new List<SelectListItem>();
+
+    Model.AM.ExpiresTimeType = "Hour";
+    Model.AM.ExpiresTimeValue = 24;
+}
+
+<style type="text/css">
+    .checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {
+        position: absolute;
+        margin-left: 0px !important;
+    }
+
+    .mrgtp10 {
+        margin-top: 10px;
+    }
+
+    .form-control-unique {
+        display: block;
+        width: 100%;
+        height: 21px;
+        padding: 0px 5px;
+        font-size: 13px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .lable-unique {
+        font-size: 14px;
+        margin-bottom: 16px;
+        margin-left: 10px;
+        color: #fff;
+    }
+
+    .smart-accordion-default .panel-default > .panel-heading {
+        background-color: #3c3a39;
+        color: #FFF;
+        margin-bottom: 5px;
+    }
+
+    .smart-accordion-default.panel-group .panel-title a {
+        font-weight: 700;
+        padding: 5px 10px;
+    }
+
+    .smart-accordion-default.panel-group .panel + .panel {
+        margin-top: 5px;
+    }
+
+    .smart-accordion-default .panel-default {
+        border-color: #c3c3c300;
+    }
+
+    .txt-color-yellow {
+        color: #ffb848 !important;
+    }
+
+    .note-editable > ol {
+        margin-top: 0 !important;
+        margin-bottom: 9px !important;
+        padding-left: 40px !important;
+    }
+
+    .note-editor.note-frame {
+        border: 1px solid #a9a9a9 !important;
+    }
+
+    .smart-form .checkbox, .smart-form .radio {
+        margin-bottom: 4px;
+        padding-left: 25px;
+        line-height: 25px;
+        color: #a1a1a1;
+        cursor: pointer;
+        font-size: 13px;
+        padding-top: 0px;
+    }
+
+    .img-list {
+        width: 19%;
+        margin-bottom: 1.2rem;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+        .img-list.selected {
+            border: none;
+            /*box-shadow: 0px 0px 6px 7px #2b2b2b;*/
+            box-shadow: 0px 12px 22px 1px #333;
+            z-index: 1;
+            /*transform: scale(1.2);*/
+            margin: 0 10px 0 10px;
+        }
+
+        .img-list > img {
+            width: 100%
+        }
+
+    .popover.bottom > .arrow:after {
+        border-bottom-color: #000;
+    }
+
+    .table-condensed.table > tbody > tr > td, .table-condensed.table > tbody > tr > th, .table-condensed.table > tfoot > tr > td, .table-condensed.table > tfoot > tr > th, .table-condensed.table > thead > tr > td, .table-condensed.table > thead > tr > th {
+        padding: 5px 15px !important;
+    }
+
+    .clsmrg2 {
+        margin-bottom: 4px;
+    }
+
+    .hasbgcolor {
+        color: red;
+    }
+    .disabled-link {
+        pointer-events: none;
+        background-color: #b5aeaecc;
+        color: unset !important;
+    }
+</style>
+
+<div class="row">
+    <article class="col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+        <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-8" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header role="heading">
+                <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                <h2>Create Quiz</h2>
+            </header>
+            <div>
+                <div class="widget-body">
+                    @using (Html.BeginForm("QuizSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        <fieldset>
+                            <article class="col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <section class="col-md-12 smart-form">
+                                            <label class="label"><b>Select Theme : </b></label>
+                                            <div class="widget-body no-padding">
+                                                <div class="img-list" data-themename="card-header theme-one" id="theme-one">
+                                                    <img src="~/assets/img/PopUpUI/01.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/01.jpg">
+                                                </div>
+                                                <div class="img-list" data-themename="card-header theme-two" id="theme-two">
+                                                    <img src="~/assets/img/PopUpUI/02.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/02.jpg">
+                                                </div>
+                                                <div class="img-list" data-themename="card-header theme-three" id="theme-three">
+                                                    <img src="~/assets/img/PopUpUI/03.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/03.jpg">
+                                                </div>
+                                                <div class="img-list" data-themename="card-header theme-four" id="theme-four">
+                                                    <img src="~/assets/img/PopUpUI/04.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/04.jpg">
+                                                </div>
+                                                <div class="img-list" data-themename="card-header theme-five" id="theme-five">
+                                                    <img src="~/assets/img/PopUpUI/05.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/05.jpg">
+                                                </div>
+                                                <div class="img-list" data-themename="card-header theme-six" id="theme-six">
+                                                    <img src="~/assets/img/PopUpUI/06.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/06.jpg">
+                                                </div>
+                                                <div class="img-list" data-themename="card-header theme-seven" id="theme-seven">
+                                                    <img src="~/assets/img/PopUpUI/07.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/07.jpg">
+                                                </div>
+                                                <div class="img-list" data-themename="card-header theme-eight" id="theme-eight">
+                                                    <img src="~/assets/img/PopUpUI/08.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/08.jpg">
+                                                </div>
+                                                <div class="superbox ">
+                                                    @Html.HiddenFor(m => m.AM.ThemeId)
+                                                </div>
+                                            </div>
+                                        </section>
+                                        
+                                    </div>
+                                </fieldset>
+                                <div class="clearfix"></div>
+                            </article>
+                            <article class="col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable">
+                                <div>
+                                    <div class="widget-body no-padding ">
+                                        <div class="panel-group smart-accordion-default" id="accordion-2">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse1" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Optional Delivery Setting
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse1" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <div class="col-md-9">
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset rel="popover-hover" data-placement="left" data-original-title="Expires in" data-content="To determine when an alert should expire and no longer be delivered check the box labeled “Expires in” and select your desired expiration time.">
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(m => m.AM.ExpiresIn, new { @class = "AlertSetting" })
+                                                                        Expires in
+                                                                        @Html.TextBoxFor(c => c.AM.ExpiresTimeValue, new { @class = "form-control input-xs ", style = "width: 50px; ", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                        @Html.DropDownListFor(m => m.AM.ExpiresTimeType, new SelectList(ListLifeTimeType, "CodeId", "CodeDesc", Model.AM.ExpiresTimeType), new { @class = "form-control input-xs" })
+                                                                        No Delivery Attempts After Expiration.
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset rel="popover-hover" data-placement="left" data-original-title="Automatically Close After" data-content="To have an alert close automatically, check the box labeled “Automatically Close After” and type the desired number of minutes you will like the alert to stay on screen for.">
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(m => m.AM.AutoCloseIn, new { @class = "AlertSetting" })
+                                                                        Automaticaly Close Window After
+                                                                        @Html.TextBoxFor(c => c.AM.AutoCloseInMin, new { @class = "form-control input-xs", style = "width: 50px; ", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                        Minute(s)
+                                                                        @Html.Hidden("OldAutoCloseInMin", Model.AM.AutoCloseInMin)
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            @*<div class="form-inline mrgtp10">
+                                                                <fieldset>
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(m => m.AM.TrayNotification, new { @class = "AlertSetting" })
+                                                                        Tray Notification (Fill Pop Up will Not Display Unless Tray Icon Message is Clicked)
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>*@
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse2" aria-expanded="true" class="">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i>  Optional Schedule Setting
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse2" class="panel-collapse collapse" aria-expanded="true">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12">
+                                                                <div class="col-md-4">
+                                                                    <label class="row col-md-12" rel="popover-hover" data-placement="left" data-original-title="Delivery Schedule" data-content="To create a delivery schedule, check the box labeled “Set Quiz Delivery Schedule” and select your start and end date and time.">
+                                                                        <input type="radio" name="RadioSchedulePattern" id="Once" value="Once" class="radiobox" />
+                                                                        <span>Set Quiz Delivery Schedule</span>
+                                                                    </label>
+                                                                    <label class="row col-md-12" rel="popover-hover" data-placement="left" data-original-title="One Time (Now)" data-content="To send this Quiz as soon you select your recipients in the second step, check the box labeled “One Time(Now)” ">
+                                                                        <input type="radio" name="RadioSchedulePattern" id="Now" value="Now" class="radiobox" />
+                                                                        <span>One Time (Now)</span>
+                                                                    </label>
+                                                                    <label class="row col-md-12" rel="popover-hover" data-placement="left" data-original-title="Daily Delivery" data-content="To set up an Quiz that will be delivered every day at a specific time, check the box labeled “Daily Delivery”, specify your desired time of day and how long the Quiz should deliver daily for. You can set this by date range or number of occurrences.">
+                                                                        <input type="radio" name="RadioSchedulePattern" id="Daily" value="Daily" class="radiobox" />
+                                                                        <span>Daily Delivery</span>
+                                                                    </label>
+                                                                    <label class="row col-md-12" rel="popover-hover" data-placement="left" data-original-title="Specific Day Of Week" data-content="To set up an Quiz that will be delivered on specific days of the week and at a specific time: (1) check the box labeled “Specific Day Of Week”, (2) specify your desired day(s) of the week and how long the Quiz should deliver weekly for. Note: You can set this by date range or number of occurrences.">
+                                                                        <input type="radio" name="RadioSchedulePattern" id="Weekly" value="Weekly" class="radiobox" />
+                                                                        <span>Specific Day Of Week</span>
+                                                                    </label>
+                                                                    <label class="row col-md-12" rel="popover-hover" data-placement="left" data-original-title="Monthly" data-content="To set up an Quiz that will be delivered monthly and at a specific time, check the box labeled “Monthly”; specify your desired day of the month and how long the Quiz should deliver monthly for. Note: You can set this by date range or number of occurrences.">
+                                                                        <input type="radio" name="RadioSchedulePattern" id="Monthly" value="Monthly" class="radiobox" />
+                                                                        <span>Specific Day Of Year</span>
+                                                                    </label>
+
+                                                                    @Html.HiddenFor(c => c.AM.SchedulePatternType)
+                                                                </div>
+                                                                <div class="col-md-8">
+                                                                    <div class="clsOnce">
+                                                                        <div class="row col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label class="col-md-3">Start Date :</label>
+                                                                                <div class="col-md-6">
+                                                                                    <div class="input-group date form_datetime">
+                                                                                        @Html.TextBoxFor(c => c.AM.OnceStartDateTime, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.AM.OnceStartDateTime), new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                                        <span class="input-group-btn">
+                                                                                            <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class=" row col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label class="col-md-3">Last Delivery Attempt:</label>
+                                                                                <div class="col-md-6">
+                                                                                    <div class="input-group date to_datetime">
+                                                                                        @Html.TextBoxFor(c => c.AM.OnceEndDateTime, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.AM.OnceEndDateTime), new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                                        <span class="input-group-btn">
+                                                                                            <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.IsOnceReminder, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Enable reminder
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row col-md-12">
+                                                                            <div class="form-group">
+                                                                                <div class="col-md-2">
+                                                                                    @Html.TextBoxFor(c => c.AM.OnceReminderVal, new { @class = "form-control-unique", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                                </div>
+                                                                                <label class="col-md-8">minutes before start date/time</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="clsDaily">
+                                                                        <div class="form-inline">
+                                                                            <fieldset>
+                                                                                <div class="form-group">
+                                                                                    @Html.DropDownListFor(m => m.AM.DailyPatternVal, new SelectList(ListScheduleDaily, "CodeId", "CodeDesc", Model.AM.DailyPatternVal), new { @class = "form-control input-xs" })
+                                                                                    &nbsp;day(s)
+                                                                                </div>
+                                                                            </fieldset>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row clsWeekly">
+                                                                        <div class="form-inline">
+                                                                            <fieldset>
+                                                                                <div class="col-md-12">
+                                                                                    Resend&nbsp;
+                                                                                    @Html.DropDownListFor(m => m.AM.WeeklyVal, new SelectList(ListScheduleDaily, "CodeId", "CodeDesc", Model.AM.WeeklyVal), new { @class = "form-control input-xs" })
+                                                                                    &nbsp;week on next days
+                                                                                </div>
+                                                                            </fieldset>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div class="col-md-12">
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.WeeklydaySunday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Sunday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.WeeklydayMonday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Monday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.WeeklydayTuesday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Tuesday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.WeeklydayWednesday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Wednesday
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-12">
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.WeeklydayThursday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Thursday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.WeeklydayFriday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Friday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.AM.WeeklydaySaturday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Saturday
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row clsMonthly">
+                                                                        <div class="form-inline">
+                                                                            <fieldset>
+                                                                                <div class="col-md-12">
+                                                                                    <input type="radio" class="form-control" name="optionsRadiosMonthly" id="1" value="1" />
+                                                                                    Day
+                                                                                    @Html.DropDownListFor(m => m.AM.MonthDay, new SelectList(ListMonthDay, "CodeId", "CodeDesc", Model.AM.MonthDay), new { @class = "form-control input-xs" })
+                                                                                    of every
+                                                                                    @Html.DropDownListFor(m => m.AM.WeeklyMonthVal, new SelectList(ListYearlMonth, "CodeId", "CodeDesc", Model.AM.WeeklyMonthVal), new { @class = "form-control input-xs" })
+                                                                                    Month(s)
+                                                                                </div>
+                                                                            </fieldset>
+                                                                        </div>
+                                                                        <div class="form-inline">
+                                                                            <fieldset>
+                                                                                <div class="col-md-12">
+                                                                                    <input type="radio" class="form-control" name="optionsRadiosMonthly" id="2" value="2" />
+                                                                                    The
+                                                                                    @Html.DropDownListFor(m => m.AM.WeekinMontly, new SelectList(ListWeekinMontly, "CodeId", "CodeDesc", Model.AM.WeekinMontly), new { @class = "form-control input-xs" })
+                                                                                    @Html.DropDownListFor(m => m.AM.DayinWeek, new SelectList(ListWeekDay, "CodeId", "CodeDesc", Model.AM.DayinWeek), new { @class = "form-control input-xs" })
+                                                                                    of every
+                                                                                    @Html.DropDownListFor(m => m.AM.MonthVal, new SelectList(ListYearlMonth, "CodeId", "CodeDesc", Model.AM.MonthVal), new { @class = "form-control input-xs" })
+                                                                                    Month(s)
+                                                                                </div>
+                                                                            </fieldset>
+                                                                        </div>
+                                                                        @Html.HiddenFor(c => c.AM.MonthlyType)
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clsComman">
+                                                            <div class="col-md-12">
+                                                                <div class="col-md-6">
+                                                                    <hr />
+                                                                    <label class="lable-unique">Start / End</label>
+                                                                    <div class="form-group">
+                                                                        <label class="control-label col-md-3">Start on: </label>
+                                                                        <div class="col-md-7">
+                                                                            <div class="input-group date form_datetime">
+                                                                                @Html.TextBoxFor(c => c.AM.StartDateComman, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.AM.StartDateComman), new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                                <span class="input-group-btn">
+                                                                                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                                </span>
+                                                                                @Html.HiddenFor(c => c.AM.StartDateComman)
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <hr />
+                                                                    <label class="lable-unique">Alert times of day</label>
+                                                                    <div class="form-group">
+                                                                        <div class="col-md-12">
+                                                                            <input type="radio" class="col-md-1" name="optionsRadiosComman" id="comrbtn1" value="1" />
+                                                                            <span class="col-md-4">No end date</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <div class="col-md-12">
+                                                                            <input type="radio" class="col-md-1" name="optionsRadiosComman" id="comrbtn2" value="2" />
+                                                                            <span class="col-md-3">End after :</span>
+                                                                            <div class="col-md-4">
+                                                                                @Html.TextBoxFor(c => c.AM.CommanOccurences, new { @class = "form-control col-md-1 ", style = "width: 50px;height:20px;", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                                <label class="control-label col-md-2">occurences</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <div class="col-md-12">
+                                                                            <input type="radio" class="col-md-1" name="optionsRadiosComman" id="comrbtn3" value="3" />
+                                                                            <span class="col-md-3">End by :</span>
+                                                                            <div class="col-md-4">
+                                                                                @Html.TextBoxFor(c => c.AM.CommanEndBy, new { @class = "form-control  ", style = "width: 200px;height:20px;" })
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @Html.HiddenFor(c => c.AM.CommanDateType)
+                                                                    @Html.HiddenFor(c => c.AM.Status)
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse3" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Scoring Display Options
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse3" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <div class="col-md-12">
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset>
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(Model => Model.AM.ShowQuizFinalScore, new { @class = "AlertSetting" })
+                                                                        Allow Recipients to See Final Score ?
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset>
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(Model => Model.AM.ShowQuizAnswerResult, new { @class = "AlertSetting" })
+                                                                        Display Specific Answer Results ?
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </fieldset>
+
+                        <fieldset>
+                            <section class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="col-xs-8 col-sm-8 col-md-10 col-lg-10 form-horizontal">
+                                        <section>
+                                            <label class="col-xs-2 hidden-mobile col-sm-4 col-md-3"><b>Quiz Title <span class="hasbgcolor">*</span> : </b></label>
+                                            <label class="input col-xs-10 col-sm-8 col-md-9">
+                                                @Html.TextBoxFor(m => m.QuizTital, new { @class = "form-control required", @placeholder = "Quiz Title" })
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 form-horizontal">
+                                        <div class="clearfix"></div>
+                                        <div class="pull-right">
+                                            <ul class="demo-btns">
+                                                <li>
+                                                    <a href="javascript:void(0);" id="btnAddRows" class="btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Add Question">
+                                                        <span class="btn-label"><i class="fa fa-plus"></i></span>Add More
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 smart-form">
+                                    <div class="portlet-body flip-scroll table-responsive">
+                                        <table class="table table-bordered table-striped table-condensed flip-content" id="sample_1" width="100%">
+                                            <thead class="flip-content">
+                                                <tr style="height: 35px;">
+                                                    <th class="col-md-1 text-center"> No. </th>
+                                                    <th class="col-md-7 text-center"> Enter Question </th>
+                                                    <th class="col-md-3 text-center"> Question Type </th>
+                                                    <th class="col-md-1 text-center"> X </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="Bodycontainer">
+                                                @foreach (var itm in Model.ListQuestion)
+                                                {
+                                                    Html.RenderPartial("_PartialAddQuiz", itm);
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                            </section>
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSubmit" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Next">
+                                                <span class="btn-label"><i class="fa fa-arrow-right"></i></span>Next
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                rules: { },
+                messages: { },
+                errorPlacement: function (error, element) { error.insertAfter(element.parent()); }
+            });
+        }
+
+        var Events = function (DomainName) {
+            $("#btnSubmit").click(function () {
+
+                if ($("#QuizTital").val() == "") {
+                    Swal.fire({
+                        title: "Please enter a quiz title",
+                        text: "",
+                        icon: "info",
+                        confirmButtonText: '<i class="fa fa-refresh"></i> Okay !',
+                        confirmButtonClass: "btn btn-danger",
+                        confirmButtonColor: '#7367f0',
+                        footer: 'Please try again or Contact your administrator for more detail.'
+                    });
+
+                    App.unblockUI();
+                    return false;
+                }
+
+                if ($('#contact-form').valid()) {
+                    App.blockUI({ boxed: true });
+                    document.forms["contact-form"].submit();
+                }
+                else {
+                    return false
+                }
+            });
+
+        };
+
+        var AddQuestions = function (DomainName, itemIndex, itemIndex1) {
+            App.blockUI({ boxed: true });
+            var StrURL1 = DomainName + '/Master/AddNewQuestion?id=' + itemIndex;
+            $.ajax({
+                url: StrURL1,
+                cache: false,
+                data: {},
+                type: 'POST',
+                success: function (html) {
+
+                    $("#Bodycontainer").append(html);
+                    $("#editorRow1_" + itemIndex).hide();
+                    $("#editorRow2_" + itemIndex).hide();
+                    $("#editorRow3_" + itemIndex).hide();
+                    $("#editorRow4_" + itemIndex).hide();
+                    $("#editorRow1_" + itemIndex1).hide();
+                    $("#editorRow2_" + itemIndex1).hide();
+                    $("#editorRow3_" + itemIndex1).hide();
+                    $("#editorRow4_" + itemIndex1).hide();
+                    $(".ClshideRow").hide();
+
+                    $("#QueList_" + itemIndex + "__QuestionType").select2({
+                        placeholder: "Select an Option",
+                        allowClear: true
+                    });
+                    $('.ClsQusTyp').on('change', function () {
+
+                        $("#QueListMCQ_" + itemIndex + "__MCQ1").val("");
+                        $("#QueListMCQ_" + itemIndex + "__MCQ2").val("");
+                        $("#QueListMCQ_" + itemIndex + "__MCQ3").val("");
+                        $("#QueListMCQ_" + itemIndex + "__MCQ4").val("");
+                        $("#QueListSA_" + itemIndex + "__TextAnswer").val("");
+
+                        GetQuestionTypDetails(DomainName, itemIndex);
+                    });
+                    $(".ClsShowRow").on("click", function () {
+                        var Rid = $(this).attr("id");
+                        Rid = Rid.replace("ClsShowRow_", "");
+
+                        $("#ClsShowRow_" + Rid).hide();
+                        $("#ClshideRow_" + Rid).show();
+
+                        if ($("#QueList_" + Rid + "__QuestionType").val() == "MCQ") {
+                            $("#editorRow1_" + Rid).show();
+                            $("#editorRow2_" + Rid).hide();
+                            $("#editorRow3_" + Rid).hide();
+                            $("#editorRow4_" + Rid).hide();
+                        }
+                        if ($("#QueList_" + Rid + "__QuestionType").val() == "SA") {
+                            $("#editorRow1_" + Rid).hide();
+                            $("#editorRow2_" + Rid).show();
+                            $("#editorRow3_" + Rid).hide();
+                            $("#editorRow4_" + Rid).hide();
+                        }
+                        if ($("#QueList_" + Rid + "__QuestionType").val() == "SC") {
+                            $("#editorRow1_" + Rid).hide();
+                            $("#editorRow2_" + Rid).hide();
+                            $("#editorRow3_" + Rid).show();
+                            $("#editorRow4_" + Rid).hide();
+                        }
+                        if ($("#QueList_" + Rid + "__QuestionType").val() == "TF") {
+                            $("#editorRow1_" + Rid).hide();
+                            $("#editorRow2_" + Rid).hide();
+                            $("#editorRow3_" + Rid).hide();
+                            $("#editorRow4_" + Rid).show();
+                        }
+                    });
+
+                    $(".ClshideRow").on("click", function () {
+                        var Rid1 = $(this).attr("id");
+                        Rid1 = Rid1.replace("ClshideRow_", "");
+
+                        $("#ClsShowRow_" + Rid1).show();
+                        $("#ClshideRow_" + Rid1).hide();
+
+                        $("#editorRow1_" + Rid1).hide();
+                        $("#editorRow2_" + Rid1).hide();
+                        $("#editorRow3_" + Rid1).hide();
+                        $("#editorRow4_" + Rid1).hide();
+
+                    });
+                    $(".ClsSingleChoise_" + itemIndex).on("click", function () {
+                        $('.ClsSingleChoise_' + itemIndex).not(this).prop('checked', false);
+                    });
+
+                    $(".orderdeleteRow").on("click", function () {
+                        var Rowdel = $(this).attr("id");
+                        Rowdel = Rowdel.replace("orderdeleteRow_", "");
+                        $(this).parents("tr.editorRow:first").remove();
+                        $("tr#editorRow1_" + Rowdel).remove();
+                        $("tr#editorRow2_" + Rowdel).remove();
+                        $("tr#editorRow3_" + Rowdel).remove();
+                        $("tr#editorRow4_" + Rowdel).remove();
+
+                        $(".rowNumber").each(function (i) {
+                            i = i + 1;
+                            $(this).text(i);
+                        });
+                        return false;
+                    });
+
+                    $(".rowNumber").each(function (i) {
+                        i = i + 1;
+                        $(this).text(i);
+                    });
+
+                    $('input[name="RadioTrueFalse_' + itemIndex + '"]').on('change', function () {
+                        if (this.value == "True") {
+                            $("#QueListTF_" + itemIndex + "__TFTVal").val(true);
+                            $("#QueListTF_" + itemIndex + "__TFFVal").val(false);
+
+                            $("#QueListTF_" + itemIndex + "__TFValT").val("True");
+                            $("#QueListTF_" + itemIndex + "__TFValF").val("False");
+                        }
+                        if (this.value == "False") {
+                            $("#QueListTF_" + itemIndex + "__TFTVal").val(false);
+                            $("#QueListTF_" + itemIndex + "__TFFVal").val(true);
+
+                            $("#QueListTF_" + itemIndex + "__TFValT").val("True");
+                            $("#QueListTF_" + itemIndex + "__TFValF").val("False");
+                        }
+                    });
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    TosterNotification("error", "Error !! There was an error druing process. Please check your internet connection or contact administrator.", "Error");
+                }
+            });
+
+        }
+
+        var GetQuestionTypDetails = function (DomainName, rowId) {
+
+            if ($("#QueList_" + rowId + "__QuestionType").val() == "MCQ") {
+                $("#editorRow1_" + rowId).show();
+                $("#editorRow2_" + rowId).hide();
+                $("#editorRow3_" + rowId).hide();
+                $("#editorRow4_" + rowId).hide();
+            }
+            if ($("#QueList_" + rowId + "__QuestionType").val() == "SA") {
+                $("#editorRow1_" + rowId).hide();
+                $("#editorRow2_" + rowId).show();
+                $("#editorRow3_" + rowId).hide();
+                $("#editorRow4_" + rowId).hide();
+            }
+            if ($("#QueList_" + rowId + "__QuestionType").val() == "SC") {
+                $("#editorRow1_" + rowId).hide();
+                $("#editorRow2_" + rowId).hide();
+                $("#editorRow3_" + rowId).show();
+                $("#editorRow4_" + rowId).hide();
+            }
+            if ($("#QueList_" + rowId + "__QuestionType").val() == "TF") {
+                $("#editorRow1_" + rowId).hide();
+                $("#editorRow2_" + rowId).hide();
+                $("#editorRow3_" + rowId).hide();
+                $("#editorRow4_" + rowId).show();
+            }
+        }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                //Formvalidate(DomainName, "contact-form");
+                FormValidate(DomainName);
+
+                $("#editorRow1_1").hide();
+                $("#editorRow2_1").hide();
+                $("#editorRow3_1").hide();
+                $("#editorRow4_1").hide();
+                $(".ClshideRow").hide();
+
+                Events(DomainName);
+
+                //Alert Copy Start
+                $('.form_datetime , .to_datetime').datetimepicker({
+                    rtl: App.isRTL(),
+                    format: "dd M yyyy HH:ii P",
+                    showMeridian: true,
+                    minuteStep: 3,
+                    autoclose: true,
+                    pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                    startDate: new Date(),
+                    todayBtn: true
+                });
+
+                $("#AM_OnceStartDateTime").on("change", function () {
+                    $(".to_datetime").datetimepicker('remove');
+                    $('.to_datetime').datetimepicker({
+                        rtl: App.isRTL(),
+                        format: "dd M yyyy HH:ii P",
+                        showMeridian: true,
+                        minuteStep: 3,
+                        autoclose: true,
+                        pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                        startDate: new Date($("#AM_OnceStartDateTime").val()),
+                        todayBtn: true
+                    });
+                    $("#AM_OnceEndDateTime").val($("#AM_OnceStartDateTime").val())
+                });
+
+                $(".clsOnce").hide();
+                $(".clsDaily").hide();
+                $(".clsWeekly").hide();
+                $(".clsMonthly").hide();
+                $(".clsYearly").hide();
+                $(".clsComman").hide();
+                $("#AM_SchedulePatternType").val(0);
+
+                $("input[name='RadioSchedulePattern']").click(function () {
+
+                    if (this.value == "Now") {
+                        $("#AM_SchedulePatternType").val("Now");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").hide();
+                    }
+                    if (this.value == "Once") {
+                        $("#AM_SchedulePatternType").val("Once");
+                        $(".clsOnce").show();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").hide();
+                    }
+                    if (this.value == "Daily") {
+                        $("#AM_SchedulePatternType").val("Daily");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").show();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+
+                    }
+                    if (this.value == "Weekly") {
+                        $("#AM_SchedulePatternType").val("Weekly");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").show();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    if (this.value == "Monthly") {
+                        $("#AM_SchedulePatternType").val("Monthly");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").show();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    if (this.value == "Yearly") {
+                        $("#AM_SchedulePatternType").val("Yearly");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").show();
+                        $(".clsComman").show();
+                    }
+                });
+
+                $("input[name='optionsRadiosComman']").click(function () {
+                    $("#AM_CommanDateType").val(this.value);
+                });
+                $("input[name='optionsRadiosYearly']").click(function () {
+                    $("#AM_YearlyType").val(this.value);
+                });
+                $("input[name='optionsRadiosMonthly']").click(function () {
+                    $("#AM_MonthlyType").val(this.value);
+                });
+
+                if ($("#AM_ThemeId").val() == "") {
+                    $("#AM_ThemeId").val("card-header theme-one");
+                }
+
+                $('.superbox-list').click(function () {
+                    $("#AM_ThemeId").val($(this).attr("id"))
+                });
+
+                $('.img-list').click(function () {
+                    $("#AM_ThemeId").val($(this).data("themename"));
+                    $('.img-list').removeClass('selected');
+                    $(this).addClass('selected');
+                });
+
+
+                $("#Now").attr("checked", "checked").click();
+                $("#comrbtn1").attr("checked", "checked").click();
+                $("#" + $("#AM_ThemeId").val().replace("card-header ", "").trim()).addClass("selected");
+
+                $('[data-toggle="popover-hover"]').popover({
+                    html: true,
+                    trigger: 'hover',
+                    placement: 'bottom',
+                    content: function () { return '<img src="' + $(this).data('img') + '" />'; }
+                });
+
+                // popovers initialization - on click
+                $('[data-toggle="popover-click"]').popover({
+                    html: true,
+                    trigger: 'click',
+                    placement: 'bottom',
+                    content: function () { return '<img src="' + $(this).data('img') + '" />'; }
+                });
+
+                //Alert Copy End
+
+                var itemIndex = $("#sample_1 input.iHidden").length;
+                var itemIndex1;
+
+                $("#btnAddRows").on('click', function () {
+                    var TOTROW = 1;
+                    for (var i = 0; i <= TOTROW - 1; i++) {
+                        setTimeout(function () {
+                            itemIndex = itemIndex + 1;
+                            itemIndex1 = itemIndex - 1;
+                            AddQuestions(DomainName, itemIndex, itemIndex1);
+                        }, 100 * i);
+                    }
+                });
+
+                $(".ClsSingleChoise_" + itemIndex).on("click", function () {
+                    $('.ClsSingleChoise_' + itemIndex).not(this).prop('checked', false);
+
+                });
+
+                $("#QueList_" + itemIndex + "__QuestionType").on('change', function () {
+
+                    $("#editorRow1_" + itemIndex).hide();
+                    $("#editorRow2_" + itemIndex).hide();
+                    $("#editorRow3_" + itemIndex).hide();
+                    $("#editorRow4_" + itemIndex).hide();
+                    $(".ClshideRow").hide();
+
+                    GetQuestionTypDetails(DomainName, itemIndex);
+                });
+
+                $('input[name="RadioTrueFalse_1"]').on('change', function () {
+                    if (this.value == "True") {
+                        $("#QueListTF_1__TFTVal").val(true);
+                        $("#QueListTF_1__TFFVal").val(false);
+
+                        $("#QueListTF_1__TFValT").val("True");
+                        $("#QueListTF_1__TFValF").val("False");
+                    }
+                    if (this.value == "False") {
+                        $("#QueListTF_1__TFTVal").val(false);
+                        $("#QueListTF_1__TFFVal").val(true);
+
+                        $("#QueListTF_1__TFValT").val("True");
+                        $("#QueListTF_1__TFValF").val("False");
+                    }
+                });
+                 if ('@ViewBag.IsExpired' == 1) {
+                     $('#btnSubmit ').hide();
+                    
+                }
+
+                $("#AM_AutoCloseIn").click(function () {
+                    if ($("#AM_AutoCloseIn").is(':checked')) {
+                        $(this).prop('checked', true);
+                        $(this).val(true);
+                        $("#AM_AutoCloseInMin").val($("#OldAutoCloseInMin").val());
+                        $("#AM_AutoCloseInMin").attr({ "min": "1" });
+                        $("#AM_AutoCloseInMin").addClass("required").change();
+                    }
+                    else {
+                        $(this).prop('checked', false);
+                        $(this).val(false);
+                        $("#AM_AutoCloseInMin").val("0");
+                        $("#AM_AutoCloseInMin").attr({ "min": "0" });
+                        $("#AM_AutoCloseInMin").addClass("required").change();
+                    }
+                });
+
+            }
+        }
+    }();
+</script>

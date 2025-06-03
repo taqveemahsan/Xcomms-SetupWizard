@@ -1,0 +1,144 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif !important;
+        }
+
+        .card * {
+            max-width: 100%;
+        }
+
+        .card-body-bg {
+            overflow-y: auto;
+        }
+
+        .card-body-bg {
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #0d1723;
+            border-radius: 10px;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .container-fluid {
+            padding: 0;
+        }
+        .logo {
+            position: relative;
+            float: left;
+            width: auto;
+            height: 60%;
+            left: 10px;
+            top: -3px;
+        }
+
+        #bntClose {
+            position: absolute;
+            right: -1px;
+            top: -4px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+            z-index: 9999;
+            cursor: pointer;
+        }
+    </style>
+    <title>Xcomms</title>
+</head>
+<body>
+    <div class="container-fluid inheriteHeight" style="height:100%">
+        <div class="row inheriteHeight">
+            <!--- Theme One --->
+            <div class="card inheriteHeight">
+                <div id="DivTheme" name="DivTheme" class="card-header PopUpAlert_theme-one">
+                    <!--- Just change class name like theme-one = theme-one --->
+                    <div class="row rowfix">
+                        <img src="" id="LogoImage" class="logo img-fluid">
+                        <!--<img src="" id="LogoImage" class="logo">-->
+                        <a  id="bntClose" onclick="closeNow()"><img src="img/close-icon.png" class="img-fluid close" /> </a>
+                    </div>
+                </div>
+                <div class="card-body card-body-bg inheriteHeight">
+                    <div id="MainDiv" class="inheriteHeight">
+                        <div class="card-body-div clearfix inheriteHeight">
+                            <div id="divTitle">
+                                <!--<b><u>Result Template</u></b>-->
+                            </div>
+                            <div id="divText">
+                                <!--<p>
+                                    <span style="color: rgb(51, 51, 51); font-weight: 700;">Message Body</span><br>
+                                </p>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr><td><b>Name</b></td><td><b>Math</b></td><td><b>Result</b></td></tr>
+                                        <tr><td>Jay</td><td>80</td><td>Pass</td></tr>
+                                        <tr><td>Anna</td><td>72</td><td>Pass<br></td></tr>
+                                        <tr><td>sally</td><td>60</td><td>Pass<br></td></tr>
+                                        <tr><td>Ellen</td><td>75</td><td>Pass<br></td></tr>
+                                    </tbody>
+                                </table>-->
+                                <!--<p><br></p><p><br></p>-->
+                                <!--<div><img style="width: 784px;" src="http://localhost/XCommAlert/Temp_Images/01_09_2021_08_05_57_PM.jpeg" data-filename="2b11ed7d0e9e2b6d459dfb333cba5b72.jpg"></div>-->
+                            </div>
+                            <!--<div class="row">
+                                <div class="col-md-10">
+                                </div>
+                                <div class="col-md-2" style="text-align: right; padding-right: 10%;">
+                                    <button class="btn btn-danger" id="btnAcknowledge">Okay</button>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                    <!--<div class="card-body-div inheriteHeight">
+                        <div id="divTitle"></div>
+                        <div id="divText"></div>
+                    </div>-->
+                    <!--<div class="row">
+                        <div class="col-md-10"></div>
+                        <div class="col-md-2" style="text-align: right; background-color: #dce3ed; padding-right:10%;">
+                            <button class="btn btn-danger" id="btnAcknowledge">Okay</button>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+            <!--- Theme One Close --->
+        </div>
+    </div>
+    <!-- Bootstrap JS-->
+    <script src="js/bootstrap.js"></script>
+
+    <script>
+        function closeNow() {
+            if (window.opener) window.close();
+        }
+    </script>
+</body>
+</html>

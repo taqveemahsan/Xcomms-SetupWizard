@@ -1,0 +1,856 @@
+﻿@using System.Configuration
+<!DOCTYPE html>
+<html>
+<head>
+    @{
+        string MenuList = "";
+        string User_Type = ViewBag.User_Type;
+        string[] ststusarray = new string[0];
+        if ((ViewBag.PermissionTyp == "Administator" && User_Type == "Cust") || ViewBag.PermissionTyp == "Custom")
+        {
+            MenuList = ViewBag.ToolList;
+            ststusarray = MenuList.Split(',');
+        }
+        else if (ViewBag.PermissionTyp == "Administator")
+        {
+            MenuList = "6";
+            ststusarray = MenuList.Split(',');
+        }
+        else if (ViewBag.PermissionTyp == "ContentManager")
+        {
+            MenuList = "ContentManager";
+            ststusarray = MenuList.Split(',');
+        }
+
+        string path = Server.MapPath("~/ProfilImage/" + ViewBag.User_Image);
+        if (!File.Exists(path))
+        {
+            ViewBag.User_Image = "default.jpg";
+        }
+        //else if (ViewBag.PermissionTyp == "Custom")
+        //{
+        //    MenuList = ViewBag.ToolList;
+        //    ststusarray = MenuList.Split(',');
+        //}
+
+
+        string CurrentYear = DateTime.Now.Year.ToString();
+    }
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title : XComms</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+
+    <!-- Basic Styles -->
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/font-awesome.min.css">
+    @*<link rel="stylesheet" type="text/css" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">*@
+    <link href="~/assets/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" />
+    <!-- SmartAdmin Styles : Caution! DO NOT change the order -->
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/smartadmin-production-plugins.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/smartadmin-production.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/smartadmin-skins.min.css">
+
+    <!-- SmartAdmin RTL Support  -->
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/smartadmin-rtl.min.css">
+
+    <!-- We recommend you use "your_style.css" to override SmartAdmin
+         specific styles this will also ensure you retrain your customization with each SmartAdmin update.
+    <link rel="stylesheet" type="text/css" media="screen" href="css/your_style.css"> -->
+    <!-- Demo purpose only: goes with demo.js, you can delete this css when designing your own WebApp -->
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/demo.min.css">
+
+    <!-- GOOGLE FONT -->
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
+    <link rel="shortcut icon" href="~/assets/img/New_XComms_Logo/favicon_shortcut.ico" type="image/x-icon">
+    <link rel="icon" href="~/assets/img/New_XComms_Logo/favicon_shortcut.ico" type="image/x-icon">
+
+    <link href="~/assets/plugins/bootstrap-datepicker/css/datepicker.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/SmartAdmin/css/daterangepicker-bs3.css" rel="stylesheet" />
+    <link href="~/assets/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.css" rel="stylesheet" />
+    <link href="~/assets/css/pages/timeline.css" rel="stylesheet" />
+    <link href="~/assets/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+    @*@Styles.Render("~/Content/css")*@
+    @Scripts.Render("~/bundles/modernizr")
+    <style type="text/css">
+        body {
+            background: url('@Url.Content("~/assets/SmartAdmin/img/mybg.png")') #fff;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #3a3633;
+            border-radius: 10px;
+        }
+        #loading {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: #f1f1f1;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+            #loading img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                margin: auto;
+            }
+        .jarviswidget {
+            margin:0;
+        }
+        .rightpopbtn {
+            position: fixed;
+            right: -50px;
+            top: 30%;
+            z-index: 999;
+            transform: rotate(90deg);
+            box-shadow:0px 0px 10px #f3f3f3;
+
+        }
+            .rightpopbtn a {
+                background-color: #a90329;
+                padding: 5px 30px 15px;
+                color: #fff;
+                font-size: 22px;
+                text-decoration: none;
+                border-radius: 0px 0px 10px 10px;
+                transition: 0.2s ease-out;
+            }
+                .rightpopbtn a:hover {
+                    background-color: #2a2725;
+                    transition: 0.3s ease-in;
+                }
+        /*table.dataTable {
+            max-width: 100% !important;
+            width: 100% !important;
+        }*/
+    </style>
+</head>
+<body class="fixed-header fixed-navigation">
+    <div class="rightpopbtn">
+        <a href="javascript:;" id="btnExpired" style="display:none;">Expired </a>
+    </div>
+    @*<div id="loading">
+            <img src="@Url.Content("~/assets/img/XComms.gif")">
+        </div>*@
+    <!-- HEADER -->
+    <header id="header">
+        <div id="logo-group">
+            <span id="logo" style="text-align: center; margin-top: 14px !important;">
+                @*<img src="~/assets/img/logos/Logo.png" style="width: 17rem;" />*@
+                <img src="@Url.Content("~/assets/img/New_XComms_Logo/logo.png")" style="width: 20rem;" />
+            </span>
+        </div>
+
+        <!-- pulled right: nav area -->
+        <div class="pull-right">
+            <!-- collapse menu button -->
+            <div id="hide-menu" class="btn-header pull-right">
+                <span> <a href="javascript:void(0);" data-action="toggleMenu" title="Collapse Menu"><i class="fa fa-reorder"></i></a> </span>
+            </div>
+            <!-- end collapse menu -->
+            <!-- logout button -->
+            <div id="logout" class="btn-header transparent pull-right">
+                <span> <a href="@Url.Action("LogOff","Account")" title="Sign Out of XComms" data-action="userLogout" data-logout-msg="You can improve your security further after logging out by closing this opened browser"><i class="fa fa-sign-out"></i></a> </span>
+            </div>
+            <!-- end logout button -->
+            <!-- search mobile button (this is hidden till mobile view port) -->
+            @*<div id="search-mobile" class="btn-header transparent pull-right">
+                    <span> <a href="javascript:void(0)" title="Search"><i class="fa fa-search"></i></a> </span>
+                </div>*@
+            <!-- end search mobile button -->
+            <!-- fullscreen button -->
+            <div id="fullscreen" class="btn-header transparent pull-right">
+                <span> <a href="javascript:void(0);" data-action="launchFullscreen" title="Full Screen"><i class="fa fa-arrows-alt"></i></a> </span>
+            </div>
+            <!-- end fullscreen button -->
+        </div>
+        <!-- end pulled right: nav area -->
+    </header>
+    <!-- END HEADER -->
+    <!-- Left panel : Navigation area -->
+    <!-- Note: This width of the aside area can be adjusted through LESS variables -->
+    <aside id="left-panel">
+        <!-- User info -->
+        <div class="login-info">
+            <span>
+                <a href="javascript:void(0);" id="show-shortcut" data-action="toggleShortcut">
+                    @*@if (string.IsNullOrEmpty(ViewBag.User_Image))
+                        {
+                            <img src= "@Url.Content(@ViewBag.User_Image)" alt ="me" class="online" style="width:25px;height:25px;" />
+                        }
+                        else
+                        {
+                            <img src="@Url.Content("~/ProfilImage/" + ViewBag.User_Image)" alt="me" class="online" style="width:25px;height:25px;" />
+                        }*@
+                    <img src="@Url.Content("~/ProfilImage/" + ViewBag.User_Image)" alt="me" class="online" style="width:25px;height:25px;" />
+                    <span>
+                        @*@User.Identity.Name.ToUpper()*@
+                        @ViewBag.FullName
+                    </span>
+                    <i class="fa fa-angle-down"></i>
+                </a>
+
+            </span>
+        </div>
+        <!-- end user info -->
+        <!-- NAVIGATION : This navigation is also responsive-->
+        <nav>
+            <ul>
+                <li>
+                    <a href="@Url.Action("Index","Home")" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Dashboard</span></a>
+                </li>
+                @foreach (var mainItem in ststusarray.OrderBy(x => x).ToArray())
+                {
+                    if (mainItem == "1" || mainItem == "6" || mainItem == "ContentManager")
+                    {
+                        <li>
+                            <a href="#"><i class="fa fa-lg fa-fw fa fa-exclamation-circle"></i><span class="menu-item-parent">Pop Up Alert</span></a>
+                            <ul>
+                                <li>
+                                    @*<a href="@Url.Action("CreateAlert","Master")">New Pop Up Alert</a>*@
+                                    <a href="~/Master/CreateAlert?AlertId=0"><i class="fa fa-check-circle fa-lg fa-fw"></i> New Pop Up Alert</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/AlertHistory"><i class="fa fa-check-circle fa-lg fa-fw"></i> History</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/DraftAlertPopUpList"><i class="fa fa-check-circle fa-lg fa-fw"></i> Drafts</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/TemplateList"><i class="fa fa-check-circle fa-lg fa-fw"></i> Templates</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    if (mainItem == "2" || mainItem == "6" || mainItem == "ContentManager")
+                    {
+                        <li>
+                            <a href="#"><i class="fa fa-lg fa-fw fa fa-ellipsis-h"></i> <span class="menu-item-parent">Scrolling Tickers</span></a>
+                            <ul>
+                                <li>
+                                    <a href="~/Master/TickerAlert?TickerID=0"><i class="fa fa-check-circle fa-lg fa-fw"></i> New Ticker Alert</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/TickerHistory"><i class="fa fa-check-circle fa-lg fa-fw"></i> History</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/DraftTickerPopUpList"><i class="fa fa-check-circle fa-lg fa-fw"></i> Drafts</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    if (mainItem == "4" || mainItem == "6" || mainItem == "ContentManager")
+                    {
+                        <li>
+                            <a href="#"><i class="fa fa-lg fa-fw fa fa-desktop"></i><span class="menu-item-parent">Wallpaper Manager</span></a>
+                            <ul>
+                                <li>
+                                    <a href="~/Master/AddWallPaper?Type=3&Id=0&Fun=A"><i class="fa fa-check-circle fa-lg fa-fw"></i> Add Wallpaper</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/WallPaperHistory?Typ=3"><i class="fa fa-check-circle fa-lg fa-fw"></i> History</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    if (mainItem == "3" || mainItem == "6" || mainItem == "ContentManager")
+                    {
+                        <li>
+                            <a href="#"><i class="fa fa-lg fa-fw fa fa-desktop"></i><span class="menu-item-parent">Screensaver Manager</span></a>
+                            <ul>
+                                <li>
+                                    <a href="~/Master/ScreenSaver?Type=4&Id=0&Fun=A"><i class="fa fa-check-circle fa-lg fa-fw"></i> Add Screensaver</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/ScreenSaverHistory?Typ=4"><i class="fa fa-check-circle fa-lg fa-fw"></i> History</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    if (mainItem == "7" || mainItem == "6" || mainItem == "ContentManager")
+                    {
+                        <li>
+                            <a href="#"><i class="fa fa-lg fa-fw fa fa-desktop"></i><span class="menu-item-parent">Lockscreen Manager</span></a>
+                            <ul>
+                                <li>
+                                    <a href="~/Master/AddLockScreen?Type=7&Id=0&Fun=A"><i class="fa fa-check-circle fa-lg fa-fw"></i> Add Lockscreen</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/LockScreenHistory?Typ=7"><i class="fa fa-check-circle fa-lg fa-fw"></i> History</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    if (mainItem == "5" || mainItem == "6" || mainItem == "ContentManager")
+                    {
+                        <li>
+                            <a href="#"><i class="fa fa-lg fa-fw fa fa-comments-o"></i><span class="menu-item-parent">Interactive</span></a>
+                            <ul>
+                                <li>
+                                    <a href="#"><span class="menu-item-parent"><i class="fa fa-check-circle fa-lg fa-fw"></i> Quiz</span></a>
+                                    <ul>
+                                        <li>
+                                            <a href="~/Master/CreateQuiz"><i class="fa fa-check-circle fa-lg fa-fw"></i> Create Quiz</a>
+                                        </li>
+                                        <li>
+                                            <a href="~/Master/QuizList"><i class="fa fa-check-circle fa-lg fa-fw"></i> Quiz History</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                @*<li>
+                                        <a href="#"><span class="menu-item-parent">Survey</span></a>
+                                        <ul>
+
+                                        </ul>
+                                    </li>*@
+                            </ul>
+                        </li>
+                    }
+                }
+                @if (ViewBag.PermissionTyp == "Administator" || MenuList == "ContentManager")
+                {
+                    <li>
+                        <a href="#"><i class="fa fa-lg fa-fw fa fa-sitemap"></i><span class="menu-item-parent">Organization</span></a>
+                        <ul>
+                            <li>
+                                <a href="~/Master/UsersGroups"><i class="fa fa-check-circle fa-lg fa-fw"></i> Users and Groups</a>
+                            </li>
+                            @*<li>
+                                    <a href="~/Master/OrganizationList">Organization Setup</a>
+                                </li>*@
+                        </ul>
+                    </li>
+                }
+
+                @if (ViewBag.PermissionTyp == "Administator")
+                {
+                    <li>
+                        <a href="#"><i class="fa fa-lg fa-fw fa fa-cogs"></i><span class="menu-item-parent">Management</span></a>
+                        <ul>
+                            <li>
+                                <a href="#"><span class="menu-item-parent"><i class="fa fa-sitemap fa-lg fa-fw"></i> XComms Connect</span></a>
+                                <ul>
+                                    <li>
+                                        <a href="~/Master/ADManagement?Id=0"><i class="fa fa-play-circle fa-lg fa-fw"></i> Connect Now</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a href="~/Master/ContentManagerList"><i class="fa fa-check-circle fa-lg fa-fw"></i> Content Managers</a>
+                            </li>
+                            @*<li>
+                                    <a href="~/Master/PermissionList">Permission</a>
+                                </li>*@
+                            <li>
+                                <a href="~/Master/DefaultSetting"><i class="fa fa-check-circle fa-lg fa-fw"></i> Default Setting</a>
+                            </li>
+                            <li>
+                                <a href="~/Master/SmtpConfiguration"><i class="fa fa-check-circle fa-lg fa-fw"></i> Smtp Setting</a>
+                            </li>
+                            <li>
+                                <a href="~/Master/ClientInstaller"><i class="fa fa-check-circle fa-lg fa-fw"></i> Client Installer</a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                <li>
+                    <a href="#"><i class="fa fa-lg fa-fw fa fa-envelope"></i><span class="menu-item-parent">Email</span></a>
+                    <ul>
+                        <li>
+                            <a href="~/Master/Email?AlertId=0"><i class="fa fa-check-circle fa-lg fa-fw"></i> Email</a>
+                        </li>
+                        <li>
+                            <a href="~/Master/EmailHistory"><i class="fa fa-check-circle fa-lg fa-fw"></i> Email History</a>
+                        </li>
+                    </ul>
+                </li>
+                @if (ststusarray.Length > 0)
+                {
+                    <li>
+                        <a href="#"><i class="fa fa-lg fa-fw fa fa-bar-chart"></i><span class="menu-item-parent">Analytics</span></a>
+                        <ul>
+                            @foreach (var mainItem in ststusarray)
+                            {
+                                if (mainItem == "1" || mainItem == "6" || mainItem == "ContentManager")
+                                {
+                                    <li>
+                                        <a href="~/Master/AnalyticActivityList?Typ=1"><i class="fa fa-check-circle fa-lg fa-fw"></i> Pop Up Alert Activity</a>
+                                    </li>
+                                }
+                                if (mainItem == "2" || mainItem == "6" || mainItem == "ContentManager")
+                                {
+                                    <li>
+                                        <a href="~/Master/AnalyticActivityList?Typ=2"><i class="fa fa-check-circle fa-lg fa-fw"></i> Scrolling Ticker Activity</a>
+                                    </li>
+                                }
+                                if (mainItem == "4" || mainItem == "6" || mainItem == "ContentManager")
+                                {
+                                    <li>
+                                        <a href="~/Master/AnalyticActivityList?Typ=3"><i class="fa fa-check-circle fa-lg fa-fw"></i> Wallpaper Activity</a>
+                                    </li>
+                                }
+                                if (mainItem == "3" || mainItem == "6" || mainItem == "ContentManager")
+                                {
+                                    <li>
+                                        <a href="~/Master/AnalyticActivityList?Typ=4"><i class="fa fa-check-circle fa-lg fa-fw"></i> Screensaver Activity</a>
+                                    </li>
+                                }
+                                if (mainItem == "7" || mainItem == "6" || mainItem == "ContentManager")
+                                {
+                                    <li>
+                                        <a href="~/Master/AnalyticActivityList?Typ=7"><i class="fa fa-check-circle fa-lg fa-fw"></i> Lockscreen Activity </a>
+                                    </li>
+                                }
+                                if (mainItem == "3" || mainItem == "6" || mainItem == "ContentManager")
+                                {
+                                    <li>
+                                        <a href="~/Master/AnalyticActivityList?Typ=5"><i class="fa fa-check-circle fa-lg fa-fw"></i> Email Activity</a>
+                                    </li>
+                                }
+                            }
+                            @if (ViewBag.PermissionTyp == "Administator")
+                            {
+                                <li>
+                                    <a href="~/Master/RecepientList"><i class="fa fa-check-circle fa-lg fa-fw"></i> Recipients</a>
+                                </li>
+                                <li>
+                                    <a href="~/Master/ContentManagerActivity"><i class="fa fa-check-circle fa-lg fa-fw"></i> Content Managers</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+                <li>
+                    @foreach (var mainItem in ststusarray)
+                    {
+                        if (ViewBag.PermissionTyp == "Administator" && User_Type != "Cust")
+                        {
+                            <a href="#"><i class="fa fa-lg fa-fw fa fa-bar-chart"></i><span class="menu-item-parent">XComms Management</span></a>
+                            <ul>
+                                <li>
+                                    <a href="~/Customer/CustomerRegistration?CustomerId=0"><i class="fa fa-check-circle fa-lg fa-fw"></i> Customer Registration</a>
+                                </li>
+                                <li>
+                                    <a href="~/Customer/CustomerList"><i class="fa fa-check-circle fa-lg fa-fw"></i> Customer List</a>
+                                </li>
+                                @if (ViewBag.BaseUserName == "CYGNUSTEAM" || ViewBag.BaseUserName == "XCOMMS" || ViewBag.BaseUserName == "XCOMMSS")
+                                {
+                                    <li>
+                                        <a href="~/Master/XCommsAnalytics"><i class="fa fa-check-circle fa-lg fa-fw"></i> XComms Analytics</a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    }
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-lg fa-fw fa fa-question-circle"></i><span class="menu-item-parent">Support</span></a>
+                    <ul>
+                        <li>
+                            <a href="~/Master/SupportKnowledge"><i class="fa fa-check-circle fa-lg fa-fw"></i> Knowledge Base</a>
+                        </li>
+                        <li>
+                            <a href="~/Master/Contact"><i class="fa fa-check-circle fa-lg fa-fw"></i> Contact XComms</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <span class="minifyme" data-action="minifyMenu">
+            <i class="fa fa-arrow-circle-left hit"></i>
+        </span>
+    </aside>
+    <!-- END NAVIGATION -->
+    <!-- MAIN PANEL -->
+    <div id="main" role="main">
+        <div id="content">
+            <section id="widget-grid" class="">
+                @RenderBody()
+            </section>
+        </div>
+    </div>
+    <!-- END MAIN PANEL -->
+    <!-- PAGE FOOTER -->
+    <div class="page-footer">
+        <div class="row">
+            <div class="col-xs-10 col-sm-10 col-md-11 col-lg-11 text-center">
+                <span style="color:grey;"> Copyright &copy; @CurrentYear XComms. All Rights Reserved.</span>
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 pull-right" style="margin:auto !important;">
+                <center><img src='@Url.Content("~/assets/img/AzureSecured.png")' alt="Azure Secured" class="img-responsive bounceIn animated" style="height: 2.3em !important; width: 3em !important; text-align:center !important;" role="menu" rel="popover-hover" data-placement="top" data-original-title="<i class='fa fa-shield fa-lg fa-fw'></i> Secured" data-content="Azure Secured" data-html="true"></center>
+            </div>
+        </div>
+    </div>
+    <!-- END PAGE FOOTER -->
+
+    <div id="shortcut">
+        <ul>
+            @foreach (var mainItem in ststusarray)
+            {
+                if (mainItem == "1" || mainItem == "6" || mainItem == "ContentManager")
+                {
+                    <li>
+                        <a href="~/Master/CreateAlert?AlertId=0" class="jarvismetro-tile big-cubes" style="background-color: #254061;text-align: center;"> New PopUp Alert <img src="~/assets/img/Screen/Alerts/5.png" class="img-responsive">  </a>
+                    </li>
+                }
+                if (mainItem == "2" || mainItem == "6" || mainItem == "ContentManager")
+                {
+                    <li>
+                        <a href="~/Master/TickerAlert?TickerID=0" class="jarvismetro-tile big-cubes" style="background-color: #640000;text-align: center;"> New Ticker <img src="~/assets/img/Screen/Tickers/3.png" class="img-responsive"></a>
+                    </li>
+                }
+                if (mainItem == "4" || mainItem == "6" || mainItem == "ContentManager")
+                {
+                    <li>
+                        <a href="~/Master/AddWallPaper?Type=3&Id=0&Fun=A" class="jarvismetro-tile big-cubes" style="background-color: #10253F;text-align: center;"> Add Wallpaper <img src="~/assets/img/Screen/Wallpaper.png" class="img-responsive" /></a>
+                    </li>
+                }
+                if (mainItem == "3" || mainItem == "6" || mainItem == "ContentManager")
+                {
+                    <li>
+                        <a href="~/Master/ScreenSaver?Type=4&Id=0&Fun=A" class="jarvismetro-tile big-cubes" style="background-color: #403152;text-align: center;">Add Screensaver <img src="~/assets/img/Screen/ScreenSaver.png" class="img-responsive" /></a>
+                    </li>
+                }
+                if (mainItem == "7" || mainItem == "6" || mainItem == "ContentManager")
+                {
+                    <li>
+                        <a href="~/Master/AddLockScreen?Type=7&Id=0&Fun=A" class="jarvismetro-tile big-cubes" style="background-color: #A85008;text-align: center;"> Lockscreen <img src="~/assets/img/Screen/LockScreen.png" class="img-responsive" /></a>
+                    </li>
+                }
+                if (mainItem == "5" || mainItem == "6" || mainItem == "ContentManager")
+                {
+                    <li>
+                        <a href="~/Master/CreateQuiz" class="jarvismetro-tile big-cubes" style="background-color: #4D862E;text-align: center;"> New Quiz <img src="~/assets/img/Screen/Quiz.png" class="img-responsive" /></a>
+                    </li>
+                }
+                if ((ViewBag.PermissionTyp == "Administator" || mainItem == "6") && User_Type != "Cust")
+                {
+                    <li>
+                        <a href="~/Master/UsersGroups" class="jarvismetro-tile big-cubes" style="background-color: #404040;text-align: center;"> Users and Groups <span class="iconbox"> <i class="fa fa-users fa-5x"></i> </span> </a>
+                    </li>
+                }
+                @*if (mainItem == "4" || mainItem == "6" || mainItem == "ContentManager")
+                    {
+                        <li>
+                            <a href="javascript:;" class="jarvismetro-tile big-cubes" style="background-color: #404040;text-align: center;"> <span> Analytics </span> <span class="iconbox"> <i class="fa fa-bar-chart fa-5x"></i> </span> </a>
+                        </li>
+                    }*@
+            }
+            @if (ViewBag.PermissionTyp == "Administator" && User_Type == "Cust")
+            {
+                <li>
+                    <a href="~/Master/UsersGroups" class="jarvismetro-tile big-cubes" style="background-color: #404040;text-align: center;"> Users and Groups <span class="iconbox"> <i class="fa fa-users fa-5x"></i> </span> </a>
+                </li>
+            }
+
+            @*<li>
+                    <a href="javascript:;" class="jarvismetro-tile big-cubes" style="background-color: #404040;"> <span> Calendar </span> <span class="iconbox"> <i class="fa fa-calendar fa-5x"></i> </span> </a>
+                </li>*@
+            <li>
+                <a href="~/Master/ViewProfile" class="jarvismetro-tile big-cubes" style="background-color: #404040;text-align: center;"> <span> My Profile </span> <span class="iconbox"> <i class="fa fa-user fa-5x"></i> </span> </a>
+            </li>
+
+        </ul>
+    </div>
+    <!-- END SHORTCUT AREA -->
+    <!--================================================== -->
+    <!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
+    <script data-pace-options='{ "restartOnRequestAfter": true }' src="~/assets/SmartAdmin/script/pace/pace.min.js"></script>
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+    <!-- IMPORTANT: APP CONFIG -->
+    <script src="~/assets/SmartAdmin/script/app.config.js"></script>
+
+    <!-- JS TOUCH : include this plugin for mobile drag / drop touch events-->
+    <script src="~/assets/SmartAdmin/script/jquery-touch/jquery.ui.touch-punch.min.js"></script>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="~/assets/SmartAdmin/script/bootstrap/bootstrap.min.js"></script>
+
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js">
+    </script>
+    <!-- CUSTOM NOTIFICATION -->
+    <script src="~/assets/SmartAdmin/script/notification/SmartNotification.min.js"></script>
+
+    <!-- JARVIS WIDGETS -->
+    <script src="~/assets/SmartAdmin/script/smartwidgets/jarvis.widget.min.js"></script>
+
+    <!-- JQUERY VALIDATE -->
+    @*<script src="~/Scripts/jquery.validate.min.js"></script>*@
+    <script src="~/assets/SmartAdmin/script/jquery-validate/jquery.validate.min.js"></script>
+
+    <!-- JQUERY MASKED INPUT -->
+    <script src="~/assets/SmartAdmin/script/masked-input/jquery.maskedinput.min.js"></script>
+
+    <!-- JQUERY SELECT2 INPUT -->
+    <script src="~/assets/SmartAdmin/script/select2/select2.min.js"></script>
+    <script src="~/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="~/assets/SmartAdmin/script/daterangepicker.js"></script>
+    <script src="~/assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
+    <script src="~/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/assets/plugins/toastr/toastr.min.js"></script>
+    <!-- browser msie issue fix -->
+    <script src="~/assets/SmartAdmin/script/msie-fix/jquery.mb.browser.min.js"></script>
+
+    <!-- FastClick: For mobile devices -->
+    <script src="~/assets/SmartAdmin/script/fastclick/fastclick.min.js"></script>
+
+    <!--[if IE 8]>
+
+    <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
+
+    <![endif]-->
+    <!-- MAIN APP JS FILE -->
+    <script src="~/assets/SmartAdmin/script/app.min.js"></script>
+
+    <!-- ENHANCEMENT PLUGINS : NOT A REQUIREMENT -->
+    <!-- Voice command : plugin -->
+    <script src="~/assets/SmartAdmin/script/speech/voicecommand.min.js"></script>
+
+    <!-- Full Calendar -->
+    <script src="~/assets/SmartAdmin/script/moment.min.js"></script>
+
+    <script src="~/assets/plugins/summernote/summernote.min.js"></script>
+    <script src="~/assets/plugins/bootstrap-summernote/summernote.js"></script>
+    <script src="~/assets/plugins/markdown/markdown.min.js"></script>
+    <script src="~/assets/plugins/markdown/to-markdown.min.js"></script>
+    <script src="~/assets/plugins/markdown/bootstrap-markdown.min.js"></script>
+    <script src="~/assets/plugins/bootstrap-slider/bootstrap-slider.min.js"></script>
+    <script src="~/assets/plugins/ion.rangeslider/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
+
+    <!-- SmartChat UI : plugin -->
+    <script src="~/assets/plugins/smart-chat-ui/smart.chat.ui.min.js"></script>
+    <script src="~/assets/plugins/smart-chat-ui/smart.chat.manager.min.js"></script>
+
+    <script src="~/assets/bootstrap-select.js"></script>
+
+    <!-- PAGE RELATED PLUGIN(S) -->
+    <script src="~/assets/plugins/superbox/superbox.min.js"></script>
+
+    @*<script src="~/assets/plugins/datatables/jquery.dataTables.min.js"></script>*@
+    <script src="~/assets/scripts/core/jquery.dataTables.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.colVis.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.tableTools.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.bootstrap.min.js"></script>
+    <script src="~/assets/plugins/datatable-responsive/datatables.responsive.min.js"></script>
+
+    <script src="~/assets/plugins/sweetalert2/sweetalert2.min.js"></script>
+
+    @*@Scripts.Render("~/bundles/assets/scripts")*@
+    @RenderSection("scripts", required: false)
+    <script src="~/assets/scripts/App.js"></script>
+    <script src="~/assets/scripts/BaseFunction.js?ver=@System.DateTime.Now.ToString("yyyyMMddhhmmss")"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        var DomainName = "";
+        if (JSON.parse("@ConfigurationManager.AppSettings["IsDomainNameRequired"].ToString()")) {
+            DomainName = "@ConfigurationManager.AppSettings["DomainName"].ToString()";
+        }
+        function TimeUpdator() {
+            var calcNewYear = setInterval(function () {
+                date_future = new Date(new Date('@ViewBag.SessionExpiryTime'));
+                //console.log(date_future);
+                date_now = new Date();
+
+                seconds = Math.floor((date_future - (date_now)) / 1000);
+                minutes = Math.floor(seconds / 60);
+                hours = Math.floor(minutes / 60);
+                days = Math.floor(hours / 24);
+
+                hours = hours - (days * 24);
+                minutes = minutes - (days * 24 * 60) - (hours * 60);
+                seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
+                $("#time").html("Session Expiry in <i class='fa fa-clock-o'></i> <strong> " + minutes + " : " + seconds + " </strong>");
+            }, 1000);
+        };
+        $(document).ready(function () {
+            $(window).resize(function (e) {
+                if ($(window).width() < 1410 && $("body").hasClass("desktop-detected")) {
+                    /*$("body").addClass("minified");*/
+                    $("body").addClass("mobile-detected mobile-view-activated");
+                }
+                else {
+                    /*$("body").removeClass("minified");*/
+                    $("body").removeClass("mobile-detected mobile-view-activated");
+                }
+            });
+            $(window).load(function () {
+                if ($(window).width() < 1410 && $("body").hasClass("desktop-detected")) {
+                    /*$("body").addClass("minified");*/
+                    $("body").addClass("mobile-detected mobile-view-activated");
+                }
+                else {
+                    /*$("body").removeClass("minified");*/
+                    $("body").removeClass("mobile-detected mobile-view-activated");
+                }
+            });
+            App.init(DomainName);
+            FormComponents.init(DomainName);
+            pageSetUp();
+            drawBreadCrumb();
+            TimeUpdator();
+            StartWarningTimer();
+            $("title").text("@ViewBag.Title : XComms");
+
+            $('nav a').each(function () {
+                if ($(this).attr('href') != "#" && $(this).attr('href') != "undefined") {
+                    $(this).click(function () {
+                        App.blockUI({ target: "#main" });
+                    });
+                }
+            });
+            /* Start Highlight Active Menu */
+            $("nav li").removeClass("active");
+            $('nav').find('a').each(function (e) {
+                //console.log(window.location.href  +" = "+"@HttpContext.Current.Request.Url.Scheme://@HttpContext.Current.Request.Url.Host" + $(this).attr('href'));
+                //console.log($(this).parent('li').index());
+                if (window.location.href == "@HttpContext.Current.Request.Url.Scheme://@HttpContext.Current.Request.Url.Host" + $(this).attr('href')) {
+                    $(this).parent('li').addClass("active", 3000);
+                    $(this).parents('ul').attr("style", "display: block;");
+                    $(this).parents('ul').parent('li').addClass("open active", 3000);
+                    $(this).parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o", 3000);
+                    return false;
+                } else if ((!window.location.href.includes("AnalyticActivityList")) && window.location.href.split('=')[0] == ("@HttpContext.Current.Request.Url.Scheme://@HttpContext.Current.Request.Url.Host" + $(this).attr('href')).split('=')[0]) {
+                    $(this).parent('li').addClass("active");
+                    $(this).parents('ul').attr("style", "display: block;");
+                    $(this).parents('ul').parent('li').addClass("open active");
+                    $(this).parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                    return false;
+                } else if (window.location.href.includes("NewUsers") || window.location.href.includes("NewGroup")) {
+                    $('li:has(a[href="' + DomainName + '/Master/UsersGroups"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/UsersGroups"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/UsersGroups"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/UsersGroups"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("CreateNewContent") || window.location.href.includes("CreateNewPermission")) {
+                    $('li:has(a[href="' + DomainName + '/Master/ContentManagerList"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/ContentManagerList"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/ContentManagerList"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/ContentManagerList"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("Home/Index")) {
+                    $('li:has(a[href="' + DomainName + '/"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("&Typ=1")) {
+                    $('li:has(a[href="' + DomainName + '/Master/CreateAlert?AlertId=0"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/CreateAlert?AlertId=0"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/CreateAlert?AlertId=0"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/CreateAlert?AlertId=0"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("Master/TickerStep2?TickerID")) {
+                    $('li:has(a[href="' + DomainName + '/Master/TickerAlert?TickerID=0"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/TickerAlert?TickerID=0"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/TickerAlert?TickerID=0"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/TickerAlert?TickerID=0"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("&Typ=3")) {
+                    $('li:has(a[href="' + DomainName + '/Master/AddWallPaper?Type=3&Id=0&Fun=A"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/AddWallPaper?Type=3&Id=0&Fun=A"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/AddWallPaper?Type=3&Id=0&Fun=A"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/AddWallPaper?Type=3&Id=0&Fun=A"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("&Type=4") || window.location.href.includes("Master/ScreenSaverStep2")) {
+                    $('li:has(a[href="' + DomainName + '/Master/ScreenSaver?Type=4&Id=0&Fun=A"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/ScreenSaver?Type=4&Id=0&Fun=A"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/ScreenSaver?Type=4&Id=0&Fun=A"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/ScreenSaver?Type=4&Id=0&Fun=A"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("&Typ=7")) {
+                    $('li:has(a[href="' + DomainName + '/Master/AddLockScreen?Type=7&Id=0&Fun=A"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/AddLockScreen?Type=7&Id=0&Fun=A"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/AddLockScreen?Type=7&Id=0&Fun=A"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/AddLockScreen?Type=7&Id=0&Fun=A"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("&Typ=5")) {
+                    $('li:has(a[href="' + DomainName + '/Master/Email?AlertId=0"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/Email?AlertId=0"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/Email?AlertId=0"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/Email?AlertId=0"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+                else if (window.location.href.includes("&Typ=6")) {
+                    $('li:has(a[href="' + DomainName + '/Master/CreateQuiz"])').addClass('active');
+                    $('li:has(a[href="' + DomainName + '/Master/CreateQuiz"])').parents('ul').attr("style", "display: block;");
+                    $('li:has(a[href="' + DomainName + '/Master/CreateQuiz"])').parents('ul').parent('li').addClass("open active");
+                    $('li:has(a[href="' + DomainName + '/Master/CreateQuiz"])').parents('ul').parent('li').find('a').find('em').removeClass("fa fa-plus-square-o").addClass("fa fa-minus-square-o");
+                }
+            });
+            /* End Highlight Active Menu */
+            if ("@ViewBag.IsExpired" == "1") {
+                $("#btnExpired").attr("style", "display:block;");
+            }
+            $("#btnExpired").on("click", function () {
+                $('#RemainderModalForExpired').modal('show');
+            });
+        });
+        var timoutWarning = 1740000; // Display warning in 14 Mins.
+        var timoutNow = 60000; // Warning has been shown, give the user 1 minute to interact
+        var logoutUrl = DomainName + '/Account/LogOff'; // URL to logout page.
+
+        var warningTimer;
+        var timeoutTimer;
+
+        // Start warning timer.
+        function StartWarningTimer() {
+            warningTimer = setTimeout("IdleWarning()", timoutWarning);
+        }
+
+        // Reset timers.
+        function ResetTimeOutTimer() {
+            clearTimeout(timeoutTimer);
+            StartWarningTimer();
+            $("#timeout").dialog('close');
+        }
+
+        // Show idle timeout warning dialog.
+        function IdleWarning() {
+            clearTimeout(warningTimer);
+            timeoutTimer = setTimeout("IdleTimeout()", timoutNow);
+            $("#timeout").dialog({
+                modal: true
+            });
+            // Add code in the #timeout element to call ResetTimeOutTimer() if
+            // the "Stay Logged In" button is clicked
+        }
+
+        // Logout the user.
+        function IdleTimeout() {
+            window.location = logoutUrl;
+        }
+        //$(window).load(function () {
+        //    $('#loading').fadeOut();
+        //});
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+﻿@model XCommsWeb.Models.AlertModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@using HtmlAgilityPack;
+@using System.Text.RegularExpressions;
+@{
+    string AlertTital = !string.IsNullOrEmpty(Model.AlertTital) ? Model.AlertTital.StripHTML() : "";
+
+    //Regex rx = new Regex("<[^>]*>");
+    //Regex rxPtoDivOpen = new Regex("<p>");
+    //Regex rxPtoDivClose = new Regex("</p>");
+    //Regex rxRemovebr = new Regex("<br>");
+    //AlertTital = Model.AlertTital;
+    //HtmlDocument documentAlertTital = new HtmlDocument();
+    //AlertTital = rxPtoDivOpen.Replace(AlertTital, "<div>");
+    //AlertTital = rxPtoDivClose.Replace(AlertTital, "</div>");
+    //AlertTital = rxRemovebr.Replace(AlertTital, "");
+    //documentAlertTital.LoadHtml(AlertTital);
+    //GeneralFuncations GF = new GeneralFuncations();
+    //GF.SetDisplayInlineForList(documentAlertTital.DocumentNode);
+    //Model.AlertTital = documentAlertTital.DocumentNode.InnerHtml.ToString();
+
+    Model.AlertTital = AlertTital;
+}
+<tr class="editorRow">
+    @using (Html.BeginCollectionItem("ListTickerMultiDelete", Model.AlertId.ToString()))
+    {
+        <td class="text-center TxtVerticalAlign">
+            @if (ViewBag.BaseUserName == @Model.EntryBy && (ViewBag.PermissionTyp != "Administator"))
+            {
+                <div class="smart-form text-center" style="width:25px;">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.IsChecked, new { @class = "chkCheck" })
+                        <i></i>
+                    </label>
+                </div>
+            }
+            @if (ViewBag.PermissionTyp == "Administator")
+            {
+                <div class="smart-form text-center" style="width:25px;">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.IsChecked, new { @class = "chkCheck" })
+                        <i></i>
+                    </label>
+                </div>
+            }
+            @Html.HiddenFor(m => m.AlertId)
+        </td>
+        <td class="col-md-8 TxtVerticalAlign">@Html.Raw(Model.AlertTital)</td>
+        <td class="text-center col-md-2 TxtVerticalAlign">
+            @Model.EntryDate.FormateDateWithFullYearUS()
+        </td>
+        <td>
+            <div class="btn-group center-block">
+                <center>
+                    <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false" rel="tooltip" title="" data-placement="top" data-original-title="<i class='fa fa-ellipsis-h fa-md fa-fw'></i> Ticker Actions" data-html="true">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-left" style="min-width:auto !important;">
+                        @if (ViewBag.BaseUserName == @Model.EntryBy && (ViewBag.PermissionTyp != "Administator"))
+                        {
+                            <li>
+                                <a href="javascript:;" class="ClsEditSend" data-id="@Model.AlertId" rel="tooltip" title="" data-placement="left" data-original-title="Edit & Send Ticker">
+                                    <i class="fa fa-share-square"></i> Edit & Send
+                                </a>
+                            </li>
+                        }
+                        @if (ViewBag.PermissionTyp == "Administator")
+                        {
+                            <li>
+                                <a href="javascript:;" class="ClsEditSend" data-id="@Model.AlertId" rel="tooltip" title="" data-placement="left" data-original-title="Edit & Send Ticker">
+                                    <i class="fa fa-share-square"></i> Edit & Send
+                                </a>
+                            </li>
+                        }
+                        <li>
+                            <a href="javascript:;" class="showTickerPreview" data-tickerid="@Model.AlertId" data-tickerposition="@Model.TickerPosition" data-tickerspeed="@Model.TickerSpeed" rel="tooltip" title="" data-placement="left" data-original-title="Preview Ticker">
+                                <i class="fa fa-eye"></i> Preview
+                            </a>
+                        </li>
+                        @*<li>
+                                <a href="@Url.Content("~/Master/DeleteAlertTicker?TickerID=" + Model.AlertId)">
+                                    <i class="fa fa-trash-o"></i><span class="mrgleft5"> Delete</span>
+                                </a>
+                            </li>*@
+                    </ul>
+                </center>
+            </div>
+        </td>
+    }
+</tr>

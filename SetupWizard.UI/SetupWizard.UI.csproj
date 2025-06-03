@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="PublishFiles\API\" />
+    <Folder Include="PublishFiles\Web\" />
     <Folder Include="Scripts\" />
   </ItemGroup>
 

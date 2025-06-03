@@ -1,0 +1,73 @@
+﻿@model XCommsWeb.Models.CYGNUS_Master_GeneralViewModel
+@using XCommsWeb.Models
+@{
+    List<CYGNUS_location> mainZoneList = new List<CYGNUS_location>();
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    if (Model.WMG.CodeType.ToUpper() == "ZONE")
+    {
+        mainZoneList = MS.GetLocationDetails().Where(c => c.Loc_Level == 2 && c.ActiveFlag == "Y").ToList();
+    }
+}
+<table class="table table-striped table-bordered table-hover" id="GeneralMaster" style="overflow-x: scroll">
+    <thead>
+        <tr>
+            <th class="center">
+                Id
+            </th>
+            <th class="center">
+                @Model.WMCT.Name_Desc
+            </th>
+            <th class="hide">
+            </th>
+            @if (Model.WMG.CodeType.ToUpper() == "ZONE")
+            {
+                <th class="center">
+                    Main Zone
+                </th>
+            }
+            <th class="center">
+                Active
+            </th>
+            <th class="center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.listWMG)
+        {
+            string TrId = "TR" + item.CodeId.ToString();
+            <tr id="@TrId">
+                <td class="center">
+                    @item.CodeId
+                </td>
+                <td>
+                    <input type="text" class="form-control clsCodeDesc required" id="txt_@item.CodeId" data-id="@item.CodeId" value="@item.CodeDesc" data-codetype="@item.CodeType" disabled />
+                </td>
+                <td class="hide">@item.CodeDesc</td>
+                @if (Model.WMG.CodeType.ToUpper() == "ZONE")
+                {
+                    <td>
+                        @Html.DropDownListFor(m => item.codefor, new SelectList(mainZoneList, "LocCode", "LocName"), "", new { @class = "select2 form-control required2 required", placeholder = "Select Main Zone" })
+                    </td>
+                }
+                <td>
+                    @if (item.StatusCode.ToUpper() == "Y")
+                    {
+                        <input type="checkbox" class="StatusCodeY statusChange" data-codeid="@item.CodeId" data-codetype="@item.CodeType" />
+                    }
+                    else
+                    {
+                        <input type="checkbox" class="StatusCodeN statusChange" data-codeid="@item.CodeId" data-codetype="@item.CodeType" />
+                    }
+                </td>
+                <td class="center">
+                    <button type="button" class="btn default btn-xs blue-stripe tooltips btnMasterEdit" title="Edit" id="btnEdit_@item.CodeId.ToString()" data-codetype="@item.CodeType" data-id="@item.CodeId" rel="tooltip" data-placement="top">
+                        <i class="fa fa-pencil"></i>&nbsp;Edit
+                    </button>
+                    <button type="button" style="display:none" class="btn default btn-xs green-stripe tooltips btnMasterSave" title="Save" id="btnSave_@item.CodeId.ToString()" data-codetype="@item.CodeType" data-id="@item.CodeId" rel="tooltip" data-placement="top">
+                        <i class="fa fa-save"></i>&nbsp;Save
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

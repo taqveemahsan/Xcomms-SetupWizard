@@ -1,0 +1,32 @@
+﻿body {
+}
+
+/*----- START : SET MANUALLY JS GRID STYLE - CR -----*/
+.jsgrid-row > .jsgrid-cell
+{
+    padding: 0.4em !important;
+    border: 1px solid #9cb4c5 !important;
+    background-color: #EEE !important;
+}
+
+.jsgrid-alt-row > .jsgrid-cell
+{
+    padding: 0.4em !important;
+    border: 1px solid #9cb4c5 !important;
+}
+
+.jsgrid-header-row > .jsgrid-header-cell
+{
+    color: #305d8c !important;
+    background-color: #d6dde7 !important;
+    padding: 0.4em !important;
+    border: 1px solid #9cb4c5 !important;
+    font-family: "Open Sans",Arial,Helvetica,Sans-Serif;
+    font-weight:unset !important;
+}
+
+.jsgrid-selected-row > .jsgrid-cell {
+    background: #c4e2ff !important;
+    border-color: #9cb4c5 !important;
+}
+/*----- END : SET MANUALLY JS GRID STYLE - CR -----*/

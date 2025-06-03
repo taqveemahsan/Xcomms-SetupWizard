@@ -1,0 +1,8 @@
+﻿@model IEnumerable<XCommsWeb.Models.AlertModel>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+@foreach (var item in Model)
+{
+    Html.RenderPartial("_TickerHistoryListPartial", item);
+}

@@ -1,0 +1,239 @@
+﻿@using System.Configuration
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <title>:: @ViewBag.Title :: XComms</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/font-awesome.min.css">
+    <!-- SmartAdmin Styles : Caution! DO NOT change the order -->
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/smartadmin-production-plugins.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/smartadmin-production.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/assets/SmartAdmin/css/smartadmin-skins.min.css">
+    @*<link href="~/Templates/css/bootstrap.css" rel="stylesheet" type="text/css" />*@
+    <link href="~/Templates/css/style.css" rel="stylesheet" type="text/css" />
+    @*<link rel="preconnect" href="https://fonts.gstatic.com">*@
+    @*<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">*@
+    <link rel="shortcut icon" href="~/assets/img/fevicon/favicon.ico" type="image/x-icon">
+    @*<link rel="icon" href="~/assets/img/fevicon/favicon.ico" type="image/x-icon">*@
+    <link rel="icon" href="~/assets/img/New_XComms_Logo/favicon_shortcut.ico" type="image/x-icon">
+    <link href="~/assets/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />*@
+
+    <style>
+        html {
+            height: calc(100vh - 51px);
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif !important;
+        }
+
+     /*   .theme-one {
+            background-color: #404040;
+            border-bottom: 1px solid #404040;
+        }*/
+
+        .theme-one {
+            background-color: #0d1723 !important;
+            /*background: linear-gradient(#000000,#7f7f7f,#000000);*/
+            border-bottom: 1px solid #0d1723;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-two {
+            background-color: #ec3d4a;
+            border-bottom: 1px solid #ec3d4a;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-three {
+            background-image: url(../img/bg-3.png);
+            margin-bottom: -4px;
+            background-repeat: round;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-four {
+            background-image: url(../img/bg-4.png);
+            margin-bottom: -4px;
+            background-repeat: round;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-five {
+            background-image: url(../img/bg-5.png);
+            margin-bottom: -4px;
+            background-repeat: round;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-six {
+            background-image: url(../img/bg-6.png);
+            margin-bottom: -4px;
+            background-repeat: round;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-seven {
+            background-image: url(../img/bg-7.png);
+            margin-bottom: -4px;
+            background-repeat: round;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-eight {
+            background-color: #d1d3d5;
+            border-bottom: 1px solid #d1d3d5;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-nine {
+            background-color: #5b5b5b;
+            border-bottom: 1px solid #5b5b5b;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .theme-ten {
+            background-color: #2bb673;
+            border-bottom: 1px solid #2bb673;
+            max-width: 100%;
+            margin-left: 0px;
+        }
+
+        .card-body-bg {
+            background-color: #dce3ed;
+            padding: 10px 10px;
+            border-bottom: 15px solid #0d1723;
+        }
+
+        .btn-primary {
+            background-color: #404040;
+            border-color: #404040;
+        }
+
+        .pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+            background-color: #404040;
+            border-color: #404040;
+        }
+
+        .pagination > li > a, .pagination > li > span {
+            color: #404040;
+        }
+
+        .text-primary {
+            color: #404040;
+        }
+
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #262626;
+            border-color: #262626;
+        }
+
+        #loading {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: #404040;
+            z-index: 100;
+            overflow: hidden;
+            opacity: 0.75;
+        }
+
+            #loading img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                margin: auto;
+            }
+
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <img src="@Url.Content("~/assets/img/XComms.gif")">
+    </div>
+    <div class="inheriteHeight">
+        <div class="inheriteHeight">
+            <div class="card inheriteHeight">
+                <div id="DivTheme" name="DivTheme" class="card-header theme-one-desktop">
+                    <div class="row rowfix">
+                        @*<img src='@Url.Content("~/assets/img/logos/Logo.png")' class="logo" />*@
+                        <img src="@Url.Content("~/assets/img/New_XComms_Logo/logo.png")" id="LogoImage" class="logo" style="width: 17rem;height:auto !important; top:8px;" />
+                        <a href="javascript:if(window.opener)window.close();" id="bntClose" target="_blank"><img src='@Url.Content("~/Templates/img/close-icon.png")' class="img-fluid close" /> </a>
+                    </div>
+                </div>
+                <div class="card-body card-body-bg inheriteHeight" id="MainDiv" style="overflow-y:auto;">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS-->
+    @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script>
+            if (!window.jQuery) {
+                document.write('<script src="~/assets/SmartAdmin/script/libs/jquery-2.1.1.min.js"><\/script>');
+            }
+        </script>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script>
+            if (!window.jQuery.ui) {
+                document.write('<script src="~/assets/SmartAdmin/script/libs/jquery-ui-1.10.3.min.js"><\/script>');
+            }
+        </script>
+        <script src="~/Templates/js/bootstrap.js"></script>
+            <script src="~/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+            <script src="~/assets/SmartAdmin/script/jquery-validate/jquery.validate.min.js"></script>
+            <script src="~/assets/plugins/datatables/dataTables.colVis.min.js"></script>
+            <script src="~/assets/plugins/datatables/dataTables.tableTools.min.js"></script>
+            <script src="~/assets/plugins/datatables/dataTables.bootstrap.min.js"></script>
+            <script src="~/assets/plugins/datatable-responsive/datatables.responsive.min.js"></script>*@
+    <script src="~/assets/SmartAdmin/script/libs/jquery-2.1.1.min.js"></script>
+    <script src="~/assets/SmartAdmin/script/libs/jquery-ui-1.10.3.min.js"></script>
+    <script src="~/Templates/js/bootstrap.js"></script>
+    <script src="~/assets/SmartAdmin/script/bootstrap/bootstrap.min.js"></script>
+    <script src="~/assets/SmartAdmin/script/jquery-touch/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/SmartAdmin/script/fastclick/fastclick.min.js"></script>
+    <script src="~/assets/SmartAdmin/script/jqueryblockUI.js"></script>
+    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>*@
+
+    @Scripts.Render("~/bundles/assets/deskptopjs")
+    @*@Scripts.Render("~/bundles/assets/scripts")*@
+
+    <script src="~/assets/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/assets/scripts/App.js"></script>
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        var DomainName = "";
+        if (JSON.parse("@ConfigurationManager.AppSettings["IsDomainNameRequired"].ToString()")) {
+            DomainName = "@ConfigurationManager.AppSettings["DomainName"].ToString()";
+        }
+        $(document).ready(function () {
+            App.init(DomainName);
+            FormComponents.init(DomainName);
+        });
+        $(window).load(function () {
+            $('#loading').fadeOut();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+﻿@{
+    List<SelectListItem> BlankList = new List<SelectListItem>();
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    string currBranchCode = Convert.ToString(ViewBag.BaseLocationCode).ToUpper();
+
+    int CurrLocLevel = Convert.ToInt32(MS.GetLocationAsPerZoneDetails().Where(c => c.LocCode.ToUpper() == currBranchCode).FirstOrDefault().Loc_Level);
+
+    var GNList = MS.GetGeneralMasterHRCHY().Where(c =>  Convert.ToInt32(c.CodeId) >= CurrLocLevel).ToList();
+    int MaxId = GNList.Max(c => Convert.ToInt32(c.CodeId));
+    string CurrLoccd = CurrLocLevel == 1 ? "All" : currBranchCode;
+}
+
+@using XCommsWeb.Models
+@using XCommsWeb.Security;
+
+@foreach (var itm in GNList)
+{
+    List<SelectListItem> LocationList = new List<SelectListItem>();
+
+    if (Convert.ToInt32(itm.CodeId) == CurrLocLevel)
+    {
+        LocationList.Add(new SelectListItem() { Text = ViewBag.BaseLocationCode + " : " + ViewBag.BaseLocationName, Value = ViewBag.BaseLocationCode });
+    }
+    else if (Convert.ToInt32(itm.CodeId) == CurrLocLevel + 1)
+    {
+        //c.LocCode == currBranchCode ||
+        var LocList = MS.GetLocationAsPerZoneDetails().Where(c => c.Report_Loc == currBranchCode).ToList();
+
+        LocationList.Add(new SelectListItem() { Text = "All", Value = "All" });
+
+        foreach (var itm1 in LocList)
+        {
+            LocationList.Add(new SelectListItem() { Text = itm1.LocCode + " : " + itm1.LocName, Value = itm1.LocCode });
+        }
+    }
+    else
+    {
+        LocationList.Add(new SelectListItem() { Text = "All", Value = "All" });
+    }
+
+    string CURRCode = LocationList.First().Value;
+
+    <div class="row">
+        <div class="col-md-11">
+            <div class="form-group">
+                <label class="control-label col-md-3">@itm.CodeDesc </label>
+                <div class="col-md-6">
+                    @Html.DropDownList("LOC" + itm.CodeId, new SelectList(LocationList, "Value", "Text"), null, new { @class = "form-control select2 required2 required dropdown2 clsLocationZone" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@Html.Hidden("Location", CurrLoccd)
+@Html.Hidden("LocationLevel", CurrLocLevel)
+@Html.Hidden("MaxId", MaxId)
+

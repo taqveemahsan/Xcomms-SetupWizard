@@ -1,0 +1,66 @@
+﻿@model IEnumerable<XCommsWeb.Models.PopAlert>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@using HtmlAgilityPack;
+@using System.Text.RegularExpressions;
+
+<table class="table table-striped table-bordered table-hover table-responsive" id="dtPopAlertAnaly" style="overflow:scroll;" width="100%">
+    <thead>
+        <tr>
+            <th class="text-center">Title <i class="fa fa-list txt-color-blue fa-lg"></i></th>
+            <th class="text-center">Sent Date <i class="fa fa-calendar txt-color-blue fa-lg"></i></th>
+            <th class="text-center">Content Creator <i class="fa fa-user txt-color-blue fa-lg"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            string AlertTital = !string.IsNullOrEmpty(item.AlertTital) ? item.AlertTital.StripHTML() : "";
+            if (string.IsNullOrEmpty(AlertTital))
+            {
+                AlertTital = "<i class='fa fa-file-image-o'></i> Image Only Used In Title";
+            }
+
+            //Regex rx = new Regex("<[^>]*>");
+            //Regex rxPtoDivOpen = new Regex("<p>");
+            //Regex rxPtoDivClose = new Regex("</p>");
+            //Regex rxRemovebr = new Regex("<br>");
+            //AlertTital = item.AlertTital;
+            //HtmlDocument documentAlertTital = new HtmlDocument();
+            //AlertTital = rxPtoDivOpen.Replace(AlertTital, "<div>");
+            //AlertTital = rxPtoDivClose.Replace(AlertTital, "</div>");
+            //AlertTital = rxRemovebr.Replace(AlertTital, "");
+            //documentAlertTital.LoadHtml(AlertTital);
+            //GeneralFuncations GF = new GeneralFuncations();
+            //GF.SetDisplayInlineForList(documentAlertTital.DocumentNode);
+            //item.AlertTital = documentAlertTital.DocumentNode.InnerHtml.ToString();
+            item.AlertTital = AlertTital;
+
+            <tr>
+                <td class="col-md-1">
+                    @if (item.Type == "3" || item.Type == "7")
+                    {
+                        if (item.AlertParentId == 0)
+                        {
+                            @item.AlertBody
+                        }
+                        else
+                        {
+                            <i class="fa fa-share-square txt-color-green"></i> @item.AlertBody
+                        }
+                    }
+                    else
+                    {
+                        @Html.Raw(item.AlertTital)
+                    }
+                </td>
+                <td class="text-center col-md-1">
+                    @item.EntryDate.FormateDateWithFullYearUS()
+                </td>
+                <td class="text-center col-md-1">
+                    @item.EntryBy
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,875 @@
+﻿@model XCommsWeb.ViewModel.StandardReportFilter
+@using XCommsWeb;
+@using XCommsWeb.Models;
+@{
+
+    List<SelectListItem> BlankList = new List<SelectListItem>();
+
+    List<Master_Parameter_Inputs> SubParaList = new List<Master_Parameter_Inputs>();
+
+    ReportService CL = new ReportService();
+
+    Model.BaseUserCode = User.Identity.Name;
+
+    Model.BaseLocationCode = ViewBag.BaseLocationCode;
+    Model.BaseCompanyCode = ViewBag.BaseCompanyCode;
+    Model.BaseLocationLevel = Convert.ToString(ViewBag.BaseLocationLevel);
+    Model.BaseFinYear = ViewBag.BaseYearVal;
+
+    string RDLPATH = ViewBag.StandardReportPath + "/" + Model.RDLName;
+    Model.ReportDetails.DisplayName = Model.ReportDetails.DisplayName.Replace("<b>(", "_").Replace(")</b>", "").Replace("  ", "").Replace("_ ", "_");
+}
+
+@Html.HiddenFor(c => c.ReportParameterSetId)
+@Html.HiddenFor(c => c.RDLName)
+@Html.HiddenFor(c => c.ReportId)
+@Html.HiddenFor(c => c.ReportDetails.ShowParameterPrompts)
+@Html.HiddenFor(c => c.ReportDetails.ShowFindControls)
+@Html.HiddenFor(c => c.ReportDetails.ShowToolBar)
+@Html.Hidden("ReportId1", Model.ReportId)
+@Html.HiddenFor(c => c.BaseFinYear)
+@Html.HiddenFor(c => c.BaseUserCode)
+@Html.HiddenFor(c => c.BaseCompanyCode)
+@Html.HiddenFor(c => c.BaseLocationCode)
+@Html.HiddenFor(c => c.BaseLocationLevel)
+@Html.HiddenFor(c => c.ReportDetails.DisplayName)
+@Html.Hidden("RDLPATH", RDLPATH)
+@Html.Hidden("isDownFormat", "false")
+
+
+@foreach (var Item in Model.ParameterSet_Details)
+{
+    Item.IsMultipleChoiceWithSearch = true;
+    var SubParaList1 = CL.GetSubParameter(Item.Id);
+
+    foreach (var itm in SubParaList1)
+    {
+        SubParaList.Add(itm);
+    }
+
+    if (Item.ParameterType == 1)
+    {
+        <text>
+            <div class="row">
+                <div class="col-md-11">
+                    <div class="form-group">
+                        <label class="control-label col-md-3">
+                            @Item.ReportParameterName
+
+                            @Html.HiddenFor(c => c.StartDate)
+                            @Html.HiddenFor(c => c.EndDate)
+                        </label>
+
+                        <div class="col-md-6">
+                            <div id="reportrange" class="btn default col-md-12">
+                                <i class="fa fa-calendar"></i>
+                                &nbsp;
+                                <span></span>
+                                <b class="fa fa-angle-down"></b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </text>
+    }
+    else if (Item.ParameterType == 7)
+    {
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group ">
+                    <label class="control-label col-md-3" style="vertical-align:middle">
+                        @Item.ReportParameterName
+                    </label>
+                    <div class="col-md-9">
+                        @{Html.RenderPartial("../UserControls/_ReportLocation");}
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 12)
+    {
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group ">
+                    <label class="control-label col-md-3">
+                        Destination
+                    </label>
+                    <div class="col-md-9">
+                        @{Html.RenderPartial("../UserControls/_ReportLocationTo");}
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 15)
+    {
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group ">
+                    <label class="control-label col-md-3" style="vertical-align:middle">
+                        @Item.ReportParameterName
+                    </label>
+                    <div class="col-md-9">
+                        @{Html.RenderPartial("../UserControls/_ReportLocationZone");}
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 5)
+    {
+        <div class="row">
+            <div class="col-md-11">
+                <div class="form-group ">
+                    <label class="control-label col-md-3">
+                        @Item.ReportParameterName
+                    </label>
+                    <div class="col-md-6 radio-list @Item.ParameterName">
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 6)
+    {
+        <div class="row">
+            <div class="col-md-11">
+                <div class="form-group ">
+                    <label class="control-label col-md-3">
+                        @Item.ReportParameterName
+                    </label>
+                    <div class="col-md-8 checkbox-list @Item.ParameterName">
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 10)
+    {
+        <div class="row">
+            <div class="col-md-11 ">
+                <div class="form-group ">
+                    <label class="control-label col-md-3">
+                        @Item.ReportParameterName <br /><span class="help-block">
+                            (select at least 1 and Max 25)
+                        </span><br />
+
+                    </label>
+                    <div class="col-md-9">
+                        <div class="has-error" id="form_2_services_error">
+                        </div>
+                        <div class="checkbox-list @Item.ParameterName " data-error-container="#form_2_services_error">
+                        </div>
+
+                    </div>
+                    @Html.Hidden(Item.ParameterName)
+
+                </div>
+            </div>
+        </div>
+    }
+
+    else if (Item.ParameterType == 9)
+    {
+        <div class="row">
+            <div class="col-md-11">
+                <div class="form-group ">
+                    <label class="control-label col-md-3">
+                        @Item.ReportParameterName
+                    </label>
+                    <div class="col-md-6">
+                        @Html.TextBox(Item.ParameterName, "", new { placeholder = Item.ParameterName, @class = "required2 form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 11)
+    {
+        <div class="row">
+            <div class="col-md-11 ">
+                <div class="form-group">
+                    <label class="control-label col-md-3">
+                    </label>
+                    <div class="col-md-6">
+                        <b>OR</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-11">
+                <div class="form-group ">
+                    <label class="control-label col-md-3">
+                        @Item.ReportParameterName
+                    </label>
+                    <div class="col-md-6">
+                        @Html.TextBox(Item.ParameterName, "", new { placeholder = Item.ParameterName, @class = "required2 form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 13)
+    {
+        <div class="row">
+            <div class="col-md-11">
+                <div class="form-group ">
+                    <label class="control-label col-md-3">
+                        @Item.ReportParameterName
+                    </label>
+                    <div class="col-md-6">
+                        <div class="input-group date ptdate-picker">
+                            @Html.TextBox(Item.ParameterName, "", String.Format("{0:dd MMM yyyy}", Convert.ToDateTime(System.DateTime.Now).ToString("dd MMM yyyy")), new { @class = "form-control  required2 ", @placeholder = @ViewBag.DefaultJqueryDateFormat, @readonly = true })
+                            <span class="input-group-btn">
+                                <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Item.ParameterType == 2)
+    {
+        string ParametrName = Item.ParameterName + "1";
+        string CheckBoxName = "CHK" + Item.ParameterName;
+
+        if (Item.IsMultipleChoice)
+        {
+            <div class="row">
+                <div class="col-md-11">
+                    <div class="form-group ">
+                        <label class="control-label col-md-3">
+                            @Item.ReportParameterName :
+                        </label>
+                        <div class="col-md-5">
+                            @Html.DropDownList(ParametrName, new SelectList(BlankList, "Value", "Text"), "", new { @class = "select2 form-control required RPTVAL", @multiple = "true" })
+
+                            @Html.Hidden(Item.ParameterName)
+                        </div>
+                        @*<div class="col-md-1">
+                                <input type="checkbox" id="@CheckBoxName" data-id="@ParametrName" class="chkAll"> All
+                            </div>*@
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-11">
+                    <div class="form-group ">
+                        <label class="control-label col-md-3">
+                            @Item.ReportParameterName
+                        </label>
+                        <div class="col-md-6">
+                            @Html.DropDownList(ParametrName, new SelectList(BlankList, "Value", "Text"), "", new { @class = "select2 form-control required2 RPTVAL" })
+
+                            @Html.Hidden(Item.ParameterName)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+<div class="form-actions fluid">
+    <div class="row">
+        <div class="col-md-offset-5 col-md-7">
+            <button type="submit" id="btnSubmit" class="btn btn-sm blue"><i class="fa fa-search"></i>&nbsp;Search</button>
+
+            <button type="submit" id="btnDwnXLS" class="btn btn-sm blue"><i class="fa fa-download"></i>&nbsp;Download XLS</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        //var handleSelect2 = function () {
+
+        //    $('.select2').select2({
+        //        placeholder: "Select an option",
+        //        allowClear: true,
+        //        // closeOnSelect: false,
+        //    });
+        //}
+
+
+        var Formvalidate = function (DomainName) {
+
+
+            var form = $('#submit_form');
+            var error = $('.alert-danger', form);
+            var success = $('.alert-success', form);
+
+            form.validate({
+                doNotHideMessage: true, //this option enables to show the error/success messages on tab switch.
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+
+                    ReportFieldsCHK: {
+                        required: true,
+                        minlength: 1,
+                        maxlength: 25
+                    },
+                },
+
+                messages: { // custom messages for radio buttons and checkboxes
+                    ReportFieldsCHK: {
+                        required: "Please select  at least 2 types of Service",
+                        minlength: jQuery.format("Please select  at least {0} types of Service"),
+                        maxlength: jQuery.format("Please select  at least {0} types of Service")
+                    }
+
+                },
+
+                //errorPlacement: function (error, element) { // render error placement for each input type
+                //    if (element.attr("name") == "gender") { // for uniform radio buttons, insert the after the given container
+                //        error.insertAfter("#form_gender_error");
+                //    } else if (element.attr("name") == "payment[]") { // for uniform radio buttons, insert the after the given container
+                //        error.insertAfter("#form_payment_error");
+                //    } else {
+                //        error.insertAfter(element); // for other inputs, just perform default behavior
+                //    }
+                //},
+
+                errorPlacement: function (error, element) { // render error placement for each input type
+                    if (element.parent(".input-group").size() > 0) {
+                        error.insertAfter(element.parent(".input-group"));
+                    } else if (element.attr("data-error-container")) {
+                        error.appendTo(element.attr("data-error-container"));
+                    } else if (element.parents('.radio-list').size() > 0) {
+                        error.appendTo(element.parents('.radio-list').attr("data-error-container"));
+                    } else if (element.parents('.radio-inline').size() > 0) {
+                        error.appendTo(element.parents('.radio-inline').attr("data-error-container"));
+                    } else if (element.parents('.checkbox-list').size() > 0) {
+                        error.appendTo(element.parents('.checkbox-list').attr("data-error-container"));
+                    } else if (element.parents('.checkbox-inline').size() > 0) {
+                        error.appendTo(element.parents('.checkbox-inline').attr("data-error-container"));
+                    } else {
+                        error.insertAfter(element); // for other inputs, just perform default behavior
+                    }
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success.hide();
+                    error.show();
+                    App.scrollTo(error, -200);
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').removeClass('has-success').addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    if (label.attr("for") == "gender" || label.attr("for") == "payment[]") { // for checkboxes and radio buttons, no need to show OK icon
+                        label
+                            .closest('.form-group').removeClass('has-error').addClass('has-success');
+                        label.remove(); // remove error label here
+                    } else { // display success icon for other inputs
+                        label
+                            .addClass('valid') // mark the current input as valid and display OK icon
+                        .closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                    }
+                },
+
+                submitHandler: function (form) {
+                    success.show();
+                    error.hide();
+                    //  alert($("#ReportFields").val());
+                    $(".RPTVAL").each(function () {
+
+                        var sID = $(this).attr("id").replace("1", "");
+                        // alert(sID);
+                        $("#" + sID).val($(this).val());
+                    });
+                    App.blockUI({ boxed: true });
+                    form.submit();
+                    //add here some ajax code to submit your form or just call form.submit() if you want to submit the form without ajax
+                }
+            });
+        }
+
+        var CheckAllDLL = function (DLLName, ChkName) {
+            var selectedValues = [];
+            // alert(DLLName+" "+ChkName)
+            $("#" + DLLName + " option").each(function () {
+                if ($(this).val() != "" && $(this).val() != null) {
+                    var item = {
+                        "id": $(this).val(),
+                        "text": $(this).text()
+                    };
+                    selectedValues.push(item);
+                }
+            });
+
+
+            if ($("#" + ChkName).is(':checked')) {
+
+                $("#" + DLLName).select2("data", selectedValues);
+
+                // $("#" + DLLName+" > option").prop("selected", "selected");
+                //  $("#" + DLLName).trigger("change");
+
+            } else {
+                $("#" + DLLName).select2('data', null)
+
+            }
+            $("#" + DLLName).trigger("change");
+
+            // $("#" + DLLName).change();
+        }
+
+        var handleDateRangePickers = function () {
+            if (!jQuery().daterangepicker) {
+                return;
+            }
+
+            $('#reportrange').daterangepicker({
+                opens: (App.isRTL() ? 'left' : 'right'),
+                startDate: moment().subtract('days', 29),
+                endDate: moment(),
+                //dateLimit: {
+                //    days: 365
+                //},
+                showDropdowns: true,
+                showWeekNumbers: true,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                    'Last 7 Days': [moment().subtract('days', 6), moment()],
+                    'Last 30 Days': [moment().subtract('days', 29), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                },
+                buttonClasses: ['btn'],
+                applyClass: 'green',
+                cancelClass: 'default',
+                format: 'DD/MM/YYYY',
+                separator: ' to ',
+                locale: {
+                    applyLabel: 'Apply',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    customRangeLabel: 'Custom Range',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
+                }
+            },
+                //function (start, end) {
+                //    console.log("Callback has been called!");
+                //    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                //}
+                 function (start, end) {
+
+                     $('#StartDate').val(start.format('DD MMM YYYY'));
+                     $('#EndDate').val(end.format('DD MMM YYYY'));
+                     $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                     //alert("Callback has been called!" + $('#StartDate').val() + " " + $('#EndDate').val());
+                     @*$('#reportrange span').html(start.toString('@ViewBag.DefaultJqueryDateFormat') + ' - ' + end.toString('@ViewBag.DefaultJqueryDateFormat'));*@
+                 }
+
+            );
+            //Set the initial state of the picker label
+            $('#reportrange span').html(moment().subtract('days', 29).format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+
+            $('#StartDate').val(moment().subtract('days', 29).format('DD MMM YYYY'));
+            $('#EndDate').val(moment().format('DD MMM YYYY'));
+
+        }
+
+        @foreach (var Item in Model.ParameterSet_Details.Where(c => c.SourceTableName != null && c.SubCount>0))
+        {
+            string JQFnName = "Get" + Item.ParameterName;
+
+            string ParameterName = Item.ParameterName;
+
+            if (Item.ParameterType == 2)
+            {
+                ParameterName = Item.ParameterName + "1";
+            }
+
+               @*if (Item.ParameterType == 7)
+            {
+             <text>
+
+        LocationContraol();
+        </text>
+               }*@
+               <text>
+
+
+
+        window["@JQFnName"] = function (DomainName) {
+
+            DomainName = "";
+
+            // alert("@Item.ParameterName")
+            App.blockUI({ boxed: true });
+
+            var SQRY = "exec @Item.SourceTableName ", STRPARAMETER = "";
+
+            @foreach (var itm1 in SubParaList.Where(c=>c.ParameterId==Item.Id))
+            {
+                string SSQRY=" @"+itm1.CompareColumn+"=";
+                string ParentColumn = itm1.ParentColumn;
+
+                if (itm1.ParameterType==2)
+                {
+                    ParentColumn = itm1.ParentColumn+"1";
+                }
+                else
+                {
+                    ParentColumn = itm1.ParentColumn ;
+                }
+
+
+                if (Item.DefaultValue == "BL")
+                {
+                    Item.DefaultValue = ViewBag.BaseLocationCode;
+                }
+
+                if (Item.DefaultValue == "BC")
+                {
+                    Item.DefaultValue = ViewBag.BaseCompanyCode;
+                }
+                string clsRadio = "cls" + itm1.ParentColumn;
+                 <text>
+
+
+
+            var ParentColumnVal = $("#@ParentColumn").val();
+
+            if ("@itm1.ParameterType" == "5") {
+                ParentColumnVal = $('input[class=@clsRadio]:checked').val();
+                // alert(ParentColumnVal)
+            }
+
+
+            if (ParentColumnVal != "undefined") {
+                if (STRPARAMETER == "")
+                    STRPARAMETER = "@SSQRY" + "'" + ParentColumnVal + "'";
+                else
+                    STRPARAMETER = STRPARAMETER + "," + "@SSQRY" + "'" + ParentColumnVal + "'";
+            }
+
+            </text>
+            }
+
+            SQRY = SQRY + "  " + STRPARAMETER;
+            var StrURL = DomainName + "/Reporting/GetDynamicParameterValue?SQRY=" + SQRY;
+             //alert(StrURL)
+
+            @if(Item.ParameterType==10)
+            {
+                 <text>
+            var StrURL1 = DomainName + "/Reporting/GetReportFields?SQRY=" + SQRY;
+
+            jsGetReportFields("@Item.ParameterName", StrURL1);
+            </text>
+            }
+            else
+            {
+                if(Item.IsFirstValueSelected)
+                {
+                           <text>
+            FillDropDownfromOtherSelectFirstReport("@ParameterName", StrURL, "@Item.ParameterName", "@Item.DefaultValue");
+
+            </text>
+                    }
+                    else
+                    {   <text>
+
+            FillDropDownfromOther("@ParameterName", StrURL, "@Item.ParameterName");
+            </text>
+                     }
+
+                }
+        };
+
+
+        </text>
+           }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                PastDatePicker();
+
+                //  handleSelect2();
+                handleDateRangePickers();
+
+                Formvalidate(DomainName);
+                $(".chkAll").click(function () {
+                    // alert("hello");
+                    var DLLName = $(this).attr("data-id");
+                    var ChkName = $(this).attr("id");
+
+                    // alert(DLLName + "  " + ChkName)
+                    CheckAllDLL(DLLName, ChkName);
+                });
+
+                $("#btnDwnXLS").click(function () {
+                    $('#isDownFormat').val("true");
+                    setTimeout(function () {
+                        App.unblockUI()
+                    }, 5000)
+                });
+
+                $("#btnSubmit").click(function () {
+                    $('#isDownFormat').val("false");
+                });
+
+                @foreach (var Item in Model.ParameterSet_Details.Where(c => c.SourceTableName != null && c.SubCount>0))
+        {
+            string JQFnName="Get"+Item.ParameterName;
+
+               <text>
+
+                @foreach (var itm1 in SubParaList.Where(c=>c.ParameterId==Item.Id))
+            {
+                string SSQRY = "@" + itm1.CompareColumn + "='";
+                string ParentColumn = itm1.ParentColumn;
+                    string clsRadio="cls"+ParentColumn;
+
+                if (itm1.ParameterType == 2)
+                {
+                    ParentColumn = itm1.ParentColumn + "1";
+                }
+
+                if (itm1.ParameterType == 2)
+                    {
+                <text>
+                $("#@ParentColumn").change(function () {
+
+                    window["@JQFnName"](DomainName);
+
+                });
+
+                </text>
+                }
+                else if (itm1.ParameterType == 5)
+                    {
+                <text>
+                $("input[name='@ParentColumn']").live('click', function () {
+
+                    //alert("HellO");
+                    window["@JQFnName"](DomainName);
+
+                });
+
+                </text>
+                }
+
+                  if (itm1.IsParentColumnBaseValue)
+                  {
+                <text>
+
+                //                setTimeout(
+                //function () {
+
+                window["@JQFnName"](DomainName);
+
+                //}, 1500);
+                </text>
+
+                }
+            }
+                </text>
+           }
+
+                @foreach (var Item in Model.ParameterSet_Details.Where(c => c.SourceTableName != null && c.SubCount==0))
+                {
+                    Item.IsMultipleChoiceWithSearch = true;
+
+                    string ParametrName = Item.ParameterName + "1";
+
+                    if (Item.DefaultValue=="BL")
+                    {
+                        Item.DefaultValue = ViewBag.BaseLocationCode;
+                    }
+                    if (Item.DefaultValue == "BC")
+                    {
+                        Item.DefaultValue = ViewBag.BaseCompanyCode;
+                    }
+
+                         <text>
+
+                App.blockUI({ boxed: true });
+
+                var SQRY = "exec @Item.SourceTableName ";
+
+                var StrURL = DomainName+ "/Reporting/GetDynamicParameterValue?SQRY=" + SQRY.replace("&#39;", "'").replace("&#39;", "'").replace("&#39;", "'").replace("&#39;", "'");
+
+
+                @if(Item.ParameterType==5)
+                {
+                        <text>
+                GetRadioButtonfromOthers("@Item.ParameterName", StrURL, "@Item.ParameterName", "@Item.DefaultValue");
+                </text>
+                }
+                else if(Item.ParameterType==6)
+                {
+                    <text>
+                //alert(StrURL);
+                GetCheckBoxButtonfromOthers("@Item.ParameterName", StrURL, "@Item.ParameterName", "@Item.DefaultValue");
+                </text>
+                }
+                else if(Item.ParameterType==9)
+                {
+                        <text>
+                var StrURL1 = DomainName + "/Reporting/@Item.SourceTableName"
+
+                if ("@Item.IsMultipleChoiceWithSearch" == "True")
+                    GetMultipleDropdownWithSearch("@Item.ParameterName", StrURL1);
+                else
+                    JsonDDL("@Item.ParameterName", StrURL1);
+
+                </text>
+                }
+                else if(Item.ParameterType==10)
+                {
+                        <text>
+
+                var StrURL1 = DomainName + '/Reporting/GetReportFields?SubReportType=@Item.SourceTableName';
+
+
+                jsGetReportFields("@Item.ParameterName", StrURL1);
+                </text>
+                }
+                else {
+                    if(Item.IsFirstValueSelected)
+                      {
+                              <text>
+                FillDropDownfromOtherSelectFirstReport("@ParametrName", StrURL, "@Item.ParameterName", "@Item.DefaultValue");
+                </text>
+                      }
+                      else
+                          {   <text>
+
+                FillDropDownfromOther("@ParametrName", StrURL, "@Item.ParameterName");
+                </text>
+                      }
+                }
+                </text>
+
+
+            }
+
+                $(".clsReportFields").live('click', function () {
+
+
+                    //    alert($(this).attr("name"));
+
+                    //var checked = $(this).is(':checked');
+
+                    var ReportFields = $("#" + $(this).attr("name")).val();
+
+                    /// if (ReportFields == null)
+                    ReportFields = "";
+
+                    var checked = jQuery(this).is(":checked");
+
+                    $("." + $(this).val()).each(function () {
+                        if (checked) {
+                            $(this).attr("checked", true);
+                            $(this).parents('span').addClass("checked");
+
+
+
+                        } else {
+                            $(this).attr("checked", false);
+                            $(this).parents('span').removeClass("checked");
+                        }
+                    });
+
+                    $(".clsReportFields1").each(function () {
+
+                        var checked1 = jQuery(this).is(":checked");
+                        if (checked1) {
+                            if (ReportFields == "")
+                                ReportFields = $(this).val();
+                            else
+                                ReportFields = ReportFields + "," + $(this).val();
+
+                            $("#" + $(this).attr("name").replace("CHK", "")).val(ReportFields);
+
+                        }
+                    });
+
+
+
+                });
+
+                $(".clsReportFields1").live('click', function () {
+
+                    var ReportFields = $("#ReportFields").val();
+
+                    ReportFields = "";
+
+                    $(".clsReportFields1").each(function () {
+
+                        var checked1 = jQuery(this).is(":checked");
+
+                        if (checked1) {
+
+                            // alert($(this).val() + "  " + $(this).attr("id"));
+
+                            if (ReportFields == "")
+                                ReportFields = $(this).val();
+                            else
+                                ReportFields = ReportFields + "," + $(this).val();
+
+                            $("#" + $(this).attr("name").replace("CHK", "")).val(ReportFields);
+
+                        }
+                    });
+
+
+                });
+
+                @foreach (var Item in Model.ParameterSet_Details)
+                {
+                    if (Item.ParameterType == 7 || Item.ParameterType == 15)
+                    {
+                        <text>
+
+                LocationContraol();
+                </text>
+                    }
+                }
+                //LocationContraol();
+                //$("#Routes1").change(function () {
+
+                //    GetStops();
+                //    //App.blockUI({ boxed: true });
+
+                //    //var StrURL = DomainName + "/Reports/GetStopListFromRoute?Route_Id=" + $(this).val();
+                //    //// alert(StrURL)
+                //    //FillDropDownfromOther("Stop1", StrURL, "Stop");
+
+                //});
+
+                $(".backButton").live("click", function () {
+                    App.blockUI({ boxed: true });
+                });
+            }
+        };
+    }();
+
+</script>

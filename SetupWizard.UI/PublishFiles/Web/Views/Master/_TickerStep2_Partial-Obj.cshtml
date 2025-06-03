@@ -1,0 +1,24 @@
+﻿@model XCommsWeb.Models.SendAlertUser
+@using ServerWeb.Helper;
+
+<tr class="editorRow" id="@Model.UserId">
+    @using (Html.BeginCollectionItem("SendTickerUserList", Model.UserId.ToString()))
+    {
+        @Html.Hidden("UserId", Model.UserId, new { @class = "iHidden" })
+        <td class="text-center">
+            @Html.CheckBoxFor(m => m.Newchacked, new { @class = "IsCheck" })
+            @Html.HiddenFor(m => m.UserId)
+        </td>
+        <td>
+            @Model.UserName
+            @Html.HiddenFor(m => m.UserName)
+        </td>
+        <td>
+            @Model.UserType
+            @Html.HiddenFor(m => m.UserType)
+        </td>
+        <td>
+            Y
+        </td>
+    }
+</tr>

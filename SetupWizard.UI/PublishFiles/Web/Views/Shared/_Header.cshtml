@@ -1,0 +1,52 @@
+﻿<header id="header">
+    <div id="logo-group">
+        <span id="logo" style="text-align:center;">
+            <img src="~/assets/SmartAdmin/img/SchoolLogo.png" alt="School ERP" />
+    </div>
+    @if (Request.IsAuthenticated)
+    {
+        <!-- Start : Company Name -->
+        <div class="project-context">
+            <span class="label">Company :</span>
+            <span class="project-selector"> @ViewBag.CompanyCode - @ViewBag.CompanyName</span>
+        </div>
+        <!-- End : Company Name -->
+
+
+        <!--Start : Login User -->
+        <div class="project-context">
+            <span class="label">Employee :</span>
+            <span class="project-selector">@ViewBag.BaseUserName</span>
+        </div>
+        <!--End : Login User -->
+
+        <!--Start : Fin. Year -->
+        <div class="project-context" id="page-breadcrumb">
+            <span class="label">Fin. Year | School Name :</span>
+            <span class="project-selector"><a>@ViewBag.FinYear | @ViewBag.BaseSchoolName</a></span>
+        </div>
+        <!--End : Fin. Year -->
+
+        <!--Start : School Name -->
+        @*<div class="project-context">
+            <span class="label">School Name :</span>
+            <span class="project-selector"><a>@ViewBag.BaseSchoolName</a></span>
+        </div>*@
+        <!--End : School Name -->
+
+    }
+    <section id="top-right">
+        @if (@Model is HelperResult)
+        {
+            @Model
+        }
+        else
+        {
+            <div class="pull-right">
+                @Html.Partial("_TopRight")
+            </div>
+        }
+    </section>
+
+</header>
+<!-- END HEADER -->

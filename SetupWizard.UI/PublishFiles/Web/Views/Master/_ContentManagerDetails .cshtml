@@ -1,0 +1,28 @@
+﻿@model XCommsWeb.Models.Tbl_Master_Users
+@using ServerWeb.Helper;
+
+<tr class="editorRow">
+    <td>@Model.Name</td>
+    <td>@Model.UserId</td>
+    <td>@Model.AccesslevelDesc</td>
+    <td>@Model.StatusDesc</td>
+    <td class="text-center col-md-1">
+        <div class="btn-group center-block">
+            <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-bars"></i>
+            </button>
+            <ul class="dropdown-menu">
+                @if (@Model.Status != "100")
+                {
+                    <li><a href="@Url.Content("~/Master/ManagerOperation?Type=A&Id=" + Model.Id)"><i class="fa fa-play-circle"></i><span class="mrgleft5"> Enable</span></a></li>
+                }
+                @if (@Model.Status == "100")
+                {
+                    <li><a href="@Url.Content("~/Master/ManagerOperation?Type=DA&Id=" + Model.Id)"><i class="fa fa-ban"></i><span class="mrgleft5"> Disable</span></a></li>
+                }
+                <li><a href="@Url.Content("~/Master/CreateNewContent?Id=" + Model.Id)"><i class="fa fa-pencil"></i><span class="mrgleft5"> Edit</span></a></li>
+                <li><a href="@Url.Content("~/Master/ManagerOperation?Type=DE&Id=" + Model.Id)"><i class="fa fa-trash-o"></i><span class="mrgleft5"> Delete</span></a></li>
+            </ul>
+        </div>
+    </td>
+</tr>

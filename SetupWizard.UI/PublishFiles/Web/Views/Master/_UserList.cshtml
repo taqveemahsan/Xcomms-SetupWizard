@@ -1,0 +1,60 @@
+﻿@model XCommsWeb.Models.UsersModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+<tr class="editorRow" id="@Model.ID">
+    @using (Html.BeginCollectionItem("Users", Model.ID.ToString()))
+    {
+        @Html.Hidden("UserId", Model.ID, new { @class = "iHidden" })
+        <td class="col-md-1 no-sort" style="vertical-align: middle;">
+            <div class="smart-form text-center" style="width:20px;">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(m => m.IsChecked, new { @class = "UserchkCheck" })
+                    <i></i>
+                </label>
+            </div>
+            @*@Html.HiddenFor(m => m.IsChecked)*@
+            @Html.HiddenFor(m => m.ID)
+            @Html.HiddenFor(m => m.RowId)
+            @Html.HiddenFor(m => m.Assiged)
+        </td>
+        <td class="col-md-1">
+            <center><span class="label @Html.Raw(Model.IsChecked == true ? "label-success" : "label-danger")"> @Html.Raw(Model.IsChecked == true ? "Yes" : "No")</span></center>
+        </td>
+        <td class="col-md-3" style="vertical-align:middle">
+            @if (Model.Is_AD_User)
+            {
+                <i class="fa fa-@Html.Raw(Model.Is_AD_User == true ? "check-circle-o txt-color-green" : "times-circle-o txt-color-red") fa-lg" rel="popover-hover" data-placement="right" data-original-title="AD Group" data-content="Domain : @Model.AD_DomainName"></i>
+            }
+            &nbsp; @Model.Name
+            @Html.HiddenFor(m => m.Name)
+            @if (Model.Is_AD_User == true && Model.IsADSync == true)
+            {
+                <span class="pull-right" rel="tooltip" data-placement="right" data-original-title="<i class='fa fa-check text-success fa-lg'></i> Synched With AD" data-html="true">
+                    <i class="fa fa-refresh fa-spin fa-lg txt-color-green"></i>
+                </span>
+            }
+        </td>
+        <td class="col-md-2" style="vertical-align:middle">
+            @Model.DisplayName
+            @Html.HiddenFor(m => m.DisplayName)
+        </td>
+        <td class="col-md-2" style="vertical-align:middle">
+            @if (!string.IsNullOrEmpty(Model.Email))
+            {
+                @Model.Email
+            }
+            else
+            {
+                <span> - </span>
+            }
+            @Html.HiddenFor(m => m.Email)
+        </td>
+        <td class="col-md-3" style="vertical-align:middle">
+            @Model.EntryDate.FormateDateWithFullYearUS()
+            @Html.HiddenFor(m => m.EntryBy)
+            @Html.HiddenFor(m => m.EntryDate)
+            @Html.HiddenFor(m => m.DeskbarId)
+        </td>
+    }
+</tr>

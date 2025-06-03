@@ -1,0 +1,643 @@
+﻿@model XCommsWeb.Models.WallPaperModel
+@using XCommsWeb.Models;
+
+@{
+    ViewBag.Title = "Add Lockscreen";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    List<CYGNUS_Master_General> WallpaperList = MS.GetGeneralMasterobject("WALLPAPERTYPE");
+    int BaseTenantId = ViewBag.BaseTenantId;
+    List<CYGNUS_Master_General> ListLifeTimeType = MS.GetGeneralMasterObject(0, BaseTenantId).Where(c => c.CodeType.ToUpper() == "LIFETIMETYPE").OrderBy(c => c.EntryDate).ToList();
+    if (Model.Id == 0)
+    {
+        Model.FromDate = DateTime.Now;
+        Model.EndDate = DateTime.Now;
+    }
+    if (Model.Id > 0)
+    {
+        if (Model.EndDate == null || Model.FromDate == null || Model.EndDate == DateTime.MinValue || Model.FromDate == DateTime.MinValue)
+        {
+            Model.FromDate = DateTime.Now;
+            Model.EndDate = DateTime.Now;
+        }
+    }
+
+    if (String.IsNullOrEmpty(Model.Opacity))
+    {
+        Model.Opacity = "0.1";
+    }
+
+    List<SelectListItem> SlideShowTimerIntervals = new List<SelectListItem>();
+    SlideShowTimerIntervals.Add(new SelectListItem { Value = "60", Text = "1 Minute" });
+    SlideShowTimerIntervals.Add(new SelectListItem { Value = "600", Text = "10 Minutes" });
+    SlideShowTimerIntervals.Add(new SelectListItem { Value = "1800", Text = "30 Minutes" });
+    SlideShowTimerIntervals.Add(new SelectListItem { Value = "3600", Text = "1 Hour" });
+    SlideShowTimerIntervals.Add(new SelectListItem { Value = "21600", Text = "6 Hours" });
+    SlideShowTimerIntervals.Add(new SelectListItem { Value = "86400", Text = "24 Hours" });
+}
+
+<style type="text/css">
+    .files input {
+        outline: 2px dashed #92b0b3;
+        outline-offset: -10px;
+        -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        padding: 120px 0px 85px 35%;
+        text-align: center !important;
+        margin: 0;
+        width: 65% !important;
+    }
+
+        .files input:focus {
+            outline: 2px dashed #92b0b3;
+            outline-offset: -10px;
+            -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            transition: outline-offset .15s ease-in-out, background-color .15s linear;
+            border: 1px solid #92b0b3;
+        }
+
+    .files {
+        position: relative
+    }
+
+        .files:after {
+            pointer-events: none;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 50px;
+            right: 0;
+            height: 56px;
+            content: "";
+            background-image: url(https://image.flaticon.com/icons/png/128/109/109612.png);
+            display: block;
+            margin: 0 auto;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+    .color input {
+        background-color: #f1f1f1;
+    }
+
+    .files:before {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        pointer-events: none;
+        width: 100%;
+        right: 0;
+        height: 57px;
+        content: " or drag it here. ";
+        display: block;
+        margin: 0 auto;
+        color: #2ea591;
+        font-weight: 600;
+        text-transform: capitalize;
+        text-align: center;
+    }
+    .profile-pic {
+        height: calc(100vh - 253px);
+        min-height: 535px;
+    }
+    .ImageDiv {
+        width: auto;
+        height: inherit;
+        background-image: url('@Url.Content("~/assets/img/Screen/screen.png")');
+        background-position: center;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+
+    #user_img {
+        width: 86.25%;
+        height: 58.5%;
+        top: 7.9%;
+        left: -6.7%;
+        position: relative;
+        /*margin-right: 260px;*/
+        /*z-index: 1000;*/
+        background-color: black;
+    }
+    ._1 {
+        object-fit: cover !important;
+    }
+    ._2 {
+        object-fit: contain;
+    }
+    ._3 {
+        object-fit: fill;
+    }
+    ._4 {
+        object-fit: none;
+        object-position: left top;
+    }
+    ._5 {
+        object-fit: none;
+    }
+    ._6 {
+        object-fit: cover;
+    }
+
+    .panel-default > .panel-heading {
+        background-color: #3c3a39;
+        color: #FFF;
+        margin-bottom: 5px;
+    }
+
+    .Mp3files, .Watermark input:focus {
+        outline: 2px dashed #92b0b3;
+        outline-offset: -10px;
+        -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        border: 1px solid #92b0b3;
+    }
+
+    .Mp3files, .Watermark {
+        position: relative
+    }
+
+     .Watermark input {
+        outline: 2px dashed #92b0b3;
+        outline-offset: -10px;
+        -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+         transition: outline-offset .15s ease-in-out, background-color .15s linear;
+         padding: 20px 0px 20px 35%;
+         text-align: center !important;
+         margin: 0;
+         width: 65% !important;
+     }
+    .hasbgcolor {
+        color: red;
+    }
+    button[disabled] {
+        background-color: #CCC;
+    }
+
+    /* Extra small devices (phones, 600px and down) */
+    @@media only screen and (max-width: 600px) {
+        #user_img {
+            top: 7.9% !important;
+            left: 6.7% !important;
+        }
+    }
+
+    /* Medium devices (landscape tablets, 768px and up) */
+    /* Large devices (laptops/desktops, 992px and up) */
+    @@media only (min-width: 600px) and (max-width: 992px) {
+        #user_img {
+            top: 7.9% !important;
+            left: -6.3% !important;
+        }
+    }
+</style>
+
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-sm-12 col-md-12 col-lg-6">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                    <h2>Add Lockscreen </h2>
+                </header>
+                <div>
+                    <div class="jarviswidget-editbox"></div>
+                    <div class="widget-body no-padding">
+                        @using (Html.BeginForm("AddWallPaperData", "Master", FormMethod.Post, new { id = "contact-form", @class = "", enctype = "multipart/form-data" }))
+                        {
+                            <div class="smart-form">
+                                <section>
+                                    <label class="label">
+                                        <b>@ViewBag.Title <span class="hasbgcolor">*</span> : </b>
+                                    </label>
+                                    <label class="input">
+                                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control required", @placeholder = "Title", autocomplete = "off" })
+                                    </label>
+                                </section>
+                                <section>
+                                    <label class="label">
+                                        <b>Upload File <span class="hasbgcolor">*</span> : </b>
+                                    </label>
+                                    <div class="files">
+                                        @if (BaseTenantId == 87 || BaseTenantId == 40 || BaseTenantId == 94 || BaseTenantId == 92|| BaseTenantId == 97 || BaseTenantId == 101 || BaseTenantId == 100)
+                                        {
+                                            @Html.TextBoxFor(model => model.File1, new { type = "file", @class = "form-control required", @id = "Files", @accept = "image/*", multiple = "multiple" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(model => model.File1, new { type = "file", @class = "form-control required", @id = "Files", @accept = "image/*" })
+                                        }
+                                    </div>
+                                </section>
+                                @if (Model.Function == "C" || Model.Function == "E")
+                                {
+                                    <section>
+                                        <label class="label"><b>Uploaded File <span class="hasbgcolor">*</span> : </b></label>
+                                        <div>
+                                            <a href="~/LockScreen/@Model.UserImg" target="_blank">@Model.UserImg</a>
+                                            @Html.HiddenFor(Model => Model.UserImg)
+                                        </div>
+                                    </section>
+                                }
+                                <section id="sizeError" style="display:none;">
+                                    <div class="alert alert-danger fade in">
+                                        <button class="close" data-dismiss="alert">×</button>
+                                        <i class="fa-fw fa fa-times"></i>
+                                        <strong>Error!</strong> File is Big, please select a file less than 2Mb.
+                                    </div>
+                                </section>
+                                @if (BaseTenantId == 87 || BaseTenantId == 40 || BaseTenantId == 94 || BaseTenantId == 92 || BaseTenantId == 97 || BaseTenantId == 101 || BaseTenantId == 100)
+                                {
+                                    <section>
+                                        <label class="label"><b>Change Picture Every <span class="hasbgcolor">*</span></b> : </label>
+                                        <label class="select">
+                                            @Html.DropDownListFor(m => m.SlideShowTimeInterval, SlideShowTimerIntervals, null, new { @class = "select2 required", @placeholder = "Select Slideshow Time Interval" })
+                                        </label>
+                                    </section>
+                                }
+                                <section>
+                                    <label class="label"><b>Select Type <span class="hasbgcolor">*</span></b> : </label>
+                                    <label class="select">
+                                        @Html.DropDownListFor(m => m.Wallpaper, new SelectList(WallpaperList, "CodeId", "CodeDesc"), null, new { @class = "select2 required", @placeholder = "Select Lock Screen" })
+                                    </label>
+                                </section>
+                                <section>
+                                    <label class="label"><b>Description : </b></label>
+                                    <label class="textarea">
+                                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", @placeholder = "Description", autocomplete = "off" })
+                                    </label>
+                                </section>
+                            </div>
+
+                            <div class="smart-form">
+                                @*<section>
+                                        <div class="col-md-12">
+                                            <div class="form-inline mrgtp10">
+                                                <div class="">
+                                                    <b> Display Duration (Seconds) :</b>
+                                                    @Html.TextBoxFor(c => c.ExpiresTimeValue, new { @class = "form-control input-xs required ", style = "width: 50px; ", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                </div>
+                                            </div>
+                                            <div class="note col-md-12">
+                                                Time Duration before rotating to next image.
+                                            </div>
+                                            <div class="col-md-2"><label></label></div>
+                                        </div>
+                                    </section>*@
+
+                                <section>
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="RadioLockScreen" id="Once" value="Once" class="" />
+                                        <i></i>&nbsp; <b>Start - End date & time</b>
+                                        @Html.HiddenFor(c => c.SchedulePatternType)
+                                        @Html.HiddenFor(c => c.Type)
+                                        @Html.HiddenFor(c => c.Id)
+                                        @Html.HiddenFor(c => c.Function)
+                                    </label>
+                                </section>
+
+                                <section>
+                                    <div class="col-md-5">
+                                        <label class="label">
+                                            Start Date :
+                                        </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-calendar"></i>
+                                            @Html.TextBoxFor(c => c.FromDate, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.FromDate), new { @class = "startdate-picker", @readonly = true })
+                                            @Html.HiddenFor(c => c.FromDate)
+                                        </label>
+                                    </div>
+                                    <div class="col-md-2"><label></label></div>
+                                    <div class="col-md-5">
+                                        <label class="label">
+                                            End Date :
+                                        </label>
+                                        <label class="input">
+                                            <i class="icon-append fa fa-calendar"></i>
+                                            @Html.TextBoxFor(c => c.EndDate, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.EndDate), new { @class = "enddate-picker", @readonly = true })
+                                            @Html.HiddenFor(c => c.EndDate)
+                                        </label>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="clearfix"></div>
+                            <br /><br />
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            @if (Model.Id > 0)
+                                            {
+                                                if (Model.Type == 7)
+                                                {
+                                                    <a href="javascript:void(0);" id="BtnListLS" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Go To List">
+                                                        <span class="btn-label"><i class="fa fa-arrow-left"></i></span>Back To List
+                                                    </a>
+                                                }
+                                            }
+
+                                            <a href="javascript:void(0);" type="button" id="btnSubmit" class="btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Go To Next">
+                                                <span class="btn-label"><i class="fa fa-arrow-right"></i></span>Next
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+
+                            @*<fieldset>
+                                    <section>
+                                        <label><b>Select Watermark</b></label>
+                                        <div class="Watermark">
+                                            @Html.TextBoxFor(c => c.Watermark, new { type = "file", @class = "form-control ", @id = "Watermark" })
+                                        </div>
+                                    </section>
+
+                                    <section id="sizeErrorWM">
+                                        <div class="alert alert-danger fade in">
+                                            <button class="close" data-dismiss="alert">
+                                                ×
+                                            </button>
+                                            <i class="fa-fw fa fa-times"></i>
+                                            <strong>Error!</strong> File is Big, please select a file less than 2Mb.
+                                        </div>
+                                    </section>
+                                    <section>
+                                        <div class="col-md-12"><label>  </label></div>
+                                    </section>
+                                    <section>
+                                        <div class="col-md-12">
+                                            <div class="form-inline mrgtp10">
+                                                <div class="">
+                                                    <b> Opacity </b>
+                                                    @Html.TextBoxFor(c => c.Opacity, new { @class = "form-control input-xs", style = "width: 50px;", @max = 1, @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2"><label></label></div>
+                                        </div>
+                                    </section>
+                                </fieldset>*@
+
+                            @*<footer>
+                                    <button type="button" class="btn btn-success" id="btnSubmit" rel="tooltip" title="" data-placement="bottom" data-original-title="Go To Next">
+                                        Next <i class="fa fa-arrow-right"></i>
+                                    </button>
+                                </footer>*@
+                        }
+                    </div>
+                </div>
+            </div>
+        </article>
+        <article class="col-sm-12 col-md-12 col-lg-6">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-2" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header>
+                    <span class="widget-icon"><i class="fa fa-desktop"></i> </span>
+                    <h2>Preview </h2>
+                </header>
+                <div>
+                    <fieldset>
+                        <section>
+                            <div class="input profile-pic">
+                                <div class="ImageDiv">
+                                    <img src="~/assets/img/Screen/no-preview.jpg" id="user_img" class="_1" />
+                                    @Html.Hidden("imgWidth")
+                                    @Html.Hidden("imgHeight")
+                                </div>
+                            </div>
+                        </section>
+                    </fieldset>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+<script type="text/javascript">
+    function show(input) {
+        if (input.files && input.files[0]) {
+            var filerdr = new FileReader();
+            filerdr.onload = function (e) {
+                $('#user_img').attr('src', e.target.result);
+                console.log(this.width + " " + this.height);
+            }
+            filerdr.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                rules: { },
+                messages: { },
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+        var handleStartDatePicker = function () {
+            $('.startdate-picker').datetimepicker({
+                isRTL: App.isRTL(),
+                format: "dd MM yyyy HH:ii P",
+                showMeridian: true,
+                autoclose: true,
+                pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                todayBtn: true,
+                startDate: new Date($('#FromDate').val())
+            });
+            $('body').removeClass("modal-open");
+        }
+
+        var handleEndDatePicker = function () {
+            $('.enddate-picker').datetimepicker({
+                isRTL: App.isRTL(),
+                format: "dd MM yyyy HH:ii P",
+                showMeridian: true,
+                autoclose: true,
+                pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                todayBtn: true,
+                startDate: ($('#FromDate').val() ? new Date($('#FromDate').val()) : new Date()),
+            });
+            $('body').removeClass("modal-open");
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+
+                handleStartDatePicker();
+                handleEndDatePicker();
+                $('#ExpiresTimeValue').val(30);
+                $("#FromDate").attr("disabled", "disabled");
+                $("#EndDate").attr("disabled", "disabled");
+                $('#SchedulePatternType').val(0);
+                $("#FromDate").on("change", function () {
+                    $('.enddate-picker').datetimepicker('remove');
+                    handleEndDatePicker();
+
+                    if (new Date($("#FromDate").val()) > new Date($("#EndDate").val())) {
+                        $("#EndDate").val($("#FromDate").val());
+                    }
+                });
+
+                $("#sizeError").hide();
+                $("#sizeErrorWM").hide();
+                $('#Wallpaper').select2();
+                $("#Wallpaper").on("change", function () {
+                    $("#user_img").removeAttr('class');
+                    $("#user_img").attr('class', '_' + $(this).val());
+                });
+                var _URL = window.URL || window.webkitURL;
+                $('#Files').change(function () {
+                    $("#sizeError").hide();
+
+                    if ($('#Files').val())
+                    {
+                        var ext = $('#Files').val().split('.').pop().toLowerCase();
+                        if ($.inArray(ext, ['png', 'jpg', 'jpeg']) == -1)
+                        {
+                            $('#Files').val("");
+                            Swal.fire('Upload only .jpg, .png, .jpeg File Format', '', 'error');
+                        }
+                        else
+                        {
+                            var file = $(this)[0].files[0];
+                            if (file != undefined)
+                            {
+                                img = new Image();
+                                img = new Image();
+                                var imgwidth = 0;
+                                var imgheight = 0;
+                                var fsize = Math.round((file.size / 1024));
+                                if (fsize > 2048) {
+                                    $("#sizeError").show();
+                                    this.value = "";
+                                    $('#user_img').attr('src', "@Url.Content("~/assets/img/Screen/no-preview.jpg")");
+                                    return false;
+                                }
+                                img.src = _URL.createObjectURL(file);
+                                $('#user_img').attr('src', _URL.createObjectURL(file));
+                                /*$("#user_img").attr("style","display:block");*/
+                                img.onload = function () {
+                                    imgwidth = this.width;
+                                    imgheight = this.height;
+
+                                    $("#imgWidth").val(imgwidth);
+                                    $("#imgHeight").val(imgheight);
+                                }
+                            }
+                            else
+                            {
+                                $('#user_img').attr('src', "@Url.Content("~/assets/img/Screen/no-preview.jpg")");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $('#user_img').attr('src', "@Url.Content("~/assets/img/Screen/no-preview.jpg")");
+                    }
+                });
+
+                $('#Watermark').change(function () {
+                    $("#sizeErrorWM").hide();
+                    var ext = $('#Watermark').val().split('.').pop().toLowerCase();
+                    if ($.inArray(ext, ['png', 'jpg', 'jpeg']) == -1) {
+                        $('#Watermark').val("");
+                        Swal.fire('Upload only .jpg, .png, .jpeg File Format', '', 'error');
+                    }
+                    else
+                    {
+                        var file = $(this)[0].files[0];
+                        if (file != undefined) {
+                            var fsize = Math.round((file.size / 1024));
+                            if (fsize > 2048) {
+                                $("#sizeErrorWM").show();
+                                this.value = "";
+                                return false;
+                            }
+                        }
+                    }
+                });
+
+                $("input[name='RadioLockScreen']").click(function () {
+                    if (this.value == "Once") {
+                        if ($('#Once').prop('checked') == true) {
+                            $("#FromDate").removeAttr("disabled");
+                            $("#EndDate").removeAttr("disabled");
+                            $('#SchedulePatternType').val(1);
+                        }
+                        else {
+
+                            $("#FromDate").attr("disabled", "disabled");
+                            $("#EndDate").attr("disabled", "disabled");
+                            $('#SchedulePatternType').val(0);
+                        }
+                    }
+                });
+
+                $("#btnSubmit").click(function () {
+                    if ($('#contact-form').valid()) {
+                        App.blockUI({ boxed: true });
+                        document.forms["contact-form"].submit();
+                    }
+                    else {
+                        return false
+                    }
+                });
+
+                $("#BtnListLS").click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/LockScreenHistory?Typ=7";
+                });
+
+                if('@Model.Id'>0)
+                {
+                    if ('@Model.Type' == 3) {
+                        url = DomainName + "/WallPaper/" + '@Model.UserImg';
+                       $("#user_img").attr('class', '_' + '@Model.Wallpaper');
+                       $('#user_img').attr('src', url);
+                    }
+                    else if ('@Model.Type' == 7) {
+                        url = DomainName + "/LockScreen/" + '@Model.UserImg';
+                       $("#user_img").attr('class', '_' + '@Model.Wallpaper');
+                       $('#user_img').attr('src', url);
+                    }
+
+                    if ('@Model.Function' == "E")
+                    {
+                        $('input#Files').prop('disabled', false);
+                        $('input#Watermark').prop('disabled', true);
+                        $('#ExpiresTimeValue').val('@Model.ExpiresTimeValue');
+                        $('#ExpiresTimeValue').prop('disabled', true);
+                        $('#Wallpaper').attr("disabled", false);
+                        $("#Title").prop("readonly", false);
+                        $("#Description").prop("readonly", false);
+                        $("#Opacity").prop("readonly", true);
+                        $('#Files').removeClass('required');
+                    }
+                }
+
+                 @*if('@Model.Id'>0)
+                {
+                    if ('@Model.Type' == 3) {
+                        url = DomainName + "/WallPaper/" + '@Model.UserImg';
+                       $("#user_img").attr('class', '_' + '@Model.Wallpaper');
+                       $('#user_img').attr('src', url);
+                    }
+                    else if ('@Model.Type' == 7) {
+                        url = DomainName + "/LockScreen/" + '@Model.UserImg';
+                       $("#user_img").attr('class', '_' + '@Model.Wallpaper');
+                       $('#user_img').attr('src', url);
+                    }
+
+
+                }*@
+                  if ('@Model.IsExpired' == 1) {
+                      $('button').addClass('disabled');
+                      $('#btnSubmit').hide();
+                }
+            }
+        }
+    }();
+</script>

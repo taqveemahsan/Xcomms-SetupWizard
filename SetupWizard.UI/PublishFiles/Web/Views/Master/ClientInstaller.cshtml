@@ -1,0 +1,260 @@
+﻿@{
+    ViewBag.Title = "Client Installer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int ClientId = ViewBag.CustomerID;
+
+    if (!Directory.Exists(Server.MapPath("~/ClientInstaller/" + ClientId + "/Windows")))
+    {
+        Directory.CreateDirectory(Server.MapPath("~/ClientInstaller/" + ClientId + "/Windows"));
+    }
+    DirectoryInfo WindowsDirectory = new DirectoryInfo(Server.MapPath("~/ClientInstaller/" + ClientId + "/Windows"));
+    FileInfo[] Files = WindowsDirectory.GetFiles("*"); //Getting Text files
+    bool IsWindowsExists = Files.Count() > 0 ? true : false;
+    string FileName = Files.Count() > 0 ? Files.OrderByDescending(c => c.LastAccessTimeUtc).ToList()[0].ToString() : "";
+
+    if (!Directory.Exists(Server.MapPath("~/ClientInstaller/" + ClientId + "/Mac")))
+    {
+        Directory.CreateDirectory(Server.MapPath("~/ClientInstaller/" + ClientId + "/Mac"));
+    }
+    DirectoryInfo MacDirectory = new DirectoryInfo(Server.MapPath("~/ClientInstaller/" + ClientId + "/Mac"));
+		FileInfo[] MacFiles = MacDirectory.GetFiles("*"); //Getting Text files
+    bool IsMacExists = MacFiles.Count() > 0 ? true : false;
+    string MacFileName = MacFiles.Count() > 0 ? MacFiles.OrderByDescending(c => c.LastAccessTimeUtc).ToList()[0].ToString() : "";
+}
+
+<style type="text/css">
+    .disabled {
+        pointer-events: none;
+        cursor: default;
+        opacity: .6;
+        color: #000000;
+    }
+
+    @@media screen and (max-width: 1600px) {
+        .ClientTitle {
+            font-size: 14px !important;
+        }
+    }
+
+    @@media screen and (max-width: 1400px) {
+        .ClientTitle {
+            font-size: 12px !important;
+        }
+    }
+
+    @@media screen and (max-width: 1200px) {
+        .ClientTitle {
+            font-size: 10px !important;
+        }
+    }
+
+    @@media screen and (max-width: 1000px) {
+        .ClientTitle {
+            font-size: 10px !important;
+        }
+    }
+
+    .TxtVerticalAlign {
+        vertical-align: middle !important;
+    }
+
+    .jarviswidget .widget-body {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+<section id="widget-grid">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-desktop"></i> </span>
+                    <h2 style="width:auto !important;">Management / Client Installer</h2>
+                </header>
+                <div class="widget-body">
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <!-- well -->
+                            <div class="">
+                                <div id="myCarousel-2" class="carousel fade">
+                                    <ol class="carousel-indicators" style="display:none">
+                                        <li data-target="#myCarousel-2" data-slide-to="0" class=""></li>
+                                        <li data-target="#myCarousel-2" data-slide-to="1" class=""></li>
+                                        <li data-target="#myCarousel-2" data-slide-to="2" class=""></li>
+                                        <li data-target="#myCarousel-2" data-slide-to="3" class=""></li>
+                                        <li data-target="#myCarousel-2" data-slide-to="4" class="active"></li>
+                                    </ol>
+                                    <div class="carousel-inner">
+                                        <!-- Slide 1 -->
+                                        <div class="item">
+                                            <img src="~/assets/img/ClientInstaller/Banner1.jpeg" alt="Client Installer Banner1" class="img-responsive" width="100%" height="100%" />
+                                        </div>
+                                        <!-- Slide 2 -->
+                                        <div class="item">
+                                            <img src="~/assets/img/ClientInstaller/Banner2.jpeg" alt="Client Installer Banner2" class="img-responsive" width="100%" height="100%" />
+                                        </div>
+                                        <!-- Slide 3 -->
+                                        <div class="item">
+                                            <img src="~/assets/img/ClientInstaller/Banner3.jpeg" alt="Client Installer Banner3" class="img-responsive" width="100%" height="100%" />
+                                        </div>
+                                        <!-- Slide 4 -->
+                                        <div class="item">
+                                            <img src="~/assets/img/ClientInstaller/Banner4.jpeg" alt="Client Installer Banner4" class="img-responsive" width="100%" height="100%" />
+                                        </div>
+                                        <!-- Slide 5 -->
+                                        <div class="item active">
+                                            <img src="~/assets/img/ClientInstaller/Banner5.png" alt="Client Installer Banner5" class="img-responsive" width="100%" height="100%" />
+                                        </div>
+                                    </div>
+                                    <a class="left carousel-control" href="#myCarousel-2" data-slide="prev" style="display:none"> <span class="glyphicon glyphicon-chevron-left"></span> </a>
+                                    <a class="right carousel-control" href="#myCarousel-2" data-slide="next" style="display:none"> <span class="glyphicon glyphicon-chevron-right"></span> </a>
+                                </div>
+                            </div>
+                            <!-- end well-->
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div style="text-align: center; font-size: 18px; color: #ffffff; background-color: #404040; padding: 5px; margin-bottom: 20px; margin-top: 0px; ">
+                                Download the latest XComms client app and deploy using your application deployment tool of choice.
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <img src="~/assets/img/ClientInstaller/Banner.jpeg" class="img-responsive" style="height: inherit; width: inherit; " />
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <div style="text-align: center; font-size: 18px; color: #ffffff; background-color: #404040; padding: 5px; margin-bottom: 20px; margin-top: 0px; ">
+                                    Download the latest XComms client app and deploy using your application deployment tool of choice.
+                                </div>
+                            </div>
+                        </div>*@
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                                <header>
+                                    <span class="widget-icon">
+                                        @*<i class="fa fa-windows"></i>*@
+                                        <img src="~/assets/img/ClientInstaller/Windows.png" class="icon" width="20" height="20" alt="Windows Image" />
+                                    </span>
+                                    <h2>Windows</h2>
+                                </header>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <ul class="list-group">
+                                            <li class="list-group-item" rel="popover-hover" data-placement="top" data-original-title="XComms-Standard Client" data-content="Download the latest XComms Standard client windows application tool. Recommended for front line staff">
+                                                <img src="~/assets/img/ClientInstaller/Red.png" class="icon" width="25" height="25" alt="Windows Image" />
+                                                &nbsp;&nbsp;
+                                                @*<span style="color:blue" class="ClientTitle">XComms-Windows Standard Client Version - Frontline</span>*@
+                                                <span style="color:blue" class="ClientTitle">
+                                                    @if (IsWindowsExists)
+                                                    {
+                                                        <a href="~/ClientInstaller/@ClientId/Windows/@FileName" target="_self" id="WindowsInstaller">XComms-Standard Client Version</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="javascript:;" class="clsClientNotFound" target="_self">XComms-Windows Standard Client Version</a>
+                                                    }
+                                                </span>
+                                                <span class="pull-right">
+                                                    <img src="~/assets/img/ClientInstaller/Download.png" class="icon img-responsive" width="20" height="20" alt="Download Image" />
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <center>
+                                            <img src="~/assets/img/ClientInstaller/WindowsDesk.png" alt="Windows Desk" class="img-responsive" width="50%" height="50%" />
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-2" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                                <header>
+                                    <span class="widget-icon">
+                                        <img src="~/assets/img/ClientInstaller/MacOsImg.jpeg" class="icon" width="20" height="20" alt="MacOs Image" />
+                                    </span>
+                                    <h2>Windows</h2>
+                                </header>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <ul class="list-group">
+                                            <li class="list-group-item" rel="popover-hover" data-placement="top" data-original-title="XComms-Executive Client" data-content="Download the latest XComms Executive client windows application tool with Do Not Disturb and XComms On Demand Alert creation function.">
+                                                <img src="~/assets/img/ClientInstaller/Blue.png" class="icon" width="25" height="25" alt="MacOs Image" />
+                                                @*<span style="color:blue" class="ClientTitle">XComms-Windows Executive Client Version</span>
+                                                    &nbsp;&nbsp;*@
+													@if (IsMacExists)
+                                                    {
+                                                        <a href="~/ClientInstaller/@ClientId/Mac/@MacFileName" target="_self" id="WindowsInstaller">XComms-Executive Client Version</a>
+                                                    }
+                                                    else
+                                                    {
+														<a href="javascript:void(0);" target="_self" id="MacInstaller" class="clsClientNotFound ClientTitle">XComms-Executive Client Version</a>
+                                                    }
+
+                                                <span class="pull-right">
+                                                    <img src="~/assets/img/ClientInstaller/Download.png" class="icon img-responsive" width="20" height="20" alt="Download Image" />
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <center>
+                                            <img src="~/assets/img/ClientInstaller/MacDesk.png" alt="Windows Desk" class="img-responsive" width="50%" height="50%" />
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var Event = function (DomainName) {
+            $(".clsClientNotFound").on("click", function () {
+                App.blockUI({ boxed: true });
+                Swal.fire('Client not found ..! <br/><br/> Please Contact your administrator for Client Installer.', '', 'error');
+                App.unblockUI();
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                Event(DomainName);
+                if ('@ViewBag.IsExpired' == 1) {
+
+                    $("#WindowsInstaller").addClass("disabled").change();
+                    $("#MacInstaller").addClass("disabled").change();
+
+                    $("#WindowsInstaller").removeAttr("href");
+                    $("#MacInstaller").removeAttr("href");
+                }
+                else {
+                    $("#WindowsInstaller").removeClass("disabled").change();
+                    $("#MacInstaller").removeClass("disabled").change();
+                }
+
+                $('.carousel.slide').carousel({
+                    interval: 5000,
+                    cycle: true
+                });
+                $('.carousel.fade').carousel({
+                    interval: 5000,
+                    cycle: true
+                });
+            }
+        }
+    }();
+</script>

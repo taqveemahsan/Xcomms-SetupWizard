@@ -1,0 +1,349 @@
+﻿@model XCommsWeb.Models.CYGNUS_Master_GeneralViewModel
+@{
+    ViewBag.Title = @Model.WMCT.HeaderDesc + " General Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row" style="display:none;">
+    <div class="col-md-6">
+        <div class="portlet box @ViewBag.TableBoxColor">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-list"></i>&nbsp;@Model.WMCT.HeaderDesc List
+                </div>
+                <div class="caption pull-right">
+                    <a class="btn default btn-xs" href="@Url.Content("~/Master/ListGeneralMaster")">
+                        <i class="fa fa-arrow-left"></i>
+                        Back to List
+                    </a>
+                    <a class="btn default btn-xs" href="#addNew" data-toggle="modal"><i class="fa fa-plus"></i> Add New</a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                @{
+                    Html.RenderPartial("_GeneralMasterList_Partial", Model);
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bs-modal-lg" id="addNew" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                @{Html.RenderPartial("_GeneralMaster_Partial", Model);}
+            </div>
+        </div>>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+
+        var Formvalidate = function (DomainName) {
+
+            var form1 = $('#form_sample');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
+
+            $.validator.addMethod('checkDuplicate', function (value) {
+
+                var strUrl = "@Url.Action("GetData", "Home")";
+                var parameters = {};
+                parameters['CodeDesc'] = $("#WMG_CodeDesc").val();
+                parameters['CodeType'] = $("#WMG_CodeType").val();
+
+                var result = $.ajax({
+
+                    async: false,
+                    type: 'POST',
+                    url: strUrl,
+                    dataType: 'json',
+                    data: {
+                        Method: 'CheckDuplicateGeneralMaster',
+                        parameters: parameters
+                    },
+                });
+                var d1 = JSON.parse(result.responseText);
+                if (d1[0]["Column1"] == "0") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }, 'This Name Already Exists!!!');
+
+            form1.validate({
+                doNotHideMessage: true,
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                // errorClass: 'validate-inline',
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",
+
+                rules: {
+                    'WMG.CodeDesc': {
+                        checkDuplicate: true,
+                    }
+                },
+                messages: {
+
+                },
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success1.hide();
+                    error1.show();
+                    App.scrollTo(error1, -200);
+                },
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+                submitHandler: function (form) {
+                    success1.show();
+                    error1.hide();
+                }
+            });
+        }
+
+        var CallSubmitClick = function (DomainName) {
+            $("#btnSave").click(function (e) {
+                App.blockUI({ Boxed: true });
+                if (e.handled !== true) // This will prevent event triggering more then once
+                {
+                    e.handled = true;
+                    Formvalidate(DomainName);
+                    if (!$('#form_sample').valid()) {
+                        App.unblockUI();
+                        return;
+                    }
+                    var CodeId = $("#WMG_CodeId").val();
+                    var CodeDesc = $("#WMG_CodeDesc").val();
+                    var CodeType = $("#WMG_CodeType").val();
+                    var StatusCode = $("#WMG_StatusCode").val();
+
+                    var GeneralMaster =
+                                    {
+                                        "CodeId": CodeId,
+                                        "CodeDesc": CodeDesc,
+                                        "StatusCode": StatusCode,
+                                        "CodeType": CodeType
+                                    };
+                    $.ajax({
+                        url: DomainName + '/Master/AddEditGeneralMaster',
+                        cache: false,
+                        data: JSON.stringify(GeneralMaster),
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            if (data.Status) {
+                                TosterNotification("success", "Record has been updated successfully..!!", "Success");
+                                $("#btnCancel").click();
+                                location.reload();
+                            }
+                            else {
+                                TosterNotification("error", 'Operation fail..!! There is an issue please try again or Contact your administrator for more detail.', "Oops..!!");
+                            }
+                            App.unblockUI();
+                        },
+                        error: function (req, status, error) {
+                            TosterNotification("error", 'Operation fail..!! There is an issue please try again or Contact your administrator for more detail.', "Oops..!!");
+                            App.unblockUI();
+                        }
+                    });
+                    $("input:checkbox, input:radio").uniform();
+                }
+            });
+
+            $(".btnMasterSave").live("click",function (e) {
+                if (e.handled !== true) // This will prevent event triggering more then once
+                {
+                    e.handled = true;
+                    var CodeId = $(this).data('id');
+                    var CodeType = $(this).data('codetype');
+                    savefn(DomainName, CodeId, CodeType);
+                }
+            });
+        }
+
+        var savefn = function (DomainName, CodeId, CodeType) {
+            App.blockUI({ boxed: true });
+
+            Formvalidate(DomainName);
+            var CodeDesc = $('#txt_' + CodeId).val();
+            if (CodeDesc == "" || CodeDesc == null) {
+                App.unblockUI();
+                return;
+            }
+            //var CodeType = $(this).data('codetype');
+            var StatusCode = $(".statusChange").prop('checked');
+            var GeneralMaster =
+                            {
+                                "CodeId": CodeId,
+                                "CodeDesc": CodeDesc,
+                                "CodeType": CodeType,
+                                "StatusCode": StatusCode
+                            };
+            $.ajax({
+                url: DomainName + '/Master/AddEditGeneralMaster',
+                cache: false,
+                data: JSON.stringify(GeneralMaster),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Status) {
+                        TosterNotification("success", "Record has been updated successfully..!!", "Success");
+                        hideShow('0000');
+                    }
+                    else {
+                        TosterNotification("error", 'Operation fail..!! There is an issue please try again or Contact your administrator for more detail.', "Oops..!!");
+                    }
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    TosterNotification("error", 'Operation fail..!! There is an issue please try again or Contact your administrator for more detail.', "Oops..!!");
+                    App.unblockUI();
+                }
+            });
+            $("input:checkbox, input:radio").uniform();
+        }
+
+        //var CheckDuplicate = function (DomainName) {
+        //    App.blockUI({
+        //        target: '#addNew',
+        //        overlayColor: 'none',
+        //        cenrerY: true,
+        //        boxed: true
+        //    });
+        //    var CodeDesc = $("#WMG_CodeDesc").val();
+        //    var CodeType = $("#WMG_CodeType").val();
+        //    var strurl = DomainName + '/Master/CheckDuplicateGeneralMaster?CodeType=' + CodeType + '&CodeDesc=' + CodeDesc;
+        //    $.ajax({
+        //        url: strurl,
+        //        cache: false,
+        //        data: {},
+        //        type: 'POST',
+        //        success: function (data) {
+        //            //alert(data)
+        //            //alert(data.Unit)
+        //            if (data.Count > "0") {
+        //                TosterNotification("error", 'Name <b>"' + CodeDesc + '"</b> already exists!!!', "Oops..!!");
+        //                $("#WMG_CodeDesc").focus();
+        //                $("#WMG_CodeDesc").select();
+        //            }
+        //            App.unblockUI('#addNew');
+        //        },
+        //        error: function (req, status, error) {
+        //            TosterNotification("error", 'Operation fail..!! There is an issue please try again or Contact your administrator for more detail.', "Ooops..!!");
+        //            App.unblockUI('#addNew');
+        //        }
+        //    });
+        //}
+
+        var switchBtn = function () {
+
+            $('.StatusCodeY').bootstrapSwitch('state', true);
+            $('.StatusCodeY').bootstrapSwitch('size', 'mini');
+            $('.StatusCodeN').bootstrapSwitch('state', false);
+            $('.StatusCodeN').bootstrapSwitch('size', 'mini');
+
+        }
+
+        var hideShow = function (id) {
+            $('.clsCodeDesc').attr('disabled', true);
+            $('.clsCodeDesc').removeClass('required2');
+            $('.btnMasterEdit').show();
+            $('.btnMasterSave').hide();
+            if (id != '0000') {
+                $('#txt_' + id).attr('disabled', false);
+                $('#txt_' + id).addClass('required2');
+                $('#txt_' + id).val($('#txt_' + id).val())
+                $('#txt_' + id).focus();
+                $('#btnEdit_' + id).hide();
+                $('#btnSave_' + id).show();
+            }
+        }
+
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+
+                Formvalidate(DomainName);
+                $("#GeneralMaster").parents('.row').show(800);
+
+                $(".btnCancel").live('click', function (e) {
+                    $("#CodeDesc").val("");
+                });
+
+                $(".btnMasterEdit").live('click', function (e) {
+                    var id = $(this).data('id');
+                    hideShow(id);
+                });
+
+                $(".clsCodeDesc").live('dblclick', function (e) {
+                    var id = $(this).data('id');
+                    hideShow(id);
+                });
+
+                $(".clsCodeDesc").live('keypress', function (e) {
+                    var key = e.KeyCode || e.which;
+                    if (key == 13 || key == 9)  // the enter key code
+                    {
+                        //alert($(this).data('id'), $(this).data('codetype'));
+                        savefn(DomainName, $(this).data('id'), $(this).data('codetype'))
+                    }
+
+                });
+
+                //$("#WMG_CodeDesc").change(function () {
+                //    CheckDuplicate(DomainName);
+                //});
+                $('#WMG_StatusCode').change(function () {
+                    $(this).val($(this).prop('checked'));
+                });
+
+                CallSubmitClick(DomainName);
+                switchBtn();
+
+                $('.statusChange').on('switchChange.bootstrapSwitch', function (event, state) {
+
+                    App.blockUI({ boxed: true });
+                    var Data = {
+                        "CodeId": $(this).data('codeid'),
+                        "CodeType": $(this).data('codetype'),
+                        "StatusCode": (state)
+                    }
+                    var strurl = DomainName + '/Master/UpdateStatusCodeforGeneralMaster';
+                    $.ajax({
+                        url: strurl,
+                        data: JSON.stringify(Data),
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            if (data.Status) {
+                                TosterNotification("success", "Record has been updated successfully..!!", "Success");
+                            }
+                            else {
+                                TosterNotification("error", 'Operation fail..!! There is an issue please try again or Contact your administrator for more detail.', "Oops..!!");
+                            }
+                            App.unblockUI();
+                        },
+                        error: function (req, status, error) {
+                            TosterNotification("error", 'Operation fail..!! There is an issue please try again or Contact your administrator for more detail.', "Oops..!!");
+                            App.unblockUI();
+                        }
+                    });
+                });
+
+                initTableById("GeneralMaster");
+            }
+        }
+    }();
+</script>

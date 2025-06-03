@@ -1,0 +1,51 @@
+﻿@model IEnumerable<XCommsWeb.Models.ActiveDerectoryModel>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+@foreach (var item in Model)
+{
+    <tr class="@Html.Raw(item.IsActive == false ? "danger" : "success")">
+        @using (Html.BeginCollectionItem("ADSyncListData", item.Id.ToString()))
+        {
+            <td class="text-center"><strong rel="tooltip" title="" data-placement="right" data-original-title="Active Directory">AD</strong></td>
+            <td class="">@item.ADSyncName</td>
+            <td class="text-center">@item.EntryBy</td>
+            <td class="text-center">@item.EntryDate.FormateDateWithFullYearUS()</td>
+            <td class="text-center">@item.UpdateBy</td>
+            <td class="text-center">@item.UpdateDate.FormateDateWithFullYearUS()</td>
+            <td class="text-center">
+                <span class="badge bg-color-@Html.Raw(item.IsAutoSync == true ? "green" : "red") txt-color-white">
+                    <small>@Html.Raw(item.IsAutoSync == true ? "Yes" : "No")</small>
+                </span>
+            </td>
+            <td class="text-center">
+                <span class="badge bg-color-green txt-color-white">
+                    <small>@item.Schedule &nbsp; <i class="fa fa-refresh fa-spin fa-sm txt-color-white"></i></small>
+                </span>
+            </td>
+            <td class="col-md-1">
+                <div class="btn-group center-block">
+                    <center>
+                        <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false" rel="tooltip" title="" data-placement="top" data-original-title="<i class='fa fa-exclamation-circle fa-md fa-fw'></i> Sync Action" data-html="true">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu pull-left"  style="min-width:auto !important;">
+                            <li>
+                                <a href="javascript:;" id="EditADSync" data-id="@item.Id" rel="tooltip" title="" data-placement="left" data-original-title="Edit Synchronize"><i class="fa fa-pencil-square"></i> Edit Sync</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" id="BtnSyncRunNow" data-id="@item.Id" data-domain="@item.DomainName" data-username="@item.ADUserName" data-password="@item.ADPassword" rel="tooltip" title="" data-placement="left" data-original-title="Run Sync Now"><i class="fa fa-play-circle-o"></i> Run Now</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" id="BtnStopSync" data-id="@item.Id" data-domain="@item.DomainName" data-username="@item.ADUserName" data-password="@item.ADPassword" rel="tooltip" title="" data-placement="left" data-original-title="Stop Sync"><i class="fa fa-ban"></i> Stop</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" id="BtnDeleteSync" data-id="@item.Id" data-domain="@item.DomainName" data-username="@item.ADUserName" data-password="@item.ADPassword" rel="tooltip" title="" data-placement="left" data-original-title="Remove Sync"><i class="fa fa-trash-o"></i> Delete Sync</a>
+                            </li>
+                        </ul>
+                    </center>
+                </div>
+            </td>
+        }
+    </tr>
+}

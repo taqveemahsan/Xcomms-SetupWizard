@@ -1,0 +1,46 @@
+﻿@model XCommsWeb.Models.OrganizationModel
+@using XCommsWeb.Models;
+@using ServerWeb.Helper;
+
+<tr class="editorRow">
+    @using (Html.BeginCollectionItem("ListDraftDelete", Model.OrganizationId.ToString()))
+    {
+        <td>
+            @Model.OrganizationName
+            @Html.HiddenFor(m => m.OrganizationId)
+        </td>
+        <td>
+            @Model.City
+        </td>
+        <td>
+            @Model.UserName
+        </td>
+        <td>
+            @Model.UserMobileNo
+        </td>
+        <td>
+            @Model.UserEmailId
+        </td>
+        <td>
+            @if (@Model.IsActive == true)
+            {
+                <span class="btn btn-xs btn-success">Yes</span>
+            }
+            else
+            {
+                <span class="btn btn-xs btn-danger ">No</span>
+            }
+        </td>
+        <td class="text-center col-md-1">
+            <div class="btn-group center-block">
+                <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="@Url.Content("~/Master/AddOrganization?OrganizationId=" + Model.OrganizationId)"><i class="fa fa-share-square"></i><span class="mrgleft5"> Edit</span></a></li>
+                    <li><a href="javascript:;" id="i_@Model.OrganizationId" class="DeleteOrganization"><i class="fa fa-eye"></i><span class="mrgleft5"> Delete</span></a></li>
+                </ul>
+            </div>
+        </td>
+    }
+</tr>

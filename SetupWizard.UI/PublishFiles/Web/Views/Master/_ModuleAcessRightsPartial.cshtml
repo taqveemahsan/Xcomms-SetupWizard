@@ -1,0 +1,30 @@
+﻿@model XCommsWeb.Models.ModuleAcessModel
+@using XCommsWeb.Models
+@using XCommsWeb.Models
+@using XCommsWeb.Helpers
+
+@{
+        
+}
+@using (Html.BeginCollectionItem("ReoprtRights", Model.UserID.ToString()))
+{
+    <tr>
+        <td>
+            @Html.CheckBoxFor(m => m.New_chacked, new { @class = "IsCheck" })  
+            @Html.HiddenFor(m => m.New_chacked)
+            @Html.HiddenFor(m => m.HasAccess)
+        </td>
+        <td>
+            @Model.UserID
+            @Html.HiddenFor(m => m.UserID)
+        </td>
+        <td>
+            @Model.Name
+            @Html.HiddenFor(m => m.Name)
+        </td>
+        <td>
+            @Model.BranchCode
+            @Html.HiddenFor(m => m.BranchCode)
+        </td>
+    </tr>
+}

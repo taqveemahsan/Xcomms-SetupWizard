@@ -1,0 +1,561 @@
+﻿@model XCommsWeb.Models.ContentManagerViewModel
+@{
+    ViewBag.Title = "Content Manager List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int CrowNo = 0;
+    int ProwNo = 0;
+}
+
+<style type="text/css">
+    .mrgtop10 {
+        margin-top: 10px
+    }
+
+    .dropdown-menu > li > a {
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+        font-size: 12px !important;
+    }
+
+        .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+            text-decoration: none;
+            color: #fff;
+            background-color: #a90329 !important;
+        }
+
+    .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #a90329;
+        border-color: #a90329;
+    }
+
+    .dt-toolbar {
+        padding: 6px 0px 1px;
+    }
+
+    .dt-toolbar-footer {
+        border-top: 0px;
+    }
+
+    a[disabled] {
+        background-color: #CCC;
+    }
+
+    button[disabled] {
+        background-color: #CCC;
+    }
+
+    .disabled-link {
+        pointer-events: none;
+        background-color: #b5aeaecc;
+        color: unset !important;
+    }
+
+    .TxtVerticalAlign {
+        vertical-align: middle !important;
+    }
+
+    .jarviswidget .widget-body {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+
+</style>
+
+<div class="row">
+
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-list"></i> </span>
+                <h2 style="width:auto !important;">@ViewBag.Title</h2>
+            </header>
+            <div class="widget-body">
+
+                <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+                    <ul id="myTab1" class="nav nav-tabs bordered">
+                        <li class="active">
+                            <a data-toggle="tab" href="#tab1" aria-expanded="true" rel="tooltip" title="" data-placement="bottom" data-original-title="Content Manager">
+                                <i class="fa fa-lg fa-user"></i>&nbsp;<span class="hidden-mobile hidden-tablet">Content Manager</span><span class="label bg-color-red txt-color-white">@Html.Raw(Model.ListUser.Count() > 0 ? Model.ListUser.Count() : 0)</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a data-toggle="tab" href="#tab2" aria-expanded="false" rel="tooltip" title="" data-placement="bottom" data-original-title="Permission Level">
+                                <i class="fa fa-lg fa-shield"></i>&nbsp;<span class="hidden-mobile hidden-tablet">Permission</span><span class="label bg-color-red txt-color-white">@Html.Raw(Model.ListPM.Count() > 0 ? Model.ListPM.Count() : 0)</span></span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content col-md-12" id="myTabContent1" style="padding:0px;">
+                        <div class="tab-pane DivCustomBorder fade in active table-responsive" id="tab1">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-10">
+                                <div class="pull-left">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" class="clsAddCM btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Add Content Manager">
+                                                <span class="btn-label"><i class="fa fa-plus"></i></span>Add Content Manager
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <table id="CMList" class="table table-striped table-bordered table-hover" width="100%">
+                                    <thead>
+                                        <tr>
+                                            @*<th>Sr No.</th>*@
+                                            <th class="text-center"><i class="fa fa-user txt-color-blue fa-lg"></i> Name</th>
+                                            <th class="text-center"><i class="fa fa-user txt-color-blue fa-lg"></i> User Id</th>
+                                            <th class="text-center"><i class="fa fa-user txt-color-blue fa-lg"></i> Permission Policy</th>
+                                            <th class="text-center"><i class="fa fa-check-circle txt-color-blue fa-lg"></i> Active</th>
+                                            <th class="text-center"><i class="fa fa-lock txt-color-blue fa-lg"></i> Reset Password</th>
+                                            <th class="text-center"><i class="fa fa-pencil-square txt-color-blue fa-lg"></i> Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.ListUser)
+                                        {
+                                            <tr class="editorRow">
+                                                <input type="hidden" value="@(CrowNo += 1)" />
+                                                <td style="vertical-align:middle">@item.Name</td>
+                                                <td style="vertical-align:middle">@item.UserId</td>
+                                                <td style="vertical-align:middle">@item.AccesslevelDesc</td>
+                                                <td class="text-center col-md-1" style="vertical-align:middle">@Html.Raw(item.StatusDesc)</td>
+                                                <td class="text-center col-md-1">
+                                                    <a class="btn btn-info PasswordReset1" id="PasswordReset" href="javascript:;" data-username="@item.Name" data-userid="@item.UserId" data-email="@item.EmailId">Reset Password</a>
+                                                </td>
+                                                @*<td>@item.StatusDesc</td>*@
+                                                <td class="text-center col-md-1">
+                                                    <div class="btn-group center-block">
+                                                        <center>
+                                                            <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                                <i class="fa fa-bars"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu pull-left" style="min-width:auto !important;left:-30px;">
+                                                                @if (@item.Status != "100")
+                                                                {
+                                                                    <li><a href="@Url.Content("~/Master/ManagerOperation?Type=A&Id=" + item.Id)" class="inabledisable" rel="tooltip" title="" data-placement="left" data-original-title="Enable CM"><i class="fa fa-play-circle"></i> Enable</a></li>
+                                                                }
+                                                                @if (@item.Status == "100")
+                                                                {
+                                                                    <li><a href="@Url.Content("~/Master/ManagerOperation?Type=DA&Id=" + item.Id)" rel="tooltip" title="" data-placement="left" data-original-title="Disable CM"><i class="fa fa-ban"></i> Disable</a></li>
+                                                                }
+                                                                <li><a href="javascript:;" class="ClsEditCM" data-id="@item.Id" rel="tooltip" title="" data-placement="left" data-original-title="Edit CM"><i class="fa fa-pencil"></i> Edit</a></li>
+                                                                <li><a href="javascript:;" id="i_@item.Id" class="CopyDeletePermission" rel="tooltip" title="" data-placement="left" data-original-title="Remove CM"><i class="fa fa-trash-o"></i> Delete</a></li>
+                                                            </ul>
+                                                        </center>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane DivCustomBorder fade table-responsive" id="tab2">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-10">
+                                <div class="pull-left">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" id="btn-backToList" class="ClsAddpermission btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Add Permission">
+                                                <span class="btn-label"><i class="fa fa-plus"></i></span>Add Permission
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <table id="PerList" class="table table-striped table-bordered table-hover" width="100%">
+                                    <thead>
+                                        <tr>
+                                            @*<th>Sr No</th>*@
+                                            <th class="text-center"><i class="fa fa-user txt-color-blue fa-lg"></i> Permission Level Name</th>
+                                            <th class="text-center"><i class="fa fa-user txt-color-blue fa-lg"></i> Assigned</th>
+                                            <th class="text-center"><i class="fa fa-pencil-square txt-color-blue fa-lg"></i> Options</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.ListPM)
+                                        {
+                                            <tr class="editorRow">
+                                                <input type="hidden" value="@(ProwNo += 1)" />
+                                                <td>@item.PermissionName</td>
+                                                <td class="text-center @Html.Raw(item.Permissioncount == 0 ? "danger" : "")">
+                                                    @if (item.Permissioncount > 0)
+                                                    {
+                                                        <a href="javascript:;" data-id="@item.Id" class="@(item.Permissioncount>0 ? "Permissioncount":"")">@item.Permissioncount</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        @item.Permissioncount
+                                                    }
+                                                </td>
+                                                <td class="text-center col-md-1">
+                                                    <div class="btn-group center-block">
+                                                        <center>
+                                                            <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                                <i class="fa fa-bars"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu pull-left" style="min-width:auto !important;left:-30px;">
+                                                                <li><a href="javascript:;" class="ClsPermission" data-id="@item.Id" rel="tooltip" title="" data-placement="left" data-original-title="Edit"><i class="fa fa-pencil"></i> Edit</a></li>
+                                                                <li><a href="javascript:;" data-id="@item.Id" class="ClsCopy" rel="tooltip" title="" data-placement="left" data-original-title="Copy"><i class="fa fa-files-o"></i> Copy</a></li>
+                                                                <li><a href="javascript:;" class="ClsView" data-id="@item.Id" rel="tooltip" title="" data-placement="left" data-original-title="View"><i class="fa fa-eye"></i> View</a></li>
+                                                                <li><a href="javascript:;" data-id="@item.Id" data-per="@item.Permissioncount" class="permissiondelete" rel="tooltip" title="" data-placement="left" data-original-title="Delete"><i class="fa fa-trash-o"></i> Delete</a></li>
+                                                            </ul>
+                                                        </center>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!--<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-list"></i> </span>
+                <h2>@ViewBag.Title</h2>
+            </header>
+            <div class="widget-body">
+                <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+                    <ul class="nav nav-tabs bordered pull-left in" role="tablist">
+                        <li class="active">
+                            <a data-toggle="tab" href="#s1" aria-expanded="true"><i class="fa fa-lg fa-user"></i>&nbsp;<span class="">Content Manager<span class="label bg-color-red txt-color-white">@Html.Raw(Model.ListUser.Count() > 0 ? Model.ListUser.Count() : 0)</span></span></a>
+                        </li>
+                        <li class="">
+                            <a data-toggle="tab" href="#s2" aria-expanded="false"><i class="fa fa-lg fa-users"></i>&nbsp;<span class="">Permission<span class="label bg-color-red txt-color-white">@Html.Raw(Model.ListPM.Count() > 0 ? Model.ListPM.Count() : 0)</span></span> </a>
+                        </li>
+                    </ul>-->
+                    @*<div class="col-md-12">
+                            <a href="@Url.Content("~/Master/CreateNewContent?Id=0")" class="btn btn-primary"> <i class="fa fa-plus"></i> Add Content Manager</a>
+                        </div>*@
+                    <!--<div class="tab-content col-md-12">
+                        <div class="tab-pane DivCustomBorder fade in active table-responsive" id="s1">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mrgtop10">
+                                <div class="pull-left">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" class="clsAddCM btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Add Content Manager">
+                                                <span class="btn-label"><i class="fa fa-plus"></i></span>Add Content Manager
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="col-md-12 mrgtop10">
+
+                            </div>
+                        </div>
+                        <div class="tab-pane DivCustomBorder fade table-responsive" id="s2">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mrgtop10">
+                                <div class="pull-left">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" id="btn-backToList" class="ClsAddpermission btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Add Permission">
+                                                <span class="btn-label"><i class="fa fa-plus"></i></span>Add Permission
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="col-md-12 mrgtop10">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>-->
+</div>
+
+<div class="modal fade" id="ConfirmationMessage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title"><strong>Confirmation</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="message">
+                    <h5>
+                        <span class="control-label">Are you sure you want to delete  </span><b><span id="DeleteSr"> </span></b> ?
+                        <br />
+                        <br />
+                        <span class="control-label">If yes then please press <b>"Confirm"</b> otherwise press "Close".</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i><span class="mrgleft5">Close</span></button> &nbsp;
+                <button type="button" class="btn btn-primary DeleteRow" id="DeleteRow" value="0"><i class="fa fa-check"></i><span class="mrgleft5">Confirm</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="PasswordResetmodal" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title"><b>Reset Password For Content Manager</b></h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h5>
+                        <input type="hidden" id="emailid" />
+                        <input type="hidden" id="UserId" />
+                        <span>Password for Content Manager  </span><b id="UserName"></b><span>  will be changed to </span><b id="Password">123456</b><b id="type" hidden></b>.
+                        <br />
+                        <br />
+                        <span>To confirm this change please click <b>"Confirm"</b>  If not, click <b>"Close".</b></span>
+                    </h5>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btnClosePasswordResetmodal" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i> Close</button>
+                <button class="btn green btn-primary" type="button" id="btnSubmitPasswordResetmodal"><i class="fa fa-check"></i> Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="Permissionpop" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-togglebutton="false">
+                            <header>
+                                <span class="widget-icon"><i class="fa fa-lock"></i></span>
+                                <h2 style="width:auto !important;">User Assigned Permission</h2>
+                            </header>
+                            <div class="widget-body">
+                                <div id="containerTblSubItem"></div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <ul class="demo-btns">
+                            <li>
+                                <a href="javascript:void(0);" id="btnClosePasswordResetmodal" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                    <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var FormComponents = function (DomainName) {
+
+        var Events = function (DomainName) {
+            $("#CMList a").on("click", function (e) {
+                // App.blockUI({ boxed: true });
+            });
+        }
+
+        var UserResetPassword = function (DomainName) {
+            $("#btnSubmitPasswordResetmodal").on("click", function (e) {
+                App.blockUI({ target: "#PasswordResetmodal" });
+                var StrUrl = DomainName + "/Master/UserReSetPassword";
+                $.ajax({
+                    url: StrUrl,
+                    cache: false,
+                    data: { UserId: $("#UserId").val(), Password: $("#Password").text(), Email: $("#emailid").val(), UserName: $("#UserName").text() },
+                    type: 'POST',
+                    success: function (data)
+                    {
+                        console.log(data);
+                        $('#PasswordResetmodal').modal('hide');
+
+                        if (data.success)
+                        {
+                            Swal.fire({
+                                title: "<i class='fa fa-lock txt-color-blue fa-md'></i> Password has been reset successfully",
+                                text: "A copy of the new password has been emailed to the content manager.",
+                                icon: "success",
+                                confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                confirmButtonClass: "btn btn-success clsConfirmYes",
+                                confirmButtonColor: '#7367f0',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false
+                            });
+
+                            $(".clsConfirmYes").on("click", function () {
+                                App.unblockUI("#PasswordResetmodal");
+                                window.location = DomainName + "/Master/ContentManagerList";
+                            });
+                        }
+
+                        dataTableById('CMList');
+                        dataTableById('PerList');
+
+                        App.unblockUI("#PasswordResetmodal");
+                    },
+                    error: function (req, status, error)
+                    {
+                        Swal.fire('Oops !', 'There seems to be an issue please try again or Contact your administrator for more detail.', 'error');
+                        App.unblockUI("#PasswordResetmodal");
+                    }
+                });
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                Events(DomainName);
+
+                $("#CMList").parents('.row').show(500);
+                $(".CopyDeletePermission").on("click", function () {
+                    $('#DeleteRow').val(1);
+                    var result = $(this).attr('id');
+                    var Id = result.substr(result.indexOf("_") + 1)
+                    $('#ConfirmationMessage').modal('show');
+                    var confirm = $('#DeleteRow').val();
+
+                    $("#DeleteRow").on("click", function () {
+                        if (confirm == 1) {
+                            window.location = DomainName + "/Master/ManagerOperation?Type=DE&Id=" + Id;
+                        }
+                    });
+
+                });
+                function generateRandomString(lenth) {
+                    var text = "";
+                    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+                    for (var i = 0; i < lenth; i++)
+                        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                    return text;
+                }
+
+
+                $(".PasswordReset1").on("click", function () {
+                    $("#Password").html(generateRandomString(6));
+                    $("#UserName").html($(this).data('username'));
+                    $("#UserId").val($(this).data('userid'));
+                    $("#emailid").val($(this).data('email'));
+                    $('#PasswordResetmodal').modal('show');
+                    UserResetPassword(DomainName);
+                });
+
+                $('.permissiondelete').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('id');
+                    var percount = $(this).data('per');
+                    if (parseInt(percount) > 0) {
+                        TosterNotification("error", "You can not delete this permission. There are users who currently have this permission assigned to them.");
+
+                    }
+                    else {
+
+                        $('#DeleteRow').val(1);
+                        $('#ConfirmationMessage').modal('show');
+                        var confirm = $('#DeleteRow').val();
+                        $("#DeleteRow").on("click", function () {
+                            if (confirm == 1) {
+                                window.location = DomainName + "/Master/CopyDeletePermission?Type=D&ID=" + Id
+                            }
+                        });
+
+                    }
+                    App.unblockUI();
+                });
+
+                $('.Permissioncount').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('id');
+                    var StrUrl = DomainName + "/Master/GetUserMasterDetails?Id=" + Id;
+                    $.ajax({
+                        url: StrUrl,
+                        cache: false,
+                        data: {},
+                        type: 'POST',
+                        success: function (data) {
+                            $("#containerTblSubItem").html(data);
+                            dataTableById('dtUserlist', 1, "asc");
+                            $('#Permissionpop').modal('show');
+                            App.unblockUI();
+                        },
+                        error: function (req, status, error) {
+                            alert("error " + req + " " + status + " " + error);
+                            App.unblockUI();
+                        }
+                    });
+                });
+
+                $('.clsAddCM').click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/CreateNewContent?Id=0";
+                });
+                $('.ClsAddpermission').click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/CreateNewPermission?Id=0";
+                });
+                $('.ClsEditCM').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('id');
+                    window.location = DomainName + "/Master/CreateNewContent?Id=" + Id;
+                });
+                $('.ClsPermission').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('id');
+                    window.location = DomainName + "/Master/CreateNewPermission?Id=" + Id;
+                });
+                $('.ClsCopy').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('id');
+                    window.location = DomainName + "/Master/CopyDeletePermission?Type=C&ID=" + Id;
+                });
+                $('.ClsView').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('id');
+                    window.location = DomainName + "/Master/VewPermission?Id=" + Id;
+                });
+                 if ('@ViewBag.IsExpired' == 1) {
+                     // $('a').addClass('disabled');
+                     //$('button').addClass('disabled');
+                     $('.ClsAddpermission ').hide();
+                     $('.clsAddCM').hide();
+                     $('#DeleteRow').hide();
+                     $('#btnSubmitPasswordResetmodal').hide();
+                     $('.inabledisable').addClass('disabled-link');
+                     $('.ClsCopy').addClass('disabled-link');
+                     $('.CopyDeletePermission').addClass('disabled-link');
+                     $('.permissiondelete').addClass('disabled-link');
+                     $('.PasswordReset1').hide();
+
+                }
+                dataTableById('CMList', 0, 'desc', true);
+                dataTableById('PerList',0,'desc');
+            }
+        }
+    }();
+</script>
+

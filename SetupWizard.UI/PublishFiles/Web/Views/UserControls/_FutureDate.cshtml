@@ -1,0 +1,92 @@
+﻿@model XCommsWeb.Models.objDate
+@using XCommsWeb.Models
+@{
+
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+
+
+    CYGNUX_Date_Rules WDR = MS.GetDateRule(Model.ModuleCode).FirstOrDefault();
+
+    DateTime MinDate = WDR.Min_Date;
+    DateTime dtStartDate = DateTime.Now.AddDays(-Convert.ToInt32(WDR.BackDate_Days));
+    DateTime dtEntDate = DateTime.Now;
+
+    DateTime FinYearStartDate = Convert.ToDateTime(ViewBag.FinYearStartDate);
+    DateTime FinYearEndDate = Convert.ToDateTime(ViewBag.FinYearEndDate);
+
+    if (User.Identity.Name.ToUpper() == "10001")
+    {
+
+        if (FinYearStartDate > MinDate)
+        {
+            dtStartDate = FinYearStartDate;
+        }
+        else
+        {
+            dtStartDate = MinDate;
+        }
+
+        if (FinYearEndDate < dtEntDate)
+        {
+            dtEntDate = FinYearEndDate;
+        }
+        else
+        {
+            dtEntDate = dtEntDate;
+        }
+
+    }
+    else
+    {
+        if (FinYearStartDate > MinDate && FinYearStartDate > dtStartDate)
+        {
+            dtStartDate = FinYearStartDate;
+        }
+        else if (dtStartDate > MinDate)
+        {
+            dtStartDate = dtStartDate;
+        }
+        else
+        {
+            dtStartDate = MinDate;
+        }
+    }
+
+
+
+    string StartDate = dtStartDate.ToString();
+    string EntDate = dtEntDate.ToString();
+
+}
+
+<div class="input-group date clsFutureDateControl">
+    @Html.TextBox(Model.ControlId, String.Format("{0:dd/MMM/yyyy}", Convert.ToDateTime(Model.ControlValue).ToString("dd MMMM yyyy")), new { @class = "form-control required required2 ", @readonly = "true", @placeholder = "dd MMM yyyy" })
+
+    <span class="input-group-btn">
+        <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+    </span>
+</div>
+
+<script type="text/javascript">
+
+    var ControlDate = function () {
+
+      //  alert( StartDate + " " + EntDate);
+
+        if (jQuery().datepicker) {
+            $(".clsFutureDateControl").datepicker({
+                rtl: App.isRTL(),
+                format: "dd MM yyyy",
+                showMeridian: true,
+                autoclose: true,
+                pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                startDate: new Date("@StartDate"),
+                endDate: new Date("@EntDate"),
+                todayBtn: true
+            });
+        }
+
+    }
+
+
+</script>

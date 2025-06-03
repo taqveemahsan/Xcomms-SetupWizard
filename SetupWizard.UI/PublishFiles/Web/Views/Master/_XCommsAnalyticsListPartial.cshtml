@@ -1,0 +1,195 @@
+﻿@model IEnumerable<XCommsWeb.Models.ClientAnalytics>
+@using XCommsWeb.Classes;
+
+<table class="table table-striped table-bordered table-hover table-responsive" style="overflow:scroll" border="1" id="tblClientAnalytics">
+    <thead>
+        <tr>
+            <th class="text-center TxtVerAlign"><i class="fa fa-university txt-color-blueDark fa-lg"></i> Company</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Registered</th>
+            <th class="text-center TxtVerAlign"> Trial/Purchase</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Days Left</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-user txt-color-blueDark fa-lg"></i> CM</th>
+            <th class="text-center TxtVerAlign">Policies <br /> Count</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Tools</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> PU</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Tick</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-desktop txt-color-blueDark fa-lg"></i> WP</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-laptop txt-color-blueDark fa-lg"></i> SS</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-desktop txt-color-blueDark fa-lg"></i> LS</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-comments-o txt-color-blueDark fa-lg"></i> Quiz</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-envelope-o txt-color-blueDark fa-lg"></i> EM</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> SMS</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-weixin txt-color-blueDark fa-lg"></i> WhatsApp</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-check-square-o txt-color-blueDark fa-lg"></i> Active</th>
+            <th class="text-center TxtVerAlign"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="TxtVerAlign">
+                    @item.CompanyName
+                </td>
+                <td class="text-center TxtVerAlign">
+                    @item.Registered
+                </td>
+                <td class="text-center TxtVerAlign">
+                    <div class="badge bg-color-@Html.Raw(item.PurchasedTrial == "Purchased" ? "green" : "magenta") txt-color-white">
+                        <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.PurchasedTrial == "Purchased" ? "check-circle txt-color-greenLight" : "tags txt-color-red")"></i>
+                        <small> @Html.Raw(item.PurchasedTrial) </small>
+                    </div>
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.DaysLeft == 0 ? "danger" : "success")">
+                    @item.DaysLeft
+                </td>
+                <td class="text-center TxtVerAlign">
+                    @if (item.ContentManagerCount > 0)
+                    {
+                        <a href="javascript:;" class="ClsContentManager" data-id="@item.CustomerId" rel="tooltip" title="" data-placement="left" data-original-title="View Content Managers">
+                            <strong> @item.ContentManagerCount </strong>
+                        </a>
+                    }
+                    else
+                    {
+                        <span>@item.ContentManagerCount</span>
+                    }
+                </td>
+                <td class="text-center TxtVerAlign">
+                    <div class="badge bg-color-green txt-color-white">
+                        <small> @Html.Raw(item.CMPolicies) </small>
+                    </div>
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.Tools == "0" ? "danger" : "warning")">
+                    @if (item.Tools != "0")
+                    {
+                        <a href="javascript:;" class="ClsCMTools" data-id="@item.CustomerId" rel="tooltip" title="" data-placement="left" data-original-title="View Tools">
+                            <strong> @item.Tools </strong>
+                        </a>
+                    }
+                    else
+                    {
+                        <span>@item.Tools</span>
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.AlertCount == 0 ? "danger" : "success")">
+                    @if (item.AlertCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.AlertCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.AlertCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.TickerCount == 0 ? "danger" : "success")">
+                    @if (item.TickerCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.TickerCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.TickerCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.WallPaperCount == 0 ? "danger" : "success")">
+                    @if (item.WallPaperCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.WallPaperCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.WallPaperCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.ScreenSaverCount == 0 ? "danger" : "success")">
+                    @if (item.ScreenSaverCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.ScreenSaverCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.ScreenSaverCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.LockScreenCount == 0 ? "danger" : "success")">
+                    @if (item.LockScreenCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.LockScreenCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.LockScreenCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.QuizCount == 0 ? "danger" : "success")">
+                    @if (item.QuizCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.QuizCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.QuizCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.EmailCount == 0 ? "danger" : "success")">
+                    @if (item.EmailCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.EmailCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.EmailCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.SMSCount == 0 ? "danger" : "success")">
+                    @if (item.SMSCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.SMSCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.SMSCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign @Html.Raw(item.WhatsappCount == 0 ? "danger" : "success")">
+                    @if (item.WhatsappCount > 0)
+                    {
+                        <div class="badge bg-color-green txt-color-white">
+                            <small> @Html.Raw(item.WhatsappCount) </small>
+                        </div>
+                    }
+                    else
+                    {
+                        @item.WhatsappCount
+                    }
+                </td>
+                <td class="text-center TxtVerAlign">
+                    <div class="badge bg-color-@Html.Raw(item.IsActive == true ? "green" : "red") txt-color-white">
+                        <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.IsActive == true ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                        <small> @Html.Raw(item.IsActive == true ? "Yes" : "No") </small>
+                    </div>
+                </td>
+                <td class="text-center TxtVerAlign">
+                    <a href="javascript:;" class="ClsViewCompanyProf" data-id="@item.CustomerId" rel="tooltip" title="" data-placement="left" data-original-title="View Company Profile"><i class="fa fa-eye fa-md"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,24 @@
+﻿@model XCommsWeb.Models.CygnusChargesHeader
+@using XCommsWeb.Helpers;
+@{
+    string percentageShow = Model.IsPercentageShow ? "" : "hide";
+}
+@using (Html.BeginCollectionItem("DynamicList", Model.ChargeCode.ToString()))
+{
+    <div class="row">
+        <div class="form-group">
+            <label class="control-label col-md-5">@Model.ChargeName<span class="@percentageShow"> - @Html.Raw("@")@Model.Percentage % </span> <kbd>[@Model.Operator]</kbd></label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(m => m.ChargeAmount,
+                        new { placeholder = @Model.ChargeName, @class = "required2 clsGSTAmt clsAmount form-control required", @readonly = "true", @data_applicable = Model.IsApplicable, @data_operator = Model.Operator, @data_percentage = Model.Percentage })
+                @Html.HiddenFor(model => model.ChargeCode)
+                @Html.HiddenFor(model => model.Operator)
+                @Html.HiddenFor(model => model.Acccode)
+                @Html.HiddenFor(model => model.Percentage)
+                @Html.HiddenFor(model => model.IsApplicable)
+                @Html.HiddenFor(model => model.AccountPayable)
+                @Html.HiddenFor(model => model.AccountReceivable)
+            </div>
+        </div>
+    </div>
+}

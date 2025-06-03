@@ -1,0 +1,896 @@
+﻿@model XCommsWeb.Models.CYGNUS_Master_UsersViewModel
+@using XCommsWeb.Models;
+@using XCommsWeb;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var Text = "Submit"; var type = "Add";
+    if (Model.EditFlag != null && Model.EditFlag == true)
+    {
+        Text = "Update";
+        type = "Edit";
+
+        if (Model.WMU.WeddingDate.Value.ToString()== "1/1/1900 12:00:00 AM")
+        {
+            Model.WMU.WeddingDate = DateTime.Now;
+        }
+    }
+    else
+    {
+        if (Model.WMU.DOB == DateTime.MinValue)
+        {
+            Model.WMU.DOB = DateTime.Now;
+        }
+
+    }
+    string IsActive = "";
+    if (Model.WMU.Status != null && Model.WMU.Status.ToUpper() == "100" || Model.EditFlag == false)
+    {
+        IsActive = "checked";
+        Model.WMU.Status = "Y";
+    }
+
+}
+@{
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+
+    List<SelectListItem> genderList = new List<SelectListItem>(){
+                            new SelectListItem { Text = "Male", Value = "M"},
+                            new SelectListItem { Text = "Female", Value = "F"},
+                           };
+    int BaseTenantId = ViewBag.BaseTenantId;
+    List<CYGNUS_Master_General> generalMasterList = MS.GetGeneralMasterObject(0, BaseTenantId);
+    List<CYGNUS_Master_Users> ManagerList = new List<CYGNUS_Master_Users>();
+    List<CYGNUS_Master_General> DesignationList = new List<CYGNUS_Master_General>();
+    if (Model.EditFlag != null && Model.EditFlag == true)
+    {
+        DesignationList = MS.GetDesignationFromCategory(Model.WMU.Category).ToList();
+        ManagerList = MS.GetManagerFromDesignationandLocation(Model.WMU.Category, Model.WMU.BranchCode).ToList();
+    }
+    List<CYGNUS_Master_Users> userMasterList = MS.GetUserDetails().Where(c => c.Status == "100").OrderBy(c => c.EmpId).ToList();
+    List<CYGNUS_location> locationList = MS.GetLocationDetails().Where(c => c.ActiveFlag == "Y").OrderBy(c => c.LocName).ToList();
+    //List<CYGNUS_Master_General> DESIGNATIONLIST = MS.GetGeneralMasterObject().Where(c => c.CodeType.ToUpper() == "DESIG" && c.StatusCode.ToUpper() == "Y").ToList();
+    //List<CYGNUS_Master_General> CATEGORYLIST = MS.GetGeneralMasterObject().Where(c => c.CodeType.ToUpper() == "HIERARCHY" && c.StatusCode.ToUpper() == "Y").ToList();
+
+    ViewBag.Title = @type + " User";
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <h4>@ViewBag.Title <b>@Model.WMU.UserId</b></h4>
+    </div>
+    @if (Model.EditFlag == true)
+    {
+        <div class="col-md-2">
+            <a class="btn default blue-stripe pull-right" style="margin-top:5px;" href="@Url.Content("~/Master/_AddEditUser")">
+                <i class="fa fa-plus"></i>
+                Add User
+            </a>
+        </div>
+    }
+</div>
+@using (Html.BeginForm("AddEditUser", "Master", FormMethod.Post, new { id = "form_sample", @class = "form-horizontal row-fluid", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="alert alert-danger display-hide">
+        <button class="close" data-close="alert"></button>
+        You have some form errors. Please check below.
+    </div>
+
+    <div class="alert alert-success display-hide">
+        <button class="close" data-close="alert"></button>
+        Your form validation is successful!
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="portlet box @ViewBag.TableBoxColor">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="fa fa-user"></i>Login Information
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-body">
+                        @Html.HiddenFor(c => c.EditFlag)
+                        @if (Model.EditFlag)
+                        {
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label col-md-4">Internal ID</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.TextBoxFor(c => c.WMU.EmpId, new { @placeholder = "Internal ID", @class = "form-control text-uppercase", @readonly = "true" })
+                                            @Html.HiddenFor(c => c.WMU.EmpId, new { @class = "hdnempid" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="control-label col-md-4">User ID</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.TextBoxFor(c => c.WMU.UserId, new { @placeholder = "User ID", @class = "form-control text-uppercase", @readonly = "true" })
+                                            @Html.HiddenFor(c => c.WMU.UserPwd)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label col-md-4">Internal ID</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.TextBoxFor(c => c.WMU.EmpId, new { @placeholder = "Internal ID", @class = "form-control required required2 text-uppercase", @autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="control-label col-md-4">User ID</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.TextBoxFor(c => c.WMU.UserId, new { @placeholder = "User ID", @class = "form-control required required2 text-uppercase", @autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="control-label col-md-4">Password</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.PasswordFor(c => c.WMU.UserPwd, new { @placeholder = "Password", @class = "form-control required required2", @minlength = 6, @autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="control-label col-md-4">Confirm Password</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.PasswordFor(c => c.WMU.confirmPassword, new { @placeholder = "Confirm Password", @class = "form-control required required2", @minlength = 6, @equalTo = "#WMU_UserPwd", @autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="portlet box @ViewBag.TableBoxColor">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="fa fa-user"></i>Other Information
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Name</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(c => c.WMU.Name, new { @placeholder = "Name", @class = "form-control required required2" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Secret Question</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(c => c.WMU.PasswordQues, new { @placeholder = "Secret Question", @class = "form-control required required2" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Secret Answer</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(c => c.WMU.PasswordAns, new { @placeholder = "Secret Answer", @class = "form-control required required2" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Gender</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.DropDownListFor(model => model.WMU.gender, new SelectList(genderList, "Value", "Text", Model.WMU.gender), "", new { @class = "form-control select2 required required2", @placeholder = "Select Gender" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Category</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.DropDownListFor(model => model.WMU.Category, new SelectList(generalMasterList.Where(c => c.CodeType.ToUpper() == "HIERARCHY" && c.StatusCode.ToUpper() == "Y").ToList(), "CodeId", "CodeDesc"), "", new { @class = "form-control select2 ClsGetDesig ClsGetManager", @placeholder = "Select Category" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Designation</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.DropDownListFor(model => model.WMU.Designation, new SelectList(DesignationList, "CodeId", "CodeDesc"), "", new { @class = "form-control select2", @placeholder = "Select Designation" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Location</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @*@Html.DropDownListFor(model => model.WMU.BranchCode, new SelectList(locationList, "LocCode", "LocName", Model.WMU.BranchCode), "", new { @class = "form-control select2 required required2", @placeholder = "Select Location" })*@
+                                        @Html.TextBoxFor(m => m.WMU.BranchCode, new { placeholder = "Select Location", @class = "required2 form-control required ClsGetManager" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Report to</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.DropDownListFor(model => model.WMU.ManagerId, new SelectList(ManagerList, "UserId", "Name"), "", new { @class = "form-control select2", @placeholder = "Select Manager" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Date of Birth</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        <div class="input-group date bkdate-picker" data-date-format="dd MMM yyyy">
+                                            @Html.TextBoxFor(m => m.WMU.DOB, String.Format("{0:dd MMM yyyy }", Convert.ToDateTime(Model.WMU.DOB).ToString("dd MMM yyyy")), new { @class = "form-control required required2", @placeholder = "dd MMM yyyy" })
+                                            <span class="input-group-btn">
+                                                <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                    <label class="control-label col-md-4">Date of Joining</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            <div class="input-group date date-picker" data-date-format="dd MMM yyyy">
+                                                @Html.TextBoxFor(m => m.WMU.DOJ_ORG, String.Format("{0:dd MMM yyyy }", Convert.ToDateTime(Model.WMU.DOJ_ORG).ToString("dd MMM yyyy")), new { @class = "form-control required required2", @placeholder = "dd MMM yyyy" })
+                                                <span class="input-group-btn">
+                                                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="col-md-3">
+                                    <label class="control-label col-md-4">User Type</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.DropDownListFor(model => model.WMU.emptype, new SelectList(generalMasterList.Where(c => c.CodeType == "USERTYP").ToList(), "CodeId", "CodeDesc", Model.WMU.emptype), "", new { @class = "form-control select2 required required2", @placeholder = "Select User Type" })
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="col-md-3">
+                                    <label class="control-label col-md-4">User Status</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.DropDownListFor(model => model.WMU.User_Type, new SelectList(generalMasterList.Where(c => c.CodeType == "EMPST").ToList(), "CodeId", "CodeDesc", Model.WMU.User_Type), "", new { @class = "form-control select2 required required2", @placeholder = "Select User Status" })
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                    <label class="control-label col-md-4">Residential Address</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.TextAreaFor(model => model.WMU.resi_addr, new { @class = "form-control", @placeholder = "Residential Address" })
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Email</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.EmailId, new { @class = "form-control required required2 email", @placeholder = "Email" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Mobile No</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.mobileno, new { @class = "form-control", @placeholder = "Mobile No", @maxlength = 12, @minlength = 10, @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Name Of bank</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.Name_Of_bank, new { @class = "form-control", @placeholder = "Name Of bank" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Bank A/C No.</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.Bank_AC_Number, new { @class = "form-control", @placeholder = "Bank A/C No." })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Department</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.Department, new { @class = "form-control", @placeholder = "Department" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">HOD</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.HOD, new { @class = "form-control", @placeholder = "HOD" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4"> Grade </label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.Grade, new { @class = "form-control", @placeholder = "Grade" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                    <label class="control-label col-md-4">IFSC Code</label>
+                                    <div class="form-group">
+                                        <div class="col-md-7">
+                                            @Html.TextBoxFor(model => model.WMU.IFSC_Code, new { @class = "form-control", @placeholder = "IFSC Code" })
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Active</label>
+                                <div class="form-group">
+                                    <div class="col-md-7 chkactive">
+                                        @Html.HiddenFor(m => m.WMU.Status)
+                                        <input type="checkbox" id="Status" @IsActive />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Read/Write</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.DropDownListFor(model => model.WMU.Read_Witre, new SelectList(generalMasterList.Where(c => c.CodeType == "RW").ToList(), "CodeId", "CodeDesc", Model.WMU.emptype), "", new { @class = "form-control select2 required required2", @placeholder = "Select Read/Write" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Personal Email</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.PersonalEmail, new { @class = "form-control required required2 email", @placeholder = "Personal Email" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Blood Group</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.DropDownListFor(model => model.WMU.BloodGroup, new SelectList(generalMasterList.Where(c => c.CodeType == "BLOODGRP").ToList(), "CodeId", "CodeDesc", Model.WMU.emptype), "", new { @class = "form-control select2", @placeholder = "Select Blood Group" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Wedding Anniv. Date</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        <div class="input-group date bkdate-picker" data-date-format="dd MMM yyyy">
+                                            @Html.TextBoxFor(m => m.WMU.WeddingDate, String.Format("{0:dd MMM yyyy }", Convert.ToDateTime(Model.WMU.WeddingDate).ToString("dd MMM yyyy")), new { @class = "form-control", @placeholder = "dd MMM yyyy" })
+                                            <span class="input-group-btn">
+                                                <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">Identity Document</label>
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        @Html.TextBoxFor(model => model.WMU.VoterID, new { @class = "form-control", @placeholder = "Doc Name" })
+                                        @Html.HiddenFor(m => m.WMU.VoterIDContentType)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">
+                                    Identity Image:
+                                </label>
+                                <div class="form-group">
+                                    <div class="col-md-7 VoterID fileinput fileinput-new" data-provides="fileinput">
+                                        <input type="hidden" value="@Model.WMU.VoterID_Image" name="Voterfiles">
+                                        <div class="fileinput-new thumbnail imgDefault" style="width: 100%;">
+                                            <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="">
+                                        </div>
+                                        <div class="fileinput-preview fileinput-exists thumbnail imgExists" style="max-width: 200px; max-height: 150px; line-height: 10px;">
+                                            @*<img src="data:@Model.WMU.VoterIDContentType;base64,@Model.WMU.VoterID_Image" alt="">*@
+                                            @if (ViewBag.DisplayType == "True")
+                                            {
+                                                // Azure file Path
+                                                <img src="@ViewBag.AzureUrl/Images/UserVoterId/@Model.WMU.VoterID_Image" alt="">
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Images/UserVoterId/@Model.WMU.VoterID_Image" alt="">
+                                            }
+                                        </div>
+                                        <div>
+                                            <span class="btn default btn-file">
+                                                <span class="fileinput-new imgDefault">
+                                                    Select image
+                                                </span>
+                                                <span class="fileinput-exists imgExists">
+                                                    Change
+                                                </span>
+                                                <input type="file" name="Voterfiles">
+                                            </span>
+                                            <a href="#" class="btn default fileinput-exists imgExists" data-dismiss="fileinput">
+                                                Remove
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="control-label col-md-4">
+                                    Photo :
+                                </label>
+                                <div class="form-group">
+                                    <div class="col-md-7 User fileinput fileinput-new" data-provides="fileinput">
+                                        @*<input type="hidden" value="@Model.WMU.User_Image" name="files">*@
+                                        @Html.HiddenFor(m => m.WMU.User_Image, new { @name = "files" })
+                                        <div class="fileinput-new thumbnail imgDefault" style="width: 100%;">
+                                            <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="">
+                                        </div>
+                                        <div class="fileinput-preview fileinput-exists thumbnail imgExists" style="max-width: 200px; max-height: 150px; line-height: 10px;">
+                                            @if (ViewBag.DisplayType == "True")
+                                            {
+                                                // Azure file Path
+                                                <img src="@ViewBag.AzureUrl/Images/UserImage/@Model.WMU.User_Image" alt="">
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Images/UserImage/@Model.WMU.User_Image" alt="">
+                                            }
+                                        </div>
+                                        <div>
+                                            <span class="btn default btn-file">
+                                                <span class="fileinput-new imgDefault">
+                                                    Select image
+                                                </span>
+                                                <span class="fileinput-exists imgExists">
+                                                    Change
+                                                </span>
+                                                <input type="file" name="files">
+                                            </span>
+                                            <a href="#" class="btn default fileinput-exists imgExists" data-dismiss="fileinput">
+                                                Remove
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="portlet box @ViewBag.TableBoxColor">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="fa fa-user"></i>Educational Documents
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-body">
+                        <div class="col-md-10">
+                            <label class="control-label col-md-3">Enter No of Rows</label>
+                            <div class="form-group">
+                                <div class="col-md-3">
+                                    @Html.TextBox("NoofRows", "0", new { placeholder = "No. of Rows", @class = "form-control", @onKeyPress = "javascript:return validDigits(event,this.getAttribute('id'))" })
+                                </div>
+                                <button type="button" id="btnAddrows" class="btn btn-sm blue controls ClsbtnSave"><i class="fa fa-plus"></i>&nbsp;Add Rows</button>
+                            </div>
+                        </div>
+                        <br />
+                        <table id="tblSubItem" class="table table-striped table-bordered table-hover">
+                            <thead class="flip-content">
+                                <tr style="text-align: center;">
+                                    <th style="text-align: center;">Educational Qualification</th>
+                                    <th style="text-align: center;">Document</th>
+                                    <th style="text-align: center;">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody id="containerTblSubItem">
+                                @foreach (var item in Model.ListEduDoc)
+                                {
+                                    Html.RenderPartial("_UserEducationalDocumentList", item);
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-actions fluid">
+        <div class="col-md-offset-4 col-md-8">
+            <a class="btn btn-sm default controls" href="@Url.Content("~/Master/User")"> <i class="fa fa-arrow-left"> </i>&nbsp;Back To List</a>
+            <button type="button" id="btnSubmit" class="btn btn-sm green ClsbtnSave"><i class="fa fa-check"></i>&nbsp;@Text</button>
+        </div>
+    </div>
+
+}
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+
+        var Formvalidate = function (DomainName) {
+
+            var form1 = $('#form_sample');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
+
+            form1.validate({
+                doNotHideMessage: true,
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                // errorClass: 'validate-inline',
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",
+
+                rules: {
+                    //account dateFuture
+                },
+                messages: {
+                    'WMU.confirmPassword': {
+                        equalto: "Please enter the same Password again.",
+                        minlength: jQuery.format("Please select at least one option")
+                    }
+                    
+
+                },
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success1.hide();
+                    error1.show();
+                    App.scrollTo(error1, -200);
+                },
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+                submitHandler: function (form) {
+                    success1.show();
+                    error1.hide();
+                }
+            });
+        }
+
+        var Events = function (DomainName) {
+
+            $('#Computerised').change(function () {
+                $('#WL_Computerised').val($(this).is(':checked') ? 'Y' : 'N')
+            });
+
+            $('#ActiveFlag').change(function () {
+                $('#WL_ActiveFlag').val($(this).is(':checked') ? 'Y' : 'N')
+            });
+
+            //$('#btnSubmit').click(function () {
+            //    if (!$('#form_sample').valid()) {
+            //        return false;
+            //    }
+            //    App.blockUI({ boxed: true });
+            //    $.ajax({
+            //        url: $('#form_sample').attr('action'),
+            //        type: 'POST',
+            //        data: $('#form_sample').serialize(),
+            //        success: function (result) {
+            //            if (result) {
+            //                TosterNotification("success", "Record has been updated successfully..!!", "Success");
+            //                setTimeout(function () {
+            //                    window.location = DomainName + "/Master/User";
+            //                }, 1500);
+            //            }
+            //            else {
+            //                TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+            //                App.unblockUI();
+            //            }
+            //        },
+            //        error: function (req, status, error) {
+            //            TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+            //            App.unblockUI();
+            //        }
+            //    });
+            //});
+
+            $('#btnSubmit').click(function () {
+                if ($('#form_sample').valid()) {
+                    App.blockUI({ boxed: true });
+                    document.forms["form_sample"].submit()
+                }
+                else {
+                    return false
+                }
+            });
+
+            $("#WMU_EmpId ,  #WMU_UserId").keypress(function (e) {
+                if ($(".hdnempid").val() != "" && $(".hdnempid").val() != undefined) {
+                    return false;
+                }
+                else {
+                    if (e.which == 32) {
+                        return false;
+                    }
+                }
+            });
+
+            $("#WMU_EmpId").blur(function (e) {
+                if ($(".hdnempid").val() != "" && $(".hdnempid").val() != undefined) {
+                    return false;
+                } else {
+                    checkDuplicate(DomainName, $(this).val(), "E")
+                }
+            });
+
+            $("#WMU_UserId").blur(function (e) {
+                if ($(".hdnempid").val() != "" && $(".hdnempid").val() != undefined) {
+                    return false;
+                }
+                else {
+                    checkDuplicate(DomainName, $(this).val(), "U")
+                }
+            });
+
+
+            $("#WMU_EmailId").blur(function (e){
+                if ($("#WMU_EmailId").val() == "") {
+                    return false;
+                }
+                else {
+                    CheckIsEmailUnique(DomainName, $(this).val(), "U")
+                }
+            });
+
+            $('#Status').change(function () {
+                $('#WMU_Status').val($(this).is(':checked') ? 'Y' : 'N')
+            });
+
+            $('#IsFieldOfficer').change(function () {
+                $('#WMU_IsFieldOfficer').val($(this).is(':checked') ? 'Y' : 'N')
+            });
+
+            $(".ClsGetManager").live('change', function () {
+                if ($('#WMU_Category').val() != "" && $("#WMU_BranchCode").val() != "") {
+                    App.blockUI({ boxed: true });
+                    var StrURL = DomainName + "/Master/GetManagerFromDesignationandLocation?Category=" + $('#WMU_Category').val() + "&Location=" + $('#WMU_BranchCode').val();
+                    FillDropDownfromOther("WMU_ManagerId", StrURL, "");
+                }
+            });
+
+            $(".ClsGetDesig").change(function () {
+                if ($('#WMU_Category').val() != "") {
+                    App.blockUI({ boxed: true });
+                    var StrURL = DomainName + "/Master/GetDesignationFromCategory?Category=" + $('#WMU_Category').val();
+                    FillDropDownfromOther("WMU_Designation", StrURL, "");
+                }
+            });
+        }
+
+        var checkDuplicate = function (DomainName, Id, Flag) {
+            if (Id == null || Id == '') {
+                return false;
+            }
+            var strUrl = DomainName + '/Master/CheckDuplicateUser/' + Id + '?Flag=' + Flag;
+            App.blockUI({ boxed: true });
+            $.ajax({
+                url: strUrl,
+                //data:Id = $(this).val(),
+                success: function (data) {
+
+                    if (data == 'False') {
+                        if (Flag == "U") {
+                            $('#WMU_UserId').val('');
+                            $('#WMU_UserId').focus();
+                            TosterNotification("error", 'User Id "' + Id + '" Already exist..', "Oppps..!!");
+                        }
+                        else {
+                            $('#WMU_EmpId').val('');
+                            $('#WMU_EmpId').focus();
+                            TosterNotification("error", 'Internal Id "' + Id + '" Already exist..', "Oppps..!!");
+                        }
+                    }
+                    else {
+                        if (Flag == "E") {
+                            $('#WMU_UserId').val($('#WMU_EmpId').val());
+                            $('#WMU_UserId').focusin();
+                            $('#WMU_UserId').select();
+                        }
+                    }
+                    App.unblockUI();
+                    return data;
+                },
+                error: function (req, status, error) {
+                    $('#WMU_UserId').val('');
+                    $('#WMU_UserId').focus();
+                    $('#WMU_EmpId').val('');
+                    $('#WMU_EmpId').focus();
+                    App.unblockUI();
+                    TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                    return false;
+                }
+            });
+        }
+
+        var CheckIsEmailUnique = function (DomainName,Email)
+        {
+             if (Email == null || Email == '') {
+                return false;
+            }
+            var strUrl = DomainName + '/Master/CheckIsEmailUnique/';
+            App.blockUI({ boxed: true });
+            $.ajax({
+                url: strUrl,
+                data: { 
+                Email: Email
+                },
+                success: function (data) {
+                    if (data == 'False') {
+                            $('#WMU_EmailId').val('');
+                            $('#WMU_EmailId').focus();
+                            TosterNotification("error", 'Email Id "' + Email + '" Already exist..', "Oppps..!!");
+                    }
+                    App.unblockUI();
+                    return data;
+                },
+                error: function (req, status, error) {
+                    $('#WMU_EmailId').val('');
+                    $('#WMU_EmailId').focus();
+                    $('#WMU_EmailId').val('');
+                    $('#WMU_EmailId').focus();
+                    App.unblockUI();
+                    TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                    return false;
+                }
+            });
+        }
+
+
+        var AddDocumentList = function (DomainName, itemIndex, strUserId) {
+            App.blockUI({ boxed: true });
+            var StrURL1 = DomainName + '/Master/EducationalDocumentList?id=' + itemIndex + '&strUserId=' + strUserId;
+            $.ajax({
+                url: StrURL1,
+                cache: false,
+                data: {},
+                type: 'POST',
+                success: function (html) {
+                    $("#containerTblSubItem").append(html);
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    TosterNotification("error", "Error !! There was an error druing process. Please check your internet connection or contact administrator.", "Error");
+                }
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                if ('@Model.WMU.UserId' == "") {
+                    $('#WMU_EmpId').focus();
+                }
+                else {
+                    $('#WMU_Name').focus();
+                }
+
+                if ('@Model.WMU.User_Image' != null && '@Model.WMU.User_Image' != "") {
+                   // $(".User .fileinput .fileinput-new").parent('div').removeClass("fileinput-new").addClass("fileinput-exists");
+                    $(".User").removeClass("fileinput-new").addClass("fileinput-exists");
+                    //$(".imgExists").show();
+                }
+                else {
+                   // $(".User .fileinput .fileinput-new").parent('div').removeClass("fileinput-exists").addClass("fileinput-new");
+                      $(".User").removeClass("fileinput-exists").addClass("fileinput-new");
+                    //$(".imgExists").hide();
+                }
+
+                //----- VoterID-------------
+                if ('@Model.WMU.VoterID_Image' != null && '@Model.WMU.VoterID_Image' != "") {
+                    $(".VoterID").removeClass("fileinput-new").addClass("fileinput-exists");
+                }
+                else {
+                    $(".VoterID").removeClass("fileinput-exists").addClass("fileinput-new");
+                }
+                @foreach(var item in Model.ListEduDoc)
+                {
+                    <text>
+                    if('@item.Edu_Image' != null && '@item.Edu_Image' != "") {
+                        $(".EduDoc").removeClass("fileinput-new").addClass("fileinput-exists");
+                    }
+                    else
+                    {
+                        $(".EduDoc").removeClass("fileinput-exists").addClass("fileinput-new");
+                    }
+                    </text>
+                }
+
+                //----- VoterID-------------
+
+                Formvalidate(DomainName);
+                handleDatePicker();
+                Events(DomainName);
+                FutureDatePicker();
+                StrURL = DomainName + "/Master/GetDestinationLocationsWithHQTR";
+                JsonDDLSelectCode("WMU_BranchCode", StrURL);
+
+                //$(".ClsGetManager").live('change', function () {
+                //    if ($('#WMU_Designation').val() != "" && $("#WMU_BranchCode").val() != "") {
+                //        var StrURL = DomainName + "/Master/GetManagerFromDesignationandLocation?Designation=" + $('#WMU_Designation').val() + "&Location=" + $('#WMU_BranchCode').val();
+                //        FillDropDownfromOther("WMU_ManagerId", StrURL, "");
+                //    }
+                //});
+
+                $("#btnAddrows").click(function () {
+                    var itemIndex = $("#tblSubItem input.iHidden").length + 1;
+                    var TOTROW = $("#NoofRows").val();
+                    for (var i = 0; i <= TOTROW - 1; i++) {
+                        setTimeout(function () {
+                            AddDocumentList(DomainName, itemIndex, $('#WMU_UserId').val());
+                            itemIndex = itemIndex + 1;
+                        }, 100 * i);
+                    }
+                    $("#NoofRows").val(0);
+                });
+
+                $("a.deleteRow").live("click", function () {
+                    $(this).parents("tr.editorRow:first").remove();
+                    return false;
+                });
+            }
+        }
+    }();
+</script>

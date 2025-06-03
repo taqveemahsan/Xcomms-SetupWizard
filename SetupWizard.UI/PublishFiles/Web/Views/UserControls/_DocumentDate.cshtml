@@ -1,0 +1,142 @@
+﻿@model XCommsWeb.Models.objDate
+@using XCommsWeb.Models
+@{
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    CYGNUX_Date_Rules WDR = MS.GetDateRule(Model.ModuleCode).FirstOrDefault();
+
+    if (!string.IsNullOrEmpty(WDR.Empcd))
+    {
+        //if (Model.ModuleCode == WDR.Module_Code && WDR.Empcd.ToUpper().Split(',').ToList().Any(c => c.Contains(User.Identity.Name.ToUpper())))
+        //{
+        //    //WDR.BackDate_Days = 16;
+        //    WDR.BackDate_Days = WDR.BackDate_Days;
+        //}
+        //else
+        //{
+        WDR.BackDate_Days = WDR.BackDate_Days;//suresh
+        // }
+    }
+    else
+    {
+        WDR.BackDate_Days = 0;
+    }
+    //WDR.BackDate_Days = 0;
+    //if (Model.ModuleCode == "17" && User.Identity.Name.ToUpper() == "H0916")
+    //{
+    //    WDR.BackDate_Days = 16;
+    //}
+    DateTime MinDate = WDR.Min_Date;
+    DateTime dtStartDate = DateTime.Now.AddDays(-Convert.ToInt32(WDR.BackDate_Days));
+    DateTime dtEntDate = DateTime.Now;
+
+    if (DateTime.Now < Convert.ToDateTime(ViewBag.GSTStartDate))
+    {
+        dtStartDate = Convert.ToDateTime(ViewBag.GSTStartDate).AddDays(-Convert.ToInt32(WDR.BackDate_Days));
+        dtEntDate = Convert.ToDateTime(ViewBag.GSTStartDate);
+    }
+    DateTime FinYearStartDate = Convert.ToDateTime(ViewBag.FinYearStartDate);
+    DateTime FinYearEndDate = Convert.ToDateTime(ViewBag.FinYearEndDate);
+
+
+    if (User.Identity.Name.ToUpper() == "ADMIN")
+    {
+        if (FinYearStartDate > MinDate)
+        {
+            dtStartDate = FinYearStartDate;
+        }
+        else
+        {
+            dtStartDate = MinDate;
+        }
+        if (FinYearEndDate < dtEntDate)
+        {
+            dtEntDate = FinYearEndDate;
+        }
+        else
+        {
+            dtEntDate = dtEntDate;
+        }
+    }
+    else
+    {
+        if (FinYearStartDate > MinDate && FinYearStartDate > dtStartDate)
+        {
+            dtStartDate = FinYearStartDate;
+        }
+        else if (dtStartDate > MinDate)
+        {
+            dtStartDate = dtStartDate;
+        }
+        else
+        {
+            dtStartDate = MinDate;
+        }
+
+        if (FinYearEndDate < dtEntDate)
+        {
+            dtEntDate = FinYearEndDate;
+            Model.ControlValue = FinYearEndDate.ToString();
+        }
+        else
+        {
+            dtEntDate = dtEntDate;
+        }
+    }
+
+    if (Model.ModuleCode == "23")
+    {
+        dtStartDate = FinYearStartDate;
+    }
+
+    if (Model.ModuleCode == "24")
+    {
+        dtStartDate = Convert.ToDateTime(ViewBag.GSTStartDate);
+    }
+
+    if (ViewBag.BaseUserName == "HQT026" && Model.ModuleCode == "13" && (Model.ControlId == "BILLDT" || Model.ControlId == "VENDORBILLDT"))
+    {
+        dtStartDate = Convert.ToDateTime("31 Jul 2017");
+    }
+
+    dtStartDate = Convert.ToDateTime("01 Apr 2019");
+    string StartDate = dtStartDate.ToString("dd MMM yyyy");
+    string EntDate = dtEntDate.ToString("dd MMM yyyy");
+    if (Convert.ToDateTime(Model.ControlValue) < Convert.ToDateTime(ViewBag.GSTStartDate))
+    {
+        Model.ControlValue = ViewBag.GSTStartDate;
+    }
+}
+
+<div class="input-group date clsDateControl">
+    @Html.TextBox(Model.ControlId, String.Format("{0:dd/MMM/yyyy}", Convert.ToDateTime(Model.ControlValue).ToString("dd MMMM yyyy")), new { @class = "form-control required required2 ", @readonly = "true", @placeholder = "dd MMM yyyy" })
+    @Html.HiddenFor(m => m.ControlId)
+    @Html.Hidden("StartDate", StartDate)
+    @Html.Hidden("EntDate", EntDate)
+    @Html.Hidden("sStartDate", dtStartDate.ToString("dd MMMM yyyy"))
+    @Html.Hidden("sEntDate", dtEntDate.ToString("dd MMMM yyyy"))
+    <span class="input-group-btn">
+        <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+    </span>
+</div>
+@Html.HiddenFor(m => m.isControlRemove)
+<script type="text/javascript">
+
+    var ControlDate = function () {
+        //   alert( StartDate + " " + EntDate);
+        if (jQuery().datepicker) {
+            $(".clsDateControl").datepicker({
+                rtl: App.isRTL(),
+                format: "dd MM yyyy",
+                showMeridian: true,
+                autoclose: true,
+                pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                startDate: new Date("@StartDate"),
+                endDate: new Date("@EntDate"),
+                todayBtn: false
+            });
+            if ($("#isControlRemove").val() == "True") {
+                $('.clsDateControl').datepicker('remove');
+            }
+        }
+    }
+</script>

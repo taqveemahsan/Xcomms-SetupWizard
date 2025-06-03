@@ -1,0 +1,80 @@
+﻿@model XCommsWeb.Models.CustomerViewModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+<tr class="editorRow">
+    @using (Html.BeginCollectionItem("", Model.CustomerId.ToString()))
+    {
+        <td class="TxtVerAlign">
+            @Model.CompanyName
+        </td>
+        <td class="TxtVerAlign">
+            @Model.FullName
+        </td>
+        <td class="text-center TxtVerAlign">
+            @Model.StartDate.ToString("MM-dd-yyyy")
+        </td>
+        <td class="text-center TxtVerAlign">
+            @Model.ExpiresDate.ToString("MM-dd-yyyy")
+        </td>
+        <td class="text-center TxtVerAlign">
+            <div class="badge bg-color-@Html.Raw(Model.PurchasedTrial == "Purchased" ? "green" : "magenta") txt-color-white">
+                <i class="fa-sm txt-color-white fa fa-@Html.Raw(Model.PurchasedTrial == "Purchased" ? "check-circle txt-color-greenLight" : "tags txt-color-red")"></i>
+                <small> @Html.Raw(Model.PurchasedTrial) </small>
+            </div>
+        </td>
+        <td class="text-center TxtVerAlign">
+            <div class="badge bg-color-@Html.Raw(Model.Status == "Yes" ? "green" : "red") txt-color-white">
+                <i class="fa-sm txt-color-white fa fa-@Html.Raw(Model.Status == "Yes" ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                <small> @Html.Raw(Model.Status == "Yes" ? "Yes" : "No") </small>
+            </div>
+        </td>
+        <td class="text-center TxtVerAlign @Html.Raw(Model.ExpDays == 0 ? "danger" : "success")">
+            @Model.ExpDays
+        </td>
+        <td class="text-center TxtVerAlign">
+            @Model.LicenseCount
+        </td>
+        @*<td class="text-center">@Model.CntModule</td>*@
+        <td class="text-center TxtVerAlign @Html.Raw(Model.CustomerId == 0 ? "danger" : "warning")">
+            @if (Model.CustomerId != 0)
+            {
+                <a href="javascript:;" class="ClsModTbl" data-id="@Model.CustomerId"> <strong> @Model.CntModule </strong> </a>
+            }
+            else
+            {
+                <span>@Model.CntModule</span>
+            }
+        </td>
+        <td>
+            <div class="btn-group center-block">
+                <center>
+                    <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" style="min-width:auto !important;left:-30px;">
+                        <li>
+                            <a href="javascript:;" class="clsEdit" data-customerid="@Model.CustomerId" rel="tooltip" title="" data-placement="left" data-original-title="Edit">
+                                <i class="fa fa-pencil"></i> Edit
+                            </a>
+                        </li>
+                        <li>
+                            @if (Model.IsBlock)
+                            {
+                                <a href="javascript:;" class="clsBlockUnblockCust" data-customerid="@Model.CustomerId" data-flag="UB" data-email="@Model.CompanyEmail" rel="tooltip" title="" data-placement="left" data-original-title="Un-Block">
+                                    <i class="fa fa-play-circle"></i> UnBlock
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="javascript:;" class="clsBlockUnblockCust" data-customerid="@Model.CustomerId" data-flag="B" data-email="@Model.CompanyEmail" rel="tooltip" title="" data-placement="left" data-original-title="Block">
+                                    <i class="fa fa-ban"></i> Block
+                                </a>
+                            }
+                        </li>
+                    </ul>
+                </center>
+            </div>
+        </td>
+    }
+</tr>

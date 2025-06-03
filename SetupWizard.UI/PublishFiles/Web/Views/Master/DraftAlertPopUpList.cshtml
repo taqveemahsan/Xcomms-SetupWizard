@@ -1,0 +1,481 @@
+﻿@model IEnumerable<XCommsWeb.Models.AlertModel>
+@{
+    ViewBag.Title = "Draft Alert PopUp List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+
+    .smart-form fieldset {
+        display: block;
+        padding: 6px 5px 5px;
+        border: none;
+        background: rgba(255, 255, 255, .9);
+        position: relative;
+    }
+
+    .jarviswidget .widget-body {
+        min-height: 10px;
+        position: relative;
+        padding-bottom: 13px;
+    }
+
+    .bootstrap-select {
+        width: 100%;
+    }
+
+    .mrgleft5 {
+        margin-left: 5px
+    }
+
+    .mrgleft10 {
+        margin-left: 10px
+    }
+
+    .mrgleft20 {
+        margin-left: 20px
+    }
+
+    .mrgtop10 {
+        margin-top: 10px
+    }
+
+    .mrgtop20 {
+        margin-top: 20px
+    }
+
+    .mrgtop30 {
+        margin-top: 30px
+    }
+
+    .mrgtop40 {
+        margin-top: 40px
+    }
+
+    .mrgtop50 {
+        margin-top: 50px
+    }
+
+    .mrgtop60 {
+        margin-top: 60px
+    }
+
+    h3 {
+        display: block;
+        font-size: 18px;
+        font-weight: 400;
+        margin: 15px 0px 0px 0px;
+        line-height: normal;
+        color: #b72125;
+    }
+
+    .tabletr {
+        background-color: #efefef;
+        font-weight: bold;
+    }
+
+    .dropdown-menu > li > a {
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+        font-size: 12px !important;
+    }
+
+        .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+            text-decoration: none;
+            color: #fff;
+            background-color: #a90329 !important;
+        }
+
+    .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #a90329;
+        border-color: #a90329;
+    }
+
+    .modal-header .close {
+        margin-top: -20px;
+    }
+
+    .squarered {
+        height: 10px;
+        width: 10px;
+        background-color: #a90329;
+    }
+
+    .squaregreen {
+        height: 10px;
+        width: 10px;
+        background-color: #739e73;
+    }
+
+    .dt-toolbar {
+        padding: 6px 1px 1px;
+    }
+
+    .ifAlertPreview {
+        position: absolute !important;
+        /* top: 0px !important;
+            left: 350px !important;*/
+        z-index: 99999 !important;
+        border: 1px solid #CCC !important;
+        border-radius: 10px !important;
+        box-shadow: 8px 8px 5px grey !important;
+    }
+
+    .dt-toolbar {
+        padding: 6px 0px 1px;
+    }
+
+    .dt-toolbar-footer {
+        border-top: 0px;
+    }
+
+    a[disabled] {
+        background-color: #CCC;
+    }
+
+    .jarviswidget .widget-body {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+@using (Html.BeginForm("AlertDraftMultipleDelete", "Master", FormMethod.Post, new { id = "form_sample" }))
+{
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header>
+                    <span class="widget-icon"><i class="fa fa-list"></i> </span>
+                    <h2>Alert Draft List</h2>
+                </header>
+                <div class="widget-body">
+
+                    <div class="col-md-12">
+                        <div class="pull-left">
+                            <ul class="demo-btns">
+                                <li>
+                                    <a href="javascript:void(0);" class="ClsAdd btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Add New Alert">
+                                        <span class="btn-label"><i class="fa fa-plus"></i></span>Add Alert
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" id="btnDelete" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Delete Draft">
+                                        <span class="btn-label"><i class="fa fa-trash-o"></i></span>Delete Alert
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 mrgtop10">
+                        <table id="dt_RecentActivity" class="table table-striped table-bordered table-hover" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center no-sort" style="width: 25px !important;">
+                                        <div class="smart-form text-center">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="checkbox" id="chkCheckAll"><i></i>
+                                            </label>
+                                        </div>
+                                    </th>
+                                    <th class="text-center"><i class="fa fa-folder-open txt-color-blueDark fa-lg"></i> Drafts</th>
+                                    <th class="text-center col-md-2"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Drafted On (EST)</th>
+                                    <th class="text-center col-md-1"><i class="fa fa-pencil-square txt-color-blueDark fa-lg"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dt_AlertDraftTbody">
+                                @{Html.RenderPartial("_DraftAlertPopUpListPartial", Model);}
+                                @*@foreach (var item in Model)
+                                    {
+                                        Html.RenderPartial("_DraftAlertPopUpListPartial", item);
+                                    }*@
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+}
+<div id="divPreview" style="display:none;">
+    <iframe id="iframe" class="ifAlertPreview" name="myFrame" frameborder="0" scrolling="no">
+    </iframe>
+</div>
+
+<div class="modal fade" id="ConfirmationMessage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title"><strong>Confirmation</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="message">
+                    <h5>
+                        <span class="control-label">Are you sure you want to delete  </span><b><span id="DeleteSr"> </span></b> ?
+                        <br />
+                        <br />
+                        <span class="control-label">If yes then please press <b>"Confirm"</b> other wise kindly press "Close".</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:10px !important;">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="pull-right">
+                            <ul class="demo-btns">
+                                <li>
+                                    <a href="javascript:void(0);" id="DeleteRow" class="btn btn-labeled btn-primary DeleteRow" rel="tooltip" title="" data-placement="bottom" data-original-title="Confirm">
+                                        <span class="btn-label"><i class="fa fa-check-circle"></i></span>Confirm
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                        <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var FormComponents = function (DomainName) {
+        var GetAlertDraft = function (DomainName) {
+            //App.blockUI({ target: "#wid-id-2" });
+            var strUrl = DomainName + "/Master/GetDraftAlert";
+            $.ajax({
+                async: true,
+                type: 'POST',
+                url: strUrl,
+                data: {},
+                success: function (data) {
+                    $('#dt_RecentActivity').dataTable().fnClearTable();
+                    $('#dt_RecentActivity').dataTable().fnDestroy();
+                    $("#dt_AlertDraftTbody").html(data);
+                    /*GetAnalytic(DomainName);*/
+                    Events(DomainName);
+                    dataTableById("dt_RecentActivity", 2, "desc", true);
+                    //App.unblockUI('#wid-id-2');
+                },
+                error: function (req, status, error) {
+                    alert(error);
+                    //App.unblockUI('#wid-id-2');
+                }
+            });
+        }
+        var Events = function (DomainName) {
+            $("#chkCheckAll").click(function () {
+                if (this.checked) {
+                    $('.chkCheck').each(function () {
+                        $(".chkCheck").prop('checked', true);
+                    })
+                } else {
+                    $('.chkCheck').each(function () {
+                        $(".chkCheck").prop('checked', false);
+                    })
+                }
+            });
+            var TotalCount = 5;
+            $(".chkCheck").click(function () {
+                var SelectCount = 0;
+                $(".chkCheck").each(function () {
+                    if (this.checked) {
+                        SelectCount = SelectCount + 1;
+                    }
+                });
+                if (SelectCount == TotalCount) {
+                    $("#chkCheckAll").prop('checked', true);
+                }
+                else {
+                    $("#chkCheckAll").prop('checked', false);
+                }
+            });
+
+            $("#btnDelete").click("on", function () {
+                var count = 0;
+                $(".chkCheck").each(function () {
+                    if (this.checked) {
+                        count = count + 1;
+                    }
+                });
+                if (count == 0) {
+                    Swal.fire({
+                        title: "Please select at least one record !",
+                        text: "",
+                        icon: "error",
+                        confirmButtonText:
+                            '<i class="fa fa-thumbs-up"></i> Okay !',
+                        showCancelButton: false,
+                        cancelButtonColor: '#d33'
+                    });
+                    return false;
+                }
+                var form = $('#form_sample');
+                var table = $('#dt_RecentActivity').DataTable();
+                table.destroy();
+                if (form.valid() == false) {
+                    return false;
+                }
+                else {
+                    dataTableById("dt_RecentActivity", 2, "desc", true);
+                    $('#ConfirmationMessage').modal('show');
+                    $(".DeleteRow").on("click", function () {
+
+                        Swal.fire({
+                            title: 'Are you sure you want to delete this!',
+                            text: "",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Swal.fire('Data has been deleted Successfully.', '', 'success');
+                                document.forms["form_sample"].submit();
+                                return true;
+                            }
+                        })
+
+                        //var result = $(this).val();
+
+                        //if (result == 1) {
+                        //    document.forms["form_sample"].submit();
+                        //    return true;
+                        //}
+                    });
+
+                }
+            });
+
+            $(".showAlertPreview").click(function () {
+                var alertid = $(this).data("alertid");
+                var height = $(this).data("height");
+                var width = $(this).data("width");
+                var AlertPosition = $(this).data("alertposition");
+                var FullScreenAlert = $(this).data("fullscreenalert");
+                if (FullScreenAlert == "True") {
+                    width = $(document).width() - 220;
+                    height = $(document).height() - 89;
+                }
+                $('#iframe').attr('height', height + 'px');
+                $('#iframe').attr('width', width + 'px');
+                App.blockUI({ boxed: true });
+                $.ajax({
+                    url: DomainName + "/Master/AlertPreviewPopup?AlertId=" + alertid,
+                    cache: false,
+                    type: 'POST',
+                    data: $('#contact-form').serialize(),
+                    success: function (data) {
+                        $(".ifAlertPreview").parent('div').attr("style", "display:none;");
+                        $("iframe").contents().find("body").html(data)
+                        $(this).attr("target", "myFrame");
+                        if (FullScreenAlert) {
+                            $(".ifAlertPreview").attr("style", "top:0px;left:0px;");
+                        } else {
+                            if (AlertPosition == 1) { // Top-Left
+                                $(".ifAlertPreview").attr("style", "top:0px;left:0px;");
+                            }
+                            if (AlertPosition == 2) { // Top-Right
+                                wt = (document.documentElement.clientWidth - width - 220) + 'px;';
+                                $(".ifAlertPreview").attr("style", "top:0px;left:" + wt);
+                            }
+                            if (AlertPosition == 3) { // Center
+                                wt = ((document.documentElement.clientWidth - width - 220) / 2) + 'px;';
+                                if ($(document).height() > $(window).height()) {
+                                    ht = ((document.documentElement.clientHeight - height - 89) / 2) + 'px;';
+                                }
+                                else {
+                                    ht = ((document.documentElement.clientHeight - height - 141) / 2) + 'px;';
+                                }
+                                $(".ifAlertPreview").attr("style", "top:" + ht + "left:" + wt);
+                            }
+                            if (AlertPosition == 4) { // Bottom-Left
+                                if ($(document).height() > $(window).height()) {
+                                    ht = (document.documentElement.clientHeight - height - 89 + window.pageYOffset) + 'px;';
+                                }
+                                else {
+                                    ht = (document.documentElement.clientHeight - height - 141) + 'px;';
+                                }
+                                $(".ifAlertPreview").attr("style", "top:" + ht + "left:0px");
+                            }
+                            if (AlertPosition == 5) { // Bottom-Right
+                                wt = (document.documentElement.clientWidth - width - 220) + 'px;';
+                                if ($(document).height() > $(window).height()) {
+                                    ht = (document.documentElement.clientHeight - height - 89 + window.pageYOffset) + 'px;';
+                                }
+                                else {
+                                    ht = (document.documentElement.clientHeight - height - 141) + 'px;';
+                                }
+                                $(".ifAlertPreview").attr("style", "top:" + ht + "left:" + wt);
+                            }
+                        }
+                        setTimeout(function () {
+
+                            //$("iframe").contents().find("#PreviewThemeId").addClass($("#ThemeId").val());
+                            //$("iframe").contents().find("#title").html($("#AlertTital").summernote('code'));
+                            //$("iframe").contents().find("#txtbody").html($("#AlertBody").summernote('code'));
+
+                            $(".ifAlertPreview").parent('div').attr("style", "display:none;");
+                            $("#divPreview").toggle('show').change();
+                            if (AlertPosition == 4 || AlertPosition == 1) {
+                                if ($("#left-panel").width() > 45) {
+                                    $(".minifyme").click();
+                                }
+                                $("iframe").contents().find(".close").on("click", function () {
+                                    $(".minifyme").click();
+                                });
+                            }
+                        }, 200);
+
+                        $("iframe").contents().find(".close").on("click", function () {
+                            $("iframe").contents().html("");
+                        });
+                        App.unblockUI();
+                    },
+                    error: function (req, status, error) {
+                        TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                        App.unblockUI();
+                    }
+                });
+
+            });
+
+            $('.ClsAdd').click(function () {
+                App.blockUI({ boxed: true });
+                window.location = DomainName + "/Master/CreateAlert?AlertId=0";
+            });
+
+            $('.clseditsend').click(function () {
+                App.blockUI({ boxed: true });
+                var Id = $(this).data('id');
+                window.location = DomainName + "/Master/CreateAlert?AlertId=" + Id;
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                GetAlertDraft(DomainName);
+                Events(DomainName);
+                if ('@ViewBag.IsExpired' == 1) {
+                    $('a').addClass('disabled');
+                    $('.ClsAdd ').hide();
+                    $('#btnDelete ').hide();
+                }
+                dataTableById("dt_RecentActivity");
+            }
+        }
+    }();
+</script>

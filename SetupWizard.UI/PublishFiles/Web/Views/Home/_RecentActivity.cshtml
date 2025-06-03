@@ -1,0 +1,62 @@
+﻿@model IEnumerable<XCommsWeb.Models.PopAlert>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+
+@foreach (var item in Model)
+{
+    string AlertTital = !string.IsNullOrEmpty(item.AlertTital) ? item.AlertTital.StripHTML() : "";
+    if (string.IsNullOrEmpty(AlertTital))
+    {
+        AlertTital = "Image Only Used In Title";
+    }
+    item.AlertTital = AlertTital;
+
+    <tr class="editorRow">
+        <td class="hide">@item.AlertId</td>
+        <td class="col-md-5" style="vertical-align:middle;">
+            <span rel="tooltip" data-placement="right" data-original-title="@item.Type">
+                <i class="fa fa-@Html.Raw(item.Type == "Wallpaper" ? "desktop" : item.Type == "Ticker" ?  "ellipsis-h" : item.Type == "Email" ? "envelope" : item.Type == "Screen Saver" ? "laptop" : "exclamation-circle") fa-lg"></i>
+            </span>
+            @*@AlertTital*@
+            @item.AlertTital
+        </td>
+        <td class="col-md-3 text-center" style="vertical-align:middle;">
+            @item.EntryDate.FormateDateWithFullYearUS()
+        </td>
+        <td class="text-center @Html.Raw(item.NoOfRecipientes == 0 ? "danger" : "success") col-md-2" style="vertical-align:middle;">
+            @if (item.NoOfRecipientes > 0)
+            {
+                if (item.Type == "Email")
+                {
+                    <strong>
+                        <a href="javascript:;" class="ClsEmailNotDeliveredData" data-alertid="@item.AlertId" data-typeticker="@item.TypeTicker" data-type="5" data-noofrecepient="@item.NoOfRecipientes" rel="tooltip" data-placement="top" data-original-title="@item.Type Recipientes">
+                            <span class="txt-color-green">
+                                @item.NoOfRecipientes
+                            </span>
+                        </a>
+                    </strong>
+                }
+                else
+                {
+                    <strong>
+                        <a href="javascript:;" class="ClsAnalytics" data-alertid="@item.AlertId" data-typeticker="@item.TypeTicker" data-noofrecepient="@item.NoOfRecipientes" rel="tooltip" data-placement="top" data-original-title="@item.Type Recipientes">
+                            <span class="txt-color-green">
+                                @item.NoOfRecipientes
+                            </span>
+                        </a>
+                    </strong>
+                }
+            }
+            else
+            {
+                <span class="txt-color-red">
+                    @item.NoOfRecipientes
+                </span>
+            }
+        </td>
+        <td class="text-center col-md-2 @Html.Raw(item.Delivered == 0 ? "danger" : "warning")" style="vertical-align:middle;">
+            @Html.Raw(item.Delivered)
+        </td>
+    </tr>
+}

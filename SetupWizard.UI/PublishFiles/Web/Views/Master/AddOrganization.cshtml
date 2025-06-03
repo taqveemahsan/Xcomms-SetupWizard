@@ -1,0 +1,190 @@
+﻿@model XCommsWeb.Models.OrganizationModel
+@using System.Configuration;
+@{
+    ViewBag.Title = "AddOrganization";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="content">
+    <section id="widget-grid" class="">
+        <div class="row">
+            <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
+                <div class="jarviswidget jarviswidget-sortable" id="wid-id-1" data-widget-editbutton="false" data-widget-custombutton="false">
+                    <header role="heading">
+                        <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                        <h2>Add Organization</h2>
+                    </header>
+                    <div>
+                        <div class="widget-body no-padding">
+                            @using (Html.BeginForm("SubmitOrganization", "Master", FormMethod.Post, new { id = "contact-form", @class = "form-horizontal smart-form", enctype = "multipart/form-data" }))
+                            {
+                                <header>
+                                    Organization Details
+                                </header>
+                                <fieldset>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-briefcase"></i>
+                                                @Html.TextBoxFor(c => c.OrganizationName, new { @class = "form-control required", placeholder = "Organization Name" })
+                                                @Html.HiddenFor(m => m.OrganizationId)
+                                                @Html.HiddenFor(m => m.EditFlag)
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-globe"></i>
+                                                @Html.TextBoxFor(c => c.Website, new { @class = "form-control required ", placeholder = "Website" })
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-envelope-o"></i>
+                                                @Html.TextBoxFor(c => c.OrgEmailId, new { @class = "form-control required email", placeholder = "E-mail Id" })
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-phone"></i>
+                                                @Html.TextBoxFor(c => c.OrgContactNo, new { @class = "form-control required", placeholder = "Phone No.", @minlength = 10, @maxlength = 10, @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-5">
+                                            <label class="input">
+                                                <i class="icon-prepend glyphicon glyphicon-map-marker"></i>
+                                                @Html.TextBoxFor(c => c.Country, new { @class = "form-control required", placeholder = "Country" })
+                                            </label>
+                                        </section>
+
+                                        <section class="col col-4">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-location-arrow"></i>
+                                                @Html.TextBoxFor(c => c.City, new { @class = "form-control required", placeholder = "City" })
+                                            </label>
+                                        </section>
+
+                                        <section class="col col-3">
+                                            <label class="input">
+                                                <i class="icon-prepend glyphicon glyphicon-pushpin"></i>
+                                                @Html.TextBoxFor(c => c.PostCode, new { @class = "form-control required", placeholder = "Post Code" })
+                                            </label>
+                                        </section>
+                                    </div>
+
+                                    <section>
+                                        <label class="textarea">
+                                            <i class="icon-prepend fa fa-comment"></i>
+                                            @Html.TextAreaFor(c => c.OrgAddress, new { @class = "form-control required", placeholder = "Address" })
+                                        </label>
+                                    </section>
+
+                                </fieldset>
+                                <header>
+                                    Contact Person Details
+                                </header>
+                                <fieldset>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-user"></i>
+                                                @Html.TextBoxFor(c => c.UserName, new { @class = "form-control required", placeholder = "Contact Person Name" })
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-phone"></i>
+                                                @Html.TextBoxFor(c => c.UserMobileNo, new { @class = "form-control required", placeholder = "Contact Person Mobile No.", @minlength = 10, @maxlength = 10, @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-envelope-o"></i>
+                                                @Html.TextBoxFor(c => c.UserEmailId, new { @class = "form-control required email", placeholder = "Contact Person E-mail Id" })
+                                            </label>
+                                        </section>
+                                    </div>
+                                </fieldset>
+                                <footer>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-save"></i> Save
+                                    </button>
+                                    <a class="btn btn-default btnAddEdit" href="@Url.Content("~/Master/OrganizationList")">
+                                        <i class="fa fa-arrow-left"></i>
+                                        Back To List
+                                    </a>
+                                </footer>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                // Rules for form validation
+                rules: {
+                },
+                // Messages for form validation
+                messages: {
+                },
+                // Do not change code below
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+
+                $("#OrgEmailId").blur(function (e) {
+                    if ($("#OrgEmailId").val() == "") {
+                        return false;
+                    } else {
+                        var strUrl = DomainName + '/Master/CheckDuplicateUser?Id=' + $(this).val();
+                        App.blockUI({ boxed: true });
+                        $.ajax({
+                            url: strUrl,
+                            success: function (data) {
+                                if (data == 'False') {
+                                    $('#OrgEmailId').val('');
+                                    $('#OrgEmailId').focus();
+                                    TosterNotification("error", "This User Id Already exist..", "Oppps..!!");
+                                }
+                                else {
+                                    $('#OrgEmailId').val($(this).val());
+                                    $('#OrgEmailId').focusin();
+                                    $('#OrgEmailId').select();
+                                }
+                                App.unblockUI();
+                                return data;
+                            },
+                            error: function (req, status, error) {
+                                $('#OrgEmailId').val('');
+                                $('#OrgEmailId').focus();
+                                App.unblockUI();
+                                TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                                return false;
+                            }
+                        });
+                    }
+                });
+
+            }
+        }
+    }();
+</script>

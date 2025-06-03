@@ -1,0 +1,557 @@
+﻿@model XCommsWeb.Models.PopAlertViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Model.Id = Model.Id;
+    string Title = "PopUp Alert";
+
+    if (Model.Id == "2")
+    {
+        Title = "Scrolling Ticker";
+    }
+    else if (Model.Id == "3")
+    {
+        Title = "Wallpaper";
+    }
+    else if (Model.Id == "4")
+    {
+        Title = "Screensaver";
+    }
+    else if (Model.Id == "5")
+    {
+        Title = "Email";
+    }
+    else if (Model.Id == "7")
+    {
+        Title = "LockScreen";
+    }
+    ViewBag.Title = Title + " Analytics";
+    ViewBag.TitleList = Title + " Analytics";
+    ViewBag.Tit = Title + " Activity Date Range";
+}
+
+<style type="text/css">
+    .mrgleft5 {
+        margin-left: 5px
+    }
+
+    .mrgleft10 {
+        margin-left: 10px
+    }
+
+    .mrgtop10 {
+        margin-top: 10px
+    }
+
+    .mrgtop20 {
+        margin-top: 20px
+    }
+
+    .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+        text-decoration: none;
+        color: #fff;
+        background-color: #a90329 !important;
+    }
+
+    .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #a90329;
+        border-color: #a90329;
+    }
+
+    .modal-header .close {
+        margin-top: -20px;
+    }
+
+    .squarered {
+        height: 10px;
+        width: 10px;
+        background-color: #a90329;
+    }
+
+    .squaregreen {
+        height: 10px;
+        width: 10px;
+        background-color: #739e73;
+    }
+
+    .ifAlertPreview {
+        position: absolute !important;
+        /* top: 0px !important;
+            left: 350px !important;*/
+        z-index: 99999 !important;
+        border: 1px solid #CCC !important;
+        border-radius: 10px !important;
+        box-shadow: 8px 8px 5px grey !important;
+    }
+
+    .dt-toolbar {
+        padding: 6px 0px 1px;
+    }
+
+    .dt-toolbar-footer {
+        border-top: 0px;
+    }
+    .tdTitle {
+        max-width: 40rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .table-forum tr td {
+        border-top-style:none !important;
+    }
+    .indicator {
+        display: inline-block;
+        width: 1.5em;
+        height: 1.5em;
+        border-radius: 50%;
+    }
+
+    .online {
+        background: #0f9f59;
+    }
+
+    .offline {
+        background: #da1515;
+    }
+
+    .jarviswidget .widget-body {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { id = "submit_form", @class = "form-horizontal row-fluid", enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-togglebutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-filter"></i> </span>
+                    <h2 style="width:auto !important;">@ViewBag.Tit</h2>
+                </header>
+                <div class="widget-body">
+                    <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+                        <div class="tab-content col-md-12">
+                            <div class="tab-pane DivCustomBorder fade in active" id="s1">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-xs-12 col-sm-12 col-md-4 col-lg-4"> Select Date : </label>
+                                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                                <div id="reportrange" class="input form-control">
+                                                    <i class="icon-append fa fa-calendar"></i>
+                                                    &nbsp;
+                                                    <span></span>
+                                                    <b class="fa fa-angle-down"></b>
+                                                    @Html.HiddenFor(c => c.FromDate)
+                                                    @Html.HiddenFor(c => c.ToDate)
+                                                    @Html.HiddenFor(c => c.Id)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xs-offset-4 col-md-offset-0">
+                                        <div class="pull-left">
+                                            <ul class="demo-btns">
+                                                <li>
+                                                    <a href="javascript:void(0);" id="btnSubmit" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Search Criteria">
+                                                        <span class="btn-label"><i class="fa fa-search"></i></span>Search
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+}
+<br /><br />
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-togglebutton="false">
+            <header>
+                <span class="widget-icon"><i class="fa fa-list"></i></span>
+                <h2 style="width:auto !important;">@ViewBag.TitleList</h2>
+            </header>
+            <div id="ResultRegion" class="widget-body">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 table-responsive">
+                    <div class="">
+                        <a href="javascript:void(0);" id="GetConfig" class="config"></a>
+                        <a href="javascript:void(0);" id="Resubmit" class="reload"></a>
+                    </div>
+                    <div id="ResultData"></div>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+<a href="#exampleModal" data-toggle="modal" id="exampleModals" style="display:none;"></a>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false" role="widget">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-users"></i></span>
+                                <h2>Analytics Recipients & Delivered Chart</h2>
+                            </header>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div id="pie-chart1" class="chart"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class=" mrgtop20 table table-responsive table-bordered" id="tblData1">
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <ul class="demo-btns">
+                        <li>
+                            <a href="javascript:void(0);" id="exportpiedata" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Export Data">
+                                <span class="btn-label"><i class="fa fa-download"></i></span>Export
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalTbl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false" role="widget">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-users"></i></span>
+                                <h2>Recipients</h2>
+                            </header>
+                            <div>
+                                <table class="mrgtop20 table table-responsive table-bordered" id="tblData2" width="100%"></table>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <ul class="demo-btns">
+                        <li>
+                            <a href="javascript:void(0);" id="exportPopAlert" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Export Data">
+                                <span class="btn-label"><i class="fa fa-download"></i></span>Export
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/assets/plugins/easy-pie-chart/jquery.easy-pie-chart.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.cust.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.resize.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.fillbetween.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.orderBar.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.pie.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.time.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.tooltip.min.js"></script>
+}
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+        var Events = function (DomainName) {
+        }
+
+        var handleDateRangePickers = function () {
+            if (!jQuery().daterangepicker) {
+                return;
+            }
+
+            $('#reportrange').daterangepicker({
+                opens: (App.isRTL() ? 'left' : 'right'),
+                startDate: moment().subtract('days', 29),
+                endDate: moment(),
+                //maxDate: '12/31/2014',
+                //dateLimit: {
+                //    days: 60
+                //},
+                showDropdowns: true,
+                showWeekNumbers: false,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                    'Last 7 Days': [moment().subtract('days', 6), moment()],
+                    'Last 30 Days': [moment().subtract('days', 29), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
+                    'All': ['@ViewBag.StartDate', moment()]
+                },
+                buttonClasses: ['btn'],
+                applyClass: 'green',
+                cancelClass: 'default',
+                format: 'MM/DD/YYYY',
+                separator: ' to ',
+                locale: {
+                    applyLabel: 'Apply',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    customRangeLabel: 'Custom Range',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
+                }
+            },
+            function (start, end) {
+                $('#FromDate').val(start.format('MMM D, YYYY'));
+                $('#ToDate').val(end.format('MMM D, YYYY'));
+                $('#reportrange span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+            }
+            );
+            $('#reportrange span').html(moment().subtract('days', 29).format('MMM D, YYYY') + ' - ' + moment().format('MMM D, YYYY'));
+            $('#FromDate').val(moment().subtract('days', 29).format('MMM D, YYYY'));
+            $('#ToDate').val(moment().format('MMM D, YYYY'));
+        }
+
+        var GetListData = function (DomainName) {
+            App.blockUI({ target: "#main" });
+            var strurl = DomainName + "/Master/PopAlertListData";
+            $.ajax({
+                url: strurl,
+                async: true,
+                cache: false,
+                data: $("#submit_form").serialize(),
+                type: 'POST',
+                success: function (data) {
+                    /*App.blockUI({ boxed: true});*/
+                    $("#ResultData").html("");
+                    $("#ResultData").html(data);
+                    GetAnalytic(DomainName);
+                    GetEmailNotDeliveredRecipientsDetail(DomainName);
+                    $("#ResultRegion").show();
+                    $('#CriteriaRegion').show();
+                    $("[rel='tooltip']").tooltip();
+                    dataTableById("dtPopAlert", 0, 'desc');
+                    App.unblockUI('#main');
+                },
+             error: function (req, status, error) {
+                 alert("error. Please try agaModeln later.");
+                 App.unblockUI('#main');
+                }
+            });
+        }
+
+        var GetAnalytic = function (DomainName) {
+            $(".ClsAnalytics").on("click", function () {
+                App.blockUI({ boxed: true });
+                var strUrl = DomainName + "/Home/GetData";
+                var NoOfRecepient = $(this).data('noofrecepient');
+                if (NoOfRecepient > 0) {
+                    var parameters = {};
+                    parameters['Type'] = '@Model.Id';
+                    parameters['AlertId'] = $(this).data('alertid');
+                    parameters['TenantId'] = '@Model.TenantId';
+                    parameters['BaseUserName'] = '@Model.BaseUserName';
+                    parameters['ViewingType'] = '@Model.BaseViewingType';
+
+                    var strUrl1 = DomainName + "/Home/ExportData";
+                    $('#exportpiedata').attr("href", strUrl1 + "?AlertId=" + $(this).data('alertid') + "&Status=" + "" + "&ModuleType=" + '@Model.Id');
+                    $.ajax({
+                        async: false,
+                        type: 'POST',
+                        url: strUrl,
+                        dataType: 'json',
+                        data: {
+                            Method: 'USP_GetPopUpAnalyticsDataV1',
+                            parameters: parameters
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            $("#exampleModals").click();
+                            setTimeout(function () {
+                                if ($('#pie-chart1').length) {
+                                    var data_pie = [];
+
+
+                                    data_pie[0] = {
+                                        label: "ND : " + data[0]["NotDelivered"],
+                                        data: data[0]["NotDelivered"],
+                                    }
+                                    data_pie[1] = {
+                                        label: "Delivered : " + data[0]["Delivered"],
+                                        data: data[0]["Delivered"]
+                                    }
+
+                                    $.plot($("#pie-chart1"), data_pie, {
+                                        series: {
+                                            pie: {
+                                                show: true,
+                                                innerRadius: 0,
+                                                radius: 1,
+                                                label: {
+                                                    show: true,
+                                                    radius: 2 / 4,
+                                                    formatter: function (label, series) {
+
+                                                        return '<div style="font-size:11px;text-align:center;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                                    },
+                                                    threshold: 0.1
+                                                }
+                                            }
+                                        },
+                                        legend: {
+                                            show: false,
+                                            noColumns: 1, // number of colums in legend table
+                                            labelFormatter: null, // fn: string -> string
+                                            labelBoxBorderColor: "#000", // border color for the little label boxes
+                                            container: null, // container (as jQuery object) to put legend in, null means default on top of graph
+                                            position: "ne", // position of default legend container within plot
+                                            margin: [5, 10], // distance from grid edge to default legend container within plot
+                                            backgroundColor: "#efefef", // null means auto-detect
+                                            backgroundOpacity: 1 // set to 0 to avoid background
+                                        },
+                                        grid: {
+                                            hoverable: true,
+                                            clickable: true
+                                        },
+                                    });
+                                    var tblString = "";
+                                    tblString += '<tr><td colspan="2"><b>Total Recepient : </b></td><td class="text-left" colspan="2"><b><center>' + data[0]["NoOfRecipientes"] + '</center></b></td></tr>';
+                                    tblString += '<tr class="success"><td><div class="squaregreen"></div></td><td><span class="mrgleft5"> <i class="fa fa-check-circle-o txt-color-green fa-md"></i> Delivered</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="Deliverd" data-type="' + data[0]["Type"] + '"><span class=""><b><center>' + data[0]["Delivered"] + '</center></b></span></a></td><td><label><span class="mrgleft5">' + data[0]["Delivered_Per"] + '</span></label></td></tr>';
+                                    tblString += '<tr class="danger"><td><div class="squarered"></div></td><td><span class="mrgleft5"> <i class="fa fa-times-circle-o txt-color-red fa-md"></i> Not Delivered</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="NotDeliverd" data-type="' + data[0]["Type"] + '"><span class=""><b><center>' + data[0]["NotDelivered"] + '</center></b></span></a></td><td><label ><span class="mrgleft5">' + data[0]["NotDelivered_Per"] + '</span></label></td></tr>';
+                                    if (data[0]["Type"] == "1" || data[0]["Type"] == "2" || data[0]["Type"] == "5") {
+                                        tblString += '<tr class="warning"><td><div></div></td><td><span class="mrgleft5"> <i class="fa fa-info-circle txt-color-blue fa-md"></i> Acknowleged</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="Acknowleged" data-type="' + data[0]["Type"] + '"><span class=""><b><center>' + data[0]["Acknowledged"] + '</center></b></span></a></td><td><label ><span class="mrgleft5">' + data[0]["Acknowledged_Per"] + '</span></label></td></tr>';
+                                    }
+
+                                    $("#tblData1").html(tblString);
+
+                                    GetAnalyticDetail(DomainName);
+                                    App.unblockUI();
+                                }
+                            }, 500);
+                        },
+                        error: function (jqXHR, exception) {
+                            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                                App.unblockUI();
+                        }
+                    });
+                }
+
+            });
+            App.unblockUI();
+            dataTableById("dt_AlertHistory");
+
+        }
+
+        var GetAnalyticDetail = function (DomainName) {
+            $(".ClsAnalTbl").on("click", function () {
+                App.blockUI({ boxed: true });
+                var strUrl = DomainName + "/Master/GetAnalyticData";
+                var strUrl1 = DomainName + "/Home/ExportData";
+                $('#exportPopAlert').attr("href", strUrl1 + "?AlertId=" + $(this).data('alertid') + "&Status=" + $(this).data('status') + "&ModuleType=" + $(this).data('type'));
+                $.ajax({
+                    async: false,
+                    type: 'POST',
+                    url: strUrl,
+                    data: { 'AlertId': $(this).data('alertid'), 'Status': $(this).data('status'), 'ModuleType': $(this).data('type')},
+                    success: function (data) {
+                        if (data == "1") {
+                            App.unblockUI();
+                        } else {
+                            $("#tblData2").html(data);
+                            $('#exampleModalTbl').modal('show');
+
+                            dataTableById("tblData2");
+
+                        }
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception) {
+                        TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                        App.unblockUI();
+                    }
+                });
+            });
+        }
+
+        var GetEmailNotDeliveredRecipientsDetail = function (DomainName) {
+            $(".ClsEmailNotDeliveredData").on("click", function () {
+                App.blockUI({ boxed: true });
+                var strUrl = DomainName + "/Master/GetAnalyticData";
+                var strUrl1 = DomainName + "/Home/ExportData";
+                var Status = "NotDeliverd";
+                $('#exportPopAlert').attr("href", strUrl1 + "?AlertId=" + $(this).data('alertid') + "&Status=" + Status + "&ModuleType=" + $(this).data('type'));
+                $.ajax({
+                    async: false,
+                    type: 'POST',
+                    url: strUrl,
+                    data: { 'AlertId': $(this).data('alertid'), 'Status': Status, 'ModuleType': $(this).data('type') },
+                    success: function (data) {
+                        if (data == "1") {
+                            App.unblockUI();
+                        } else {
+                            $("#tblData2").html(data);
+                            $('#exampleModalTbl').modal('show');
+                            dataTableById("tblData2");
+                        }
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception) {
+                        TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                        App.unblockUI();
+                    }
+                });
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                Events(DomainName);
+                dataTableById("dtPopAlert", 0, 'desc');
+                //$("#ResultRegion").hide();
+                handleDateRangePickers();
+                GetListData(DomainName);
+                $("#btnSubmit").click(function () {
+                    GetListData(DomainName);
+                });
+            }
+        }
+    }();
+</script>

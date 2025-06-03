@@ -1,0 +1,954 @@
+﻿@model XCommsWeb.Models.AlertModel
+@using System.Configuration;
+@{
+    ViewBag.Title = "Default Setting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Default Setting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SelectListItem> ListLifeTimeType = new List<SelectListItem>(){
+        new SelectListItem { Text = "Day(s)", Value = "Day"},
+        new SelectListItem { Text = "Hour(s)", Value = "Hour"},
+        new SelectListItem { Text = "Minute(s)", Value = "Minute"}
+    };
+}
+
+<style type="text/css">
+    .checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {
+        position: absolute;
+        margin-left: 0px !important;
+    }
+
+    .mrgtp10 {
+        margin-top: 10px;
+    }
+
+    .mrgtp22 {
+        margin-top: 22px;
+    }
+
+    .mrgtp40 {
+        margin-top: 40px;
+    }
+
+    .form-control-unique {
+        display: block;
+        width: 100%;
+        height: 21px;
+        padding: 0px 5px;
+        font-size: 13px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .lable-unique {
+        font-size: 14px;
+        margin-bottom: 16px;
+        margin-left: 10px;
+        color: #fff;
+    }
+
+    .smart-accordion-default .panel-default > .panel-heading {
+        background-color: #3c3a39;
+        color: #FFF;
+        margin-bottom: 5px;
+    }
+
+    .smart-accordion-default.panel-group .panel-title a {
+        font-weight: 700;
+        padding: 5px 10px;
+    }
+
+    .smart-accordion-default.panel-group .panel + .panel {
+        margin-top: 5px;
+    }
+
+    .smart-accordion-default .panel-default {
+        border-color: #c3c3c300;
+    }
+
+    .txt-color-yellow {
+        color: #ffb848 !important;
+    }
+
+    .smart-form .checkbox, .smart-form .radio {
+        margin-bottom: 4px;
+        padding-left: 25px;
+        line-height: 25px;
+        color: #a1a1a1;
+        cursor: pointer;
+        font-size: 13px;
+        padding-top: 0px;
+    }
+
+    .popover.bottom > .arrow:after {
+        border-bottom-color: #000;
+    }
+
+    .slider.slider-vertical {
+        height: 150px;
+    }
+
+    .img-list {
+        width: 19%;
+        margin-bottom: 1.2rem;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+        .img-list.selected {
+            border: none;
+            /*box-shadow: 0px 0px 6px 7px #2b2b2b;*/
+            box-shadow: 0px 12px 22px 1px #333;
+            z-index: 1;
+            /*transform: scale(1.2);*/
+            margin: 0 10px 0 10px;
+        }
+
+        .img-list > img {
+            width: 100%
+        }
+
+    .img-list1 {
+        width: calc(100vw/8);
+        margin-bottom: 1.2rem;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+        .img-list1.selected {
+            border: none;
+            /*box-shadow: 0px 0px 6px 7px #2b2b2b;*/
+            box-shadow: 0px 12px 22px 1px #333;
+            z-index: 1;
+            /*transform: scale(1.2);*/
+            margin: 0 10px 0 10px;
+        }
+
+        .img-list1 > img {
+            width: 100%
+        }
+
+    button[disabled] {
+        background-color: #CCC;
+    }
+
+    .invalid {
+        color: red;
+    }
+
+    .hasbgcolor {
+        color: red;
+    }
+
+    .clsUserImage {
+        max-height: 80px !important;
+        max-width: 250px !important;
+        border: 1px solid #e1e1e1 !important;
+        /*box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;*/
+    }
+
+    .clsSetImage {
+        border: 1px solid #898989 !important;
+        /*box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;*/
+    }
+
+    .MainBox {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+<div class="row">
+    <article class="col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+        <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header role="heading">
+                <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                <h2>@ViewBag.Title</h2>
+            </header>
+            <div class="widget-body no-padding">
+                @using (Html.BeginForm("DefaultSettingSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                {
+                    <!--<div class="col-md-12 margin-top-10">
+                        <div class="pull-right">
+                            <button id="BtnSumitDefaultSetting" type="button" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Save Setting">
+                                <span class="btn-label"><i class="fa fa-pencil-square-o"></i></span>Save Setting
+                            </button>-->
+
+                    @*<ul class="demo-btns">
+                            <li>
+                                <a href="javascript:void(0);" id="btnSubmit" class="btnSubmitAlt btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Save Setting">
+                                    <span class="btn-label"><i class="fa fa-save"></i></span>Save Setting
+                                </a>
+                            </li>
+                        </ul>*@
+                    <!--</div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />-->
+
+                    <br /><br />
+                    <fieldset>
+                        <article class="col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable">
+                            <div class="widget-body no-padding ">
+                                <div class="panel-group smart-accordion-default" id="accordion-2">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse1" class="" aria-expanded="true">
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Pop Up Alert Defaults
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse1" class="panel-collapse collapse in" aria-expanded="true" style="">
+                                            <div class="panel-body" style="border-radius: 10px;">
+                                                <fieldset>
+                                                    <section class="col-md-6">
+                                                        <label class="lable-unique">Screen Display Position</label>
+                                                        <div class="row smart-form">
+                                                            <div class="col-md-6">
+                                                                <label class="radio">
+                                                                    <input type="radio" name="radioPosition" id="TopLeft" value="1" class="radiobox" />
+                                                                    <i></i>Top Left
+                                                                </label>
+                                                                <label class="radio">
+                                                                    <input type="radio" name="radioPosition" id="TopRight" value="2" class="radiobox" />
+                                                                    <i></i>Top Right
+                                                                </label>
+                                                                <label class="radio">
+                                                                    <input type="radio" name="radioPosition" id="Center" value="3" class="radiobox" />
+                                                                    <i></i>Center
+                                                                </label>
+                                                                <label class="radio">
+                                                                    <input type="radio" name="radioPosition" id="BottomLeft" value="4" class="radiobox" />
+                                                                    <i></i>Bottom Left
+                                                                </label>
+                                                                <label class="radio">
+                                                                    <input type="radio" name="radioPosition" id="BottomRight" value="5" class="radiobox" />
+                                                                    <i></i>Bottom Right
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <img src="~/assets/img/Screen/Alerts/5.png" class="img-responsive" id="alertImage" />
+                                                            </div>
+                                                        </div>
+                                                        @Html.HiddenFor(m => m.AlertPosition)
+                                                    </section>
+                                                    <section class="col-md-offset-1 col-md-5">
+                                                        <label class="lable-unique">Alert Sizing option</label>
+                                                        <div class="row smart-form margin-bottom-10">
+                                                            <label class="col-md-5" style="color:#a1a1a1;">Full Screen</label>
+                                                            <div class="col-md-2">
+                                                                <label class="checkbox">
+                                                                    @Html.CheckBoxFor(m => m.FullScreenAlert, new { @class = "AlertSetting checkbox " })
+                                                                    <i></i>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row smart-form margin-bottom-10">
+                                                            <label class="col-md-5" style="color:#a1a1a1;">Resize</label>
+                                                            <div class="col-md-2">
+                                                                <label class="checkbox">
+                                                                    @Html.CheckBoxFor(m => m.isResize, new { @class = "AlertSetting checkbox " })
+                                                                    <i></i>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label class="col-md-5">Alert Width</label>
+                                                                <div class="form-inline">
+                                                                    @Html.TextBoxFor(c => c.DesktopSizeWidth, new { @class = "form-control input-xs", @min = "10", style = "width: 50px; ", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                    pixels
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label class="col-md-5">Alert Height</label>
+                                                                <div class="form-inline">
+                                                                    @Html.TextBoxFor(c => c.DesktopSizeHeight, new { @class = "form-control input-xs", @min = "10", style = "width: 50px; ", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                    pixels
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse2" class="" aria-expanded="true">
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Scrolling Ticker Defaults
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse2" class="panel-collapse collapse in" aria-expanded="true" style="">
+                                            <div class="panel-body" style="border-radius: 10px;">
+                                                <fieldset>
+                                                    <section class="col-md-6">
+                                                        <label class="lable-unique">Screen Delivery Position</label>
+                                                        <div class="widget-body no-padding smart-form">
+                                                            <div class="col-md-6">
+                                                                <label class="radio">
+                                                                    <input type="radio" name="ScreenDeliveryPositionRadios" id="top" value="1" class="radiobox" />
+                                                                    <i></i>Top
+                                                                </label>
+                                                                <label class="radio">
+                                                                    <input type="radio" name="ScreenDeliveryPositionRadios" id="middle" value="2" class="radiobox" />
+                                                                    <i></i>Middle
+                                                                </label>
+                                                                <label class="radio">
+                                                                    <input type="radio" name="ScreenDeliveryPositionRadios" id="bottom" value="3" class="radiobox" />
+                                                                    <i></i>Bottom
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <img src="~/assets/img/Screen/Tickers/3.png" class="img-responsive" id="tickerImage" />
+                                                            </div>
+                                                        </div>
+                                                        @Html.HiddenFor(m => m.TickerPosition)
+                                                    </section>
+                                                    <label class="lable-unique">Set Scrolling Speed</label><br />
+                                                    <section class="col-md-offset-1 col-md-1">
+                                                        <input type="text" class="slider" value="@Model.TickerSpeed" id="slider"
+                                                               data-slider-ticks-labels='["short", "medium", "long"]'
+                                                               data-slider-min="5"
+                                                               data-slider-max="15"
+                                                               data-slider-step="5"
+                                                               data-slider-value="@Model.TickerSpeed"
+                                                               data-slider-selection="before"
+                                                               data-slider-orientation="vertical"
+                                                               data-slider-handle="round"
+                                                               data-slider-tooltip="hide">
+                                                        @Html.HiddenFor(m => m.TickerSpeed)
+                                                    </section>
+                                                    <div class="col-md-3">
+                                                        <label class="lable-unique">Slow</label>
+                                                    </div>
+                                                    <div class="col-md-3" style="margin-top:30px">
+                                                        <label class="lable-unique">Medium</label>
+                                                    </div>
+                                                    <div class="col-md-3" style="margin-top:30px">
+                                                        <label class="lable-unique">Fast</label>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse3" aria-expanded="true" class="">
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i>  Optional Delivery Setting
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse3" class="panel-collapse collapse in" aria-expanded="true" style="">
+
+                                            <div class="panel-body" style="border-radius: 10px;">
+                                                <div class="col-md-9">
+                                                    @*<div class="form-inline">
+                                                            <fieldset>
+                                                                <div class="">
+                                                                    @Html.CheckBoxFor(m => m.CriticalAlert, new { @class = "AlertSetting" })
+                                                                    Critical Alert (Will Display Over Windows Locked Screens)
+                                                                </div>
+                                                            </fieldset>
+                                                        </div>*@
+                                                    <div class="form-inline mrgtp10">
+                                                        <fieldset>
+                                                            <div class="">
+                                                                @Html.CheckBoxFor(m => m.ExpiresIn, new { @class = "AlertSetting" })
+                                                                Expires in
+                                                                @Html.TextBoxFor(c => c.ExpiresTimeValue, new { @class = "form-control input-xs ", style = "width: 50px; ", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                @Html.DropDownListFor(m => m.ExpiresTimeType, new SelectList(ListLifeTimeType, "Value", "Text", Model.ExpiresTimeType), new { @class = "form-control input-xs" })
+                                                                No Delivery Attempts After Expiration.
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-inline mrgtp10">
+                                                        <fieldset>
+                                                            <div class="">
+                                                                @Html.CheckBoxFor(m => m.AutoCloseIn, new { @class = "AlertSetting" })
+                                                                Automaticaly Close Alert After
+                                                                @Html.TextBoxFor(c => c.AutoCloseInMin, new { @class = "form-control input-xs required", @min = "0", style = "width: 50px; ", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                Minute(s)
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-inline mrgtp10">
+                                                        <fieldset>
+                                                            <div class="">
+                                                                @Html.CheckBoxFor(m => m.TrayNotification, new { @class = "AlertSetting" })
+                                                                Tray Notification (Full Alert will Not Display Unless Tray Icon Message is Clicked)
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-inline mrgtp10">
+                                                        <fieldset>
+                                                            <div class="">
+                                                                @Html.CheckBoxFor(m => m.AcknoledgrButton, new { @class = "AlertSetting" })
+                                                                Add Alert Receipt Acknowledgement Button
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion-3" href="#ScreenSavercollapse" class="" aria-expanded="true">
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                    <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Screensaver Setting
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="ScreenSavercollapse" class="panel-collapse collapse in" aria-expanded="true" style="">
+                                            <div class="panel-body" style="border-radius: 10px;">
+                                                <div class="col-md-9">
+                                                    <div class="form-inline mrgtp10">
+                                                        <fieldset>
+                                                            <div class="">
+                                                                Time interval between images
+                                                                @Html.TextBoxFor(Model => Model.Timeinterval, new { @class = "form-control input-xs", style = "width: 50px;", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                @Html.HiddenFor(Model => Model.Timeinterval)
+                                                                second(s)
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="form-inline mrgtp10">
+                                                        <fieldset>
+                                                            <div class="">
+                                                                Wait :
+                                                                @Html.TextBoxFor(Model => Model.ScreenWaitMinutes, new { @class = "form-control input-xs", style = "width:50px;", @onkeypress = "javascript:return validInt(event,this.getAttribute('id'))" })
+                                                                @Html.HiddenFor(Model => Model.ScreenWaitMinutes)
+                                                                Minute(s) &nbsp;&nbsp;
+
+                                                                @Html.CheckBoxFor(Model => Model.IsOnResumeDisplay, new { @class = "clschkIsOnResumeDisplay" })
+                                                                @Html.HiddenFor(Model => Model.IsOnResumeDisplay)
+                                                                On resume, display logon screen.
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="col-xs-12 col-sm-12 col-md-5 col-lg-6">
+                            <div class="row">
+
+                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                                        <header role="heading">
+                                            <div class="jarviswidget-ctrls" role="menu"></div>
+                                            <span class="widget-icon">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                            </span>
+                                            <h2>Select New PopUp Alert Theme</h2>
+                                        </header>
+                                        <div class="MainBox">
+                                            <div class="form-group">
+                                                <section class="col-md-12 smart-form">
+                                                    @*<label class="label"><b>Select Alert Theme</b></label>*@
+                                                    <div class="widget-body no-padding">
+                                                        <div class="img-list" data-themename="card-header theme-one" id="theme-one">
+                                                            <img src="~/assets/img/PopUpUI/01.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/01.jpg">
+                                                        </div>
+                                                        <div class="img-list" data-themename="card-header theme-two" id="theme-two">
+                                                            <img src="~/assets/img/PopUpUI/02.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/02.jpg">
+                                                        </div>
+                                                        <div class="img-list" data-themename="card-header theme-three" id="theme-three">
+                                                            <img src="~/assets/img/PopUpUI/03.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/03.jpg">
+                                                        </div>
+                                                        <div class="img-list" data-themename="card-header theme-four" id="theme-four">
+                                                            <img src="~/assets/img/PopUpUI/04.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/04.jpg">
+                                                        </div>
+                                                        <div class="img-list" data-themename="card-header theme-five" id="theme-five">
+                                                            <img src="~/assets/img/PopUpUI/05.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/05.jpg">
+                                                        </div>
+                                                        <div class="img-list" data-themename="card-header theme-six" id="theme-six">
+                                                            <img src="~/assets/img/PopUpUI/06.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/06.jpg">
+                                                        </div>
+                                                        <div class="img-list" data-themename="card-header theme-seven" id="theme-seven">
+                                                            <img src="~/assets/img/PopUpUI/07.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/07.jpg">
+                                                        </div>
+                                                        <div class="img-list" data-themename="card-header theme-eight" id="theme-eight">
+                                                            <img src="~/assets/img/PopUpUI/08.jpg" data-toggle="popover-hover" data-img="./../assets/img/PopUpUI/08.jpg">
+                                                        </div>
+                                                        @Html.HiddenFor(m => m.ThemeId)
+                                                    </div>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-top:20px;">
+                                    <div class="jarviswidget jarviswidget-color-darken" id="wid-id-2" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                                        <header role="heading">
+                                            <div class="jarviswidget-ctrls" role="menu"></div>
+                                            <span class="widget-icon">
+                                                <i class="fa fa-ellipsis-h"></i>
+                                            </span>
+                                            <h2>Select Scrolling Tickers Theme</h2>
+                                        </header>
+                                        <div class="MainBox">
+                                            <div class="form-group">
+                                                <section class="col-md-12 smart-form">
+                                                    @*<label class="label"><b>Select Ticker Theme</b></label>*@
+                                                    <div class="widget-body no-padding">
+                                                        <div class="img-list1" data-themename="row theme-one" id="theme-oneT">
+                                                            <img src="~/assets/img/line-popup/Tol 01.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 01.jpg">
+                                                        </div>
+                                                        <div class="img-list1" data-themename="row theme-two" id="theme-twoT">
+                                                            <img src="~/assets/img/line-popup/Tol 02.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 02.jpg">
+                                                        </div>
+                                                        <div class="img-list1" data-themename="row theme-three" id="theme-threeT">
+                                                            <img src="~/assets/img/line-popup/Tol 03.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 03.jpg">
+                                                        </div>
+                                                        <div class="img-list1" data-themename="row theme-four" id="theme-fourT">
+                                                            <img src="~/assets/img/line-popup/Tol 04.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 04.jpg">
+                                                        </div>
+                                                        <div class="img-list1" data-themename="row theme-five" id="theme-fiveT">
+                                                            <img src="~/assets/img/line-popup/Tol 05.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 05.jpg">
+                                                        </div>
+                                                        <div class="img-list1" data-themename="row theme-six" id="theme-sixT">
+                                                            <img src="~/assets/img/line-popup/Tol 06.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 06.jpg">
+                                                        </div>
+                                                        <div class="img-list1" data-themename="row theme-seven" id="theme-sevenT">
+                                                            <img src="~/assets/img/line-popup/Tol 07.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 07.jpg">
+                                                        </div>
+                                                        <div class="img-list1" data-themename="row theme-eight" id="theme-eightT">
+                                                            <img src="~/assets/img/line-popup/Tol 08.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 08.jpg">
+                                                        </div>
+                                                        @Html.HiddenFor(m => m.ThemeIdTic)
+                                                    </div>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-top:20px;">
+                                    <div class="jarviswidget jarviswidget-color-darken" id="wid-id-3" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                                        <header role="heading">
+                                            <div class="jarviswidget-ctrls" role="menu"></div>
+                                            <span class="widget-icon">
+                                                <i class="fa fa-user"></i>
+                                            </span>
+                                            <h2>Templates Logo</h2>
+                                        </header>
+                                        <div class="smart-form MainBox">
+                                            <fieldset>
+                                                <legend>Custom Template Logo</legend>
+                                                <section class="row form-group text-center">
+                                                    @if (string.IsNullOrEmpty(Model.CompanyLogo))
+                                                    {
+                                                        <div class="center">
+                                                            <center>
+                                                                <img src="~/Templates/img/logo.png" id="TemplateLogoImage" class="clsUserImage img-responsive img-fluid" />
+                                                            </center>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (File.Exists(Server.MapPath(".." + Model.CompanyLogo)))
+                                                        {
+                                                            <div class="center">
+                                                                <center>
+                                                                    <img src="@Url.Content(".." + Model.CompanyLogo)" id="TemplateLogoImage" class="clsUserImage img-responsive img-fluid" />
+                                                                </center>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="center">
+                                                                <center>
+                                                                    <img src="~/Templates/img/logo.png" id="TemplateLogoImage" class="clsUserImage img-responsive img-fluid" />
+                                                                </center>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </section>
+                                                <br /><br />
+                                                <section class="row form-group">
+                                                    <label class="col-md-3 label">Template Logo : </label>
+                                                    <section class="input col-md-9">
+                                                        <div class="input input-file">
+                                                            <input id="files" type="file" name="files" class="form-control" onchange="loadFile(this)" accept="image/png , image/jpg, image/jpeg" />
+                                                        </div>
+                                                        @Html.HiddenFor(Model => Model.CompanyLogo)
+                                                        <div class="note">
+                                                            <strong>Note : </strong> Maximum single file size allowed : 1 MB !
+                                                        </div>
+                                                    </section>
+                                                </section>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        </article>
+                    </fieldset>
+
+                    <br />
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            <button id="BtnSumitDefaultSetting" type="button" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Save Setting">
+                                <span class="btn-label"><i class="fa fa-pencil-square-o"></i></span>Save Setting
+                            </button>
+
+                            @*<ul class="demo-btns">
+                                    <li>
+                                        <a href="javascript:void(0);" id="btnSubmit" class="btnSubmitAlt btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Save Setting">
+                                            <span class="btn-label"><i class="fa fa-save"></i></span>Save Setting
+                                        </a>
+                                    </li>
+                                </ul>*@
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+                }
+            </div>
+        </div>
+    </article>
+</div>
+
+<script type="text/javascript">
+
+    function loadFile(input) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('TemplateLogoImage');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    };
+
+    //function show(input) {
+    //    if (input.files && input.files[0]) {
+    //        var filerdr = new FileReader();
+    //        filerdr.onload = function (e) {
+    //            $('#TemplateLogoImage').attr('src', e.target.result);
+    //            $('#TemplateLogoImage').addClass("clsSetImage");
+    //        }
+    //        filerdr.readAsDataURL(input.files[0]);
+    //    }
+    //}
+
+    @*function show(input)
+    {
+        if (input.files && input.files[0])
+        {
+            //input.files[0].size
+            if (input.files[0].size != undefined)
+            {
+                //HERE I CHECK IF THE FILE SIZE is bigger than 1 MB (numbers below are in bytes)
+                var fsize = Math.round((input.files[0].size / 1024));
+                if (fsize > 1024)
+                {
+                    Swal.fire('File size is more than 1MB, please select a file less than 1Mb.', '', 'error');
+                    $('#TemplateLogoImage').attr('src', '').change();
+                    $('#files').val("").change();
+
+                    var ExistImageValue = $("#CompanyLogo").val();
+                    if (ExistImageValue == "")
+                    {
+                        $('#TemplateLogoImage').attr('src', "@Url.Content("~/Templates/img/logo.png")").change();
+                    }
+                    else
+                    {
+                        $("#userTemplateLogoImage_img").attr("src", "../" + ExistImageValue).change();
+                    }
+                    return false;
+                }
+                else
+                {
+                    var filerdr = new FileReader();
+                    filerdr.onload = function (e) {
+                        $('#TemplateLogoImage').attr("src", "");
+                        $('#TemplateLogoImage').attr('src', e.target.result);
+                        $('#TemplateLogoImage').addClass("clsSetImage");
+                    }
+                    filerdr.readAsDataURL(input.files[0]);
+                }
+            }
+        }
+    }*@
+
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                rules: { },
+                messages: { },
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+        var CallSubmitClick = function (DomainName) {
+
+            $("#BtnSumitDefaultSetting").click(function (e) {
+
+                App.blockUI();
+                $("#TickerSpeed").val($("#slider").val());
+
+                var form = $("#contact-form");
+                if (form.valid() == false)
+                {
+                    App.unblockUI();
+                    return false;
+                }
+                else
+                {
+                    Swal.fire({
+                        title: 'Are you sure? <br> You want to update default setting.',
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Change It !'
+                    }).then((result) => {
+                        if (result.isConfirmed) {                 
+                            document.forms["contact-form"].submit();
+                            Swal.fire({
+                                title: "Data has been updated successfully",
+                                text: "",
+                                icon: "success",
+                                confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                confirmButtonClass: "btn btn-success clsConfirmYes",
+                                confirmButtonColor: '#7367f0'
+                            });
+
+                            //$(".clsConfirmYes").on("click", function () {
+                            //    App.unblockUI();
+                            //    window.location = DomainName + "/Master/DefaultSetting";
+                            //});
+
+                            App.unblockUI();
+                        }
+                        else {
+                            App.unblockUI();
+                        }
+                    })
+                    App.unblockUI();
+
+                    //document.forms["contact-form"].submit();
+
+                    //$.ajax({
+                    //    url: $('#contact-form').attr('action'),
+                    //    cache: false,
+                    //    type: 'POST',
+                    //    data: $('#contact-form').serialize(),
+                    //    success: function (data) {
+                    //        console.log('Data : ' + data);
+                    //        setTimeout(function () {
+                    //            window.location = DomainName + "/Master/DefaultSetting";
+                    //        }, 1500);
+                    //        App.unblockUI();
+                    //    },
+                    //    error: function (req, status, error) {
+                    //        TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                    //        App.unblockUI();
+                    //    }
+                    //});
+                }
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                @*if ('@Model.EditFlag' == "Y") {*@
+
+                if ($("#AlertPosition").val() != "")
+                {
+                    $("input[name=radioPosition][value=" + $("#AlertPosition").val() + "]").prop('checked', true);
+                }
+                $("#alertImage").attr("src", DomainName + "/assets/img/Screen/Alerts/" + $("#AlertPosition").val() + ".png");
+                if ($("#TickerPosition").val() != "") {
+                    $("input[name=ScreenDeliveryPositionRadios][value=" + $("#TickerPosition").val() + "]").prop('checked', true);
+                }
+                $("#tickerImage").attr("src", DomainName + "/assets/img/Screen/Tickers/" + $("#TickerPosition").val() + ".png");
+
+                $("#" + $("#ThemeId").val().replace("card-header ", "").trim()).addClass("selected");
+                $("#" + $("#ThemeIdTic").val().replace("row ", "").trim() + "T").addClass("selected");
+                //}
+
+                $("input[name='radioPosition']").click(function () {
+                    $("#AlertPosition").val(this.value);
+                    $("#alertImage").attr("src", DomainName + "/assets/img/Screen/Alerts/" + this.value + ".png");
+                });
+
+                $("input[name='ScreenDeliveryPositionRadios']").click(function () {
+                    $("#TickerPosition").val($(this).val());
+                    $("#tickerImage").attr("src", DomainName + "/assets/img/Screen/Tickers/" + $(this).val() + ".png");
+                });
+
+                CallSubmitClick(DomainName);
+
+                if ($("#ThemeId").val() == "") {
+                    $("#ThemeId").val("card-header theme-one");
+                }
+
+                $('.superbox-list').click(function () {
+                    $("#ThemeId").val($(this).attr("id"))
+                });
+
+                $('.img-list').click(function () {
+                    $("#ThemeId").val($(this).data("themename"));
+                    $('.img-list').removeClass('selected');
+                    $(this).addClass('selected');
+                });
+
+                if ($("#ThemeIdTic").val() == "") {
+                    $("#ThemeIdTic").val("row theme-one");
+                }
+
+                $('.img-list1').click(function () {
+                    $("#ThemeIdTic").val($(this).data("themename"));
+                    $('.img-list1').removeClass('selected');
+                    $(this).addClass('selected');
+                });
+
+                @*if ("@Model.AlertId" == "0") {*@
+                    //$("#BottomRight").attr("checked", "checked").click();
+                    //$("#bottom").attr("checked", "checked").click();
+                    // $("#ExpiresIn").attr("checked", "checked").change();
+                //}
+
+                $('[data-toggle="popover-hover"]').popover({
+                    html: true,
+                    trigger: 'hover',
+                    placement: 'bottom',
+                    content: function () { return '<img src="' + $(this).data('img') + '" />'; }
+                });
+
+                // popovers initialization - on click
+                $('[data-toggle="popover-click"]').popover({
+                    html: true,
+                    trigger: 'click',
+                    placement: 'bottom',
+                    content: function () { return '<img src="' + $(this).data('img') + '" />'; }
+                });
+                if ('@ViewBag.IsExpired' == 1) {
+                    $('#BtnSumitDefaultSetting').hide();
+                }
+
+                $("#AutoCloseIn").click(function () {
+                    if ($('input[name=AutoCloseIn]').is(':checked')) {
+                        $(this).prop('checked', true);
+                        $(this).val(true);
+                        $("#AutoCloseInMin").val("5");
+                        $("#AutoCloseInMin").attr({ "min": "1" });
+                        $("#AutoCloseInMin").focus();
+                    }
+                    else {
+                        $(this).prop('checked', false);
+                        $(this).val(false);
+                        $("#AutoCloseInMin").val("0");
+                        $("#AutoCloseInMin").attr({ "min": "0" });
+                    }
+                });
+
+                $('.clschkIsOnResumeDisplay').change('on', function () {
+                    if (jQuery(this).is(":checked")) {
+                        $(this).val("true");
+                        $(this).prop('checked', true);
+                    }
+                    else {
+                        $(this).val("false");
+                        $(this).prop('checked', false);
+                    }
+                });
+
+                $('#files').change(function () {
+                    var ExistImageValue = $("#CompanyLogo").val();
+                    if ($(this).val())
+                    {
+                        var ext = $('#files').val().split('.').pop().toLowerCase();
+                        if ($.inArray(ext, ['png', 'jpg', 'jpeg']) == -1)
+                        {
+                            Swal.fire('Please upload only .png, .jpg, .jpeg images file.', '', 'error');
+                            $('#TemplateLogoImage').attr('src', "");
+                            $('#files').val("");
+
+                            if (ExistImageValue == "")
+                            {
+                                $('#TemplateLogoImage').attr('src', "@Url.Content("~/Templates/img/logo.png")").change();
+                            }
+                            else
+                            {
+                                $("#TemplateLogoImage").attr("src", "../" + ExistImageValue).change();
+                            }
+                            return false;
+                        }
+                        else
+                        {
+                            var file = $(this)[0].files[0];
+                            if (file != undefined)
+                            {
+                                //HERE I CHECK IF THE FILE SIZE is bigger than 1 MB (numbers below are in bytes)
+                                var fsize = Math.round((file.size / 1024));
+                                if (fsize > 1024)
+                                {
+                                    Swal.fire('File size is more than 1MB, please select a file less than 1Mb.', '', 'error');
+                                    $("#TemplateLogoImage").attr("src", "");
+                                    $("#files").val("").change();
+
+                                    if (ExistImageValue == "")
+                                    {
+                                        $('#TemplateLogoImage').attr('src', "@Url.Content("~/Templates/img/logo.png")").change();
+                                    }
+                                    else
+                                    {
+                                        $("#TemplateLogoImage").attr("src", "../" + ExistImageValue).change();
+                                    }
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+
+                });
+
+
+                // Logo not refresh in Image Previewer Changes
+                var ExistImageValue = $("#CompanyLogo").val();
+                if (ExistImageValue == "")
+                {
+                    console.log("Logo Is Not Exists");
+                    $("#TemplateLogoImage").attr("src", "@Url.Content("~/Templates/img/logo.png")");
+                }
+                else
+                {
+                    console.log("Logo Is Exists");
+                    $('#TemplateLogoImage').attr('src', "@Url.Content("~/" + Model.CompanyLogo)").change();
+                }
+            }
+        }
+    }();
+</script>

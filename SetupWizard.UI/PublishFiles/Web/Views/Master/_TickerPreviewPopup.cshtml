@@ -1,0 +1,106 @@
+﻿@model XCommsWeb.Models.AlertModel
+@{
+    //Model.ThemeId = Model.TickerID == 0 ? "" : Model.ThemeId;
+    //Model.TickerTital = Model.TickerID == 0 ? "" : Model.TickerTital;
+    //Model.TickerBody = Model.TickerID == 0 ? "" : Model.TickerBody;
+    //Model.TickerSpeed = string.IsNullOrEmpty(Model.TickerSpeed) ? "10" : Model.TickerSpeed;
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/Templates/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/Templates/css/style.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif !important;
+        }
+
+        .container-fluid {
+            background-color: #2a2b2a;
+        }
+
+        .divMarquee {
+            background-color: #fff;
+            margin-top: 1px;
+        }
+
+            /*.divMarquee > marquee {
+                padding: 7px 0px 0px 0px !important;
+            }*/
+
+        .imgLogo {
+            height: 102% !important;
+            padding: 3px;
+        }
+
+        .close {
+            /*margin-top: 0.5vh;*/
+            right: 12px;
+            top: 12px;
+        }
+
+        .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+            padding-right: var(--bs-gutter-x,-0.25rem);
+            padding-left: var(--bs-gutter-x,-0.25rem);
+        }
+
+        .container-fluid {
+            background-color: #2a2b2a;
+        }
+
+        html {
+            height: calc(100% - 0px);
+        }
+        marquee * {
+            font-size: 16px !important;
+            display: inline;
+        }
+    </style>
+    <title>Xcomms - One</title>
+</head>
+<body>
+    <div class="container-fluid inheriteHeight">
+        <div id="DivTheme" name="DivTheme" class="@Model.ThemeId inheriteHeight">
+            <div class="col col-2 inheriteHeight">
+
+                @if (File.Exists(Server.MapPath(".." + Model.CompanyLogo)))
+                {
+                    <img src="..@Model.CompanyLogo" class="img-fluid imgLogo" />
+                }
+                else
+                {
+                    <img src="~/Templates/img/logo.png" class="img-fluid imgLogo" />
+                }
+
+                @*<img src="..@Model.CompanyLogo" class="img-fluid imgLogo" />*@
+            </div>
+            <div class="col col-9 divMarquee " style="width: 80vw;">
+                <marquee behavior="scroll" direction="left" id="marqueeScroll" scrollamount="@Model.TickerSpeed" onmouseover="this.stop();" onmouseout="this.start();" style="vertical-align: middle; padding-top: calc(100vh / 4);">
+                    @Html.Raw(@Model.AlertTital) || @Html.Raw(@Model.AlertBody)
+                </marquee>
+            </div>
+            <div class="col col-1">
+                <a href="#"><img src="../Templates/img/close-icon.png" onclick="window.parent.document.getElementById('divPreview').style.display = 'none';" class="img-fluid close" /> </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Templates/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        function closeWin() {
+            window.parent.document.getElementById('divPreview').style.display = "none";
+        }
+        $(document).ready(function () {
+            if (("@Model.AlertBody").indexOf("img") < 0) {                
+                $("#DivTheme").css({ "background-color": "yellow", "font-size": "200%" });
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+﻿@model XCommsWeb.Models.NewGroupModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+
+<tr class="editorRow @Html.Raw(Model.IsActive == false ? "danger" : "")" id="@Model.Id">
+    @using (Html.BeginCollectionItem("NewGroup", Model.Id.ToString()))
+    {
+        <td class="text-center no-sort" style="vertical-align:middle;">
+            @if (Model.IsActive == true)
+            {
+                <div class="smart-form text-center" style="width:20px;">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.IsChecked, new { @class = "GroupchkCheck" })
+                        <i></i>
+                    </label>
+                </div>
+            }
+            else
+            {
+                <span> - </span>
+            }
+            @Html.HiddenFor(m => m.IsChecked)
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.RowId)
+        </td>
+        <td style="vertical-align:middle">
+            @if (Model.Is_AD_Group)
+            {
+                <i class="fa fa-@Html.Raw(Model.Is_AD_Group == true ? "check-circle-o txt-color-green" : "times-circle-o txt-color-red") fa-lg" rel="popover-hover" data-placement="right" data-original-title="AD Group" data-content="Domain : @Model.AD_DomainName"></i>
+            }
+            &nbsp; @Model.GroupName
+            @Html.HiddenFor(m => m.GroupName)
+            @if (Model.Is_AD_Group == true && Model.IsADGroupSync == true)
+            {
+                <span class="pull-right" rel="tooltip" data-placement="right" data-original-title="<i class='fa fa-check text-success fa-lg'></i> Synched With AD" data-html="true">
+                    <i class="fa fa-refresh fa-spin fa-lg txt-color-green"></i>
+                </span>
+            }
+        </td>
+        <td class="text-center" style="vertical-align:middle">
+            @Model.EntryBy
+            @Html.HiddenFor(m => m.EntryBy)
+        </td>
+        <td class="text-center" style="vertical-align:middle">
+            @Model.EntryDate.FormateDateWithFullYearUS()
+            @Html.HiddenFor(m => m.EntryDate)
+        </td>
+        <td class="text-center">
+            <span class="label @Html.Raw(Model.IsActive == true ? "label-success" : "label-danger")"> @Html.Raw(Model.IsActive == true ? "Yes" : "No")</span>
+        </td>
+    }
+</tr>

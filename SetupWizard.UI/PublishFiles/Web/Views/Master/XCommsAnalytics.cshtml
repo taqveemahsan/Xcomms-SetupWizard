@@ -1,0 +1,368 @@
+﻿@model XCommsWeb.Models.XCommsAnalyticsViewModel
+@{
+    ViewBag.Title = "XComms Analytics";
+    ViewBag.TitleList = "XComms Analytics List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    .TxtVerAlign {
+        vertical-align: middle !important;
+    }
+
+    .MainBox {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-togglebutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-filter"></i> </span>
+                    <h2>@ViewBag.Title</h2>
+                </header>
+                <div class="MainBox">
+                    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "FormXCommsAnalytics", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-12 col-md-4 col-lg-4"> Select Date :</label>
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                        <div id="XCommsAnalyticsDTPicker" class="input form-control">
+                                            <i class="icon-append fa fa-calendar"></i>
+                                            &nbsp;
+                                            <span></span>
+                                            <b class="fa fa-angle-down"></b>
+                                            @Html.HiddenFor(c => c.FromDate)
+                                            @Html.HiddenFor(c => c.ToDate)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xs-offset-4 col-md-offset-0">
+                                <div class="pull-left">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSearchAnalytics" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Search Criteria">
+                                                <span class="btn-label"><i class="fa fa-search"></i></span>Search
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </article>
+    </div>
+    <br /><br />
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-togglebutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-list"></i> </span>
+                    <h2>@ViewBag.TitleList</h2>
+                </header>
+                <div id="ResultRegion" class="MainBox">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 table-responsive">
+                        <div id="divResultData"></div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- START : CUSTOMER WISE DISPLAY MODULES/POLICIES -->
+<div class="modal fade" id="ModalCustModules" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-user"></i></span>
+                                <h2>Customer Modules</h2>
+                            </header>
+                            <div>
+                                <table class="table table-responsive table-bordered table-striped" id="TblCustModules" width="100%"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:10px !important;">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                            <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END : CUSTOMER WISE DISPLAY MODULES/POLICIES -->
+
+<!-- START : VIEW COMPANY PROFILE -->
+<div class="modal fade" id="ModalCustProfile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-2" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-user"></i></span>
+                                <h2>Company Profile</h2>
+                            </header>
+                            <div id="DivCustProfDet"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:10px !important;">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                            <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END : VIEW COMPANY PROFILE -->
+
+<!-- START : CUSTOMER WISE DISPLAY CONTENT MANAGER -->
+<div class="modal fade" id="ModalContentManager" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-3" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-user"></i></span>
+                                <h2>Content Managers</h2>
+                            </header>
+                            <div id="DivContentManagerData"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:10px !important;">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <a href="javascript:void(0);" id="btnSubmit" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                            <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END : CUSTOMER WISE DISPLAY CONTENT MANAGER -->
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var Events = function (DomainName) {
+            $(".ClsCMTools").on("click", function () {
+                App.blockUI();
+                $.ajax({
+                    type: 'POST',
+                    url: DomainName + "/Customer/GetCustomerModule",
+                    data: { 'CustomerId': $(this).data('id') },
+                    success: function (data)
+                    {
+                        $("#TblCustModules").html("");
+                        $("#TblCustModules").html(data);
+                        $('#ModalCustModules').modal('show');
+                        dataTableById("TblCustModules", 0, '', '');
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception)
+                    {
+                        Swal.fire('Oops ! <br/><br/>' + errorResult(jqXHR, exception), '', 'error');
+                        App.unblockUI();
+                    }
+                });
+            });
+
+            $(".ClsViewCompanyProf").on("click", function () {
+                App.blockUI();
+                $.ajax({
+                    type: 'POST',
+                    url: DomainName + "/Customer/GetCustomerProfileDetails",
+                    data: { 'CustomerId': $(this).data('id') },
+                    success: function (data)
+                    {
+                        $("#DivCustProfDet").html("");
+                        $("#DivCustProfDet").html(data);
+                        $('#ModalCustProfile').modal('show');
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception)
+                    {
+                        Swal.fire('Oops ! <br/><br/>' + errorResult(jqXHR, exception), '', 'error');
+                        App.unblockUI();
+                    }
+                });
+            });
+
+            $(".ClsContentManager").on("click", function () {
+                App.blockUI();
+                $.ajax({
+                    type: 'POST',
+                    url: DomainName + "/Master/GetContentManager",
+                    data: { 'CustomerId': $(this).data('id') },
+                    success: function (data)
+                    {
+                        $("#DivContentManagerData").html("");
+                        $("#DivContentManagerData").html(data);
+                        $('#ModalContentManager').modal('show');
+                        dataTableById("TblContentManager", 2, 'desc', '');
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception)
+                    {
+                        Swal.fire('Oops ! <br/><br/>' + errorResult(jqXHR, exception), '', 'error');
+                        App.unblockUI();
+                    }
+                });
+            });
+
+            $(".ClsContentManagerAnalytic").on("click", function () {
+                App.blockUI();
+                $.ajax({
+                    type: 'POST',
+                    url: DomainName + "/Master/GetContentManagerData",
+                    data: { 'UserId': $(this).data('userid'), 'Type': $(this).data('type') },
+                    success: function (data)
+                    {
+                        if (data.Status == "0")
+                        {
+                            Swal.fire('Oops ! <br/><br/>' + data.Message, '', 'error');
+                            App.unblockUI();
+                        }
+                        else
+                        {
+                            $("#tblData1").html("");
+                            $("#tblData1").html(data);
+                            $('#exampleModalTbl').modal('show');
+                            GetContentmanagerDetail(DomainName)
+                            dataTableById("tblData1", 0, 'desc');
+                            App.unblockUI();
+                        }
+                    },
+                    error: function (jqXHR, exception)
+                    {
+                        Swal.fire('Oops ! <br/><br/>' + errorResult(jqXHR, exception), '', 'error');
+                        App.unblockUI();
+                    }
+                });
+            });
+        }
+
+        var handleDateRangePickers = function (DomainName) {
+            console.log("Call handleDateRangePickers");
+
+            if (!jQuery().daterangepicker) {
+                return;
+            }
+
+            $('#XCommsAnalyticsDTPicker').daterangepicker({
+                opens: (App.isRTL() ? 'left' : 'right'),
+                startDate: moment().subtract('days', 29),
+                endDate: moment(),
+                showDropdowns: true,
+                showWeekNumbers: false,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                    'Last 7 Days': [moment().subtract('days', 6), moment()],
+                    'Last 30 Days': [moment().subtract('days', 29), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
+                    'All': ['@ViewBag.StartDate', moment()]
+                },
+                buttonClasses: ['btn'],
+                applyClass: 'green',
+                cancelClass: 'default',
+                format: 'MM/DD/YYYY',
+                separator: ' to ',
+                locale: {
+                    applyLabel: 'Apply',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    customRangeLabel: 'Custom Range',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
+                }
+            },
+            function (start, end) {
+                $('#FromDate').val(start.format('MMM D, YYYY'));
+                $('#ToDate').val(end.format('MMM D, YYYY'));
+                $('#XCommsAnalyticsDTPicker span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+            }
+            );
+            $('#XCommsAnalyticsDTPicker span').html(moment().subtract('days', 29).format('MMM D, YYYY') + ' - ' + moment().format('MMM D, YYYY'));
+            $('#FromDate').val(moment().subtract('days', 29).format('MMM D, YYYY'));
+            $('#ToDate').val(moment().format('MMM D, YYYY'));
+        }
+
+        var GetAnalyticsDataList = function (DomainName) {
+            App.blockUI();
+            var strurl = DomainName + "/Master/GetClientAnalyticsDataByCriteria";
+            $.ajax({
+                url: strurl,
+                data: $("#FormXCommsAnalytics").serialize(),
+                type: 'POST',
+                success: function (data)
+                {
+                    console.log("Result Data : " + data);
+                    $("#divResultData").html("");
+                    $("#divResultData").html(data);
+                    $("[rel='tooltip']").tooltip();
+                    Events(DomainName);
+                    dataTableById("tblClientAnalytics", 1, "desc", "");
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    App.unblockUI();
+                    Swal.fire('Oops ! <br/><br/>' + errorResult(jqXHR, exception), '', 'error');
+                }
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                GetAnalyticsDataList(DomainName);
+                Events(DomainName);
+                $("#btnSearchAnalytics").click(function () {
+                    GetAnalyticsDataList(DomainName);
+                });
+                $("[rel='tooltip']").tooltip();
+                handleDateRangePickers(DomainName);
+            }
+        }
+    }();
+</script>

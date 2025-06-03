@@ -1,0 +1,153 @@
+html {
+    height: calc(100% - 4px);
+}
+
+body {
+    font-family: 'Roboto', sans-serif !important;
+    height: inherit;
+}
+
+.inheriteHeight {
+    height: inherit;
+}
+
+.custom-close {
+    float: right;
+    position: relative;
+    margin-top: 7px;
+}
+
+.mrgtop10 {
+    margin-top: 10px;
+}
+
+.card-header {
+    padding: .5rem 1rem;
+    margin-bottom: 0;
+    background-color: #0d1723;
+    border-bottom: 1px solid #0d1723;
+}
+.theme-one-desktop {
+    /*background-color: #0d1723 !important;*/
+    background: linear-gradient(#000000,#7f7f7f,#000000);
+    border-bottom: 1px solid #0d1723;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-one {
+    background-color: #0d1723 !important;
+    /*background: linear-gradient(#000000,#7f7f7f,#000000);*/
+    border-bottom: 1px solid #0d1723;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-two {
+    background-color: #ec3d4a;
+    border-bottom: 1px solid #ec3d4a;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-three {
+    background-image: url(../img/bg-3.png);
+    margin-bottom: -4px;
+    background-repeat: round;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-four {
+    background-image: url(../img/bg-4.png);
+    margin-bottom: -4px;
+    background-repeat: round;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-five {
+    background-image: url(../img/bg-5.png);
+    margin-bottom: -4px;
+    background-repeat: round;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-six {
+    background-image: url(../img/bg-6.png);
+    margin-bottom: -4px;
+    background-repeat: round;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-seven {
+    background-image: url(../img/bg-7.png);
+    margin-bottom: -4px;
+    background-repeat: round;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-eight {
+    background-color: #d1d3d5;
+    border-bottom: 1px solid #d1d3d5;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-nine {
+    background-color: #5b5b5b;
+    border-bottom: 1px solid #5b5b5b;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.theme-ten {
+    background-color: #2bb673;
+    border-bottom: 1px solid #2bb673;
+    max-width: 100%;
+    margin-left: 0px;
+}
+
+.card-body-bg {
+    background-color: #dce3ed;
+    padding: 10px 10px;
+    border-bottom: 15px solid #0d1723;
+}
+
+.card-body-div {
+    background-color: #fff;
+    padding: 15px 15px;
+}
+
+.logo {
+    position: relative;
+    float: left;
+    width: auto;
+    height: 40%;
+    left: 10px;
+    top:5px;
+}
+
+.rowfix {
+    height: 80px;
+    margin-bottom: -40px;
+}
+
+.heigth100 {
+    min-height: 3rem;
+}
+
+.close {
+    width: 15px;
+    height: 15px;
+    margin-top: 1.5vh;
+    float: right;
+    right: 20px;
+    top: 14px;
+    margin-right: 12px;
+    position: absolute;
+    opacity: 1;
+}

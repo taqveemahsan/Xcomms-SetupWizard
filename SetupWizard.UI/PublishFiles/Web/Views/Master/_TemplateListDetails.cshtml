@@ -1,0 +1,97 @@
+﻿@model XCommsWeb.Models.TamlpateModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@using HtmlAgilityPack;
+@using System.Text.RegularExpressions;
+@{
+    //Regex rx = new Regex("<[^>]*>");
+    //Regex rxPtoDivOpen = new Regex("<p>");
+    //Regex rxPtoDivClose = new Regex("</p>");
+    //Regex rxRemovebr = new Regex("<br>");
+    //string TemplateTitle = Model.TemplateTitle;
+    //HtmlDocument documentTemplateTitle = new HtmlDocument();
+    //TemplateTitle = rxPtoDivOpen.Replace(TemplateTitle, "<div>");
+    //TemplateTitle = rxPtoDivClose.Replace(TemplateTitle, "</div>");
+    //TemplateTitle = rxRemovebr.Replace(TemplateTitle, "");
+    //documentTemplateTitle.LoadHtml(TemplateTitle);
+    //GeneralFuncations GF = new GeneralFuncations();
+    //GF.SetDisplayInlineForList(documentTemplateTitle.DocumentNode);
+    //Model.TemplateTitle = documentTemplateTitle.DocumentNode.InnerHtml.ToString();
+    Model.TemplateTitle = !string.IsNullOrEmpty(Model.TemplateTitle) ? Model.TemplateTitle.StripHTML() : "";
+}
+<tr class="editorRow">
+    @using (Html.BeginCollectionItem("ListTamlpate", Model.ID.ToString()))
+    {
+        <td class="text-center">
+            @if (ViewBag.BaseUserName == @Model.EntryBy && (ViewBag.PermissionTyp != "Administator"))
+            {
+                <div class="smart-form text-center" style="width: 25px !important;">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.IsChecked, new { @class = "chkCheck" })
+                        <i></i>
+                    </label>
+                </div>
+            }
+            @if (ViewBag.PermissionTyp == "Administator")
+            {
+                <div class="smart-form text-center" style="width: 25px !important;">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.IsChecked, new { @class = "chkCheck" })
+                        <i></i>
+                    </label>
+                </div>
+            }
+
+            @Html.HiddenFor(m => m.ID)
+        </td>
+        @*<td>@Model.ID</td>*@
+        <td>@Model.TemplateName</td>
+        <td>@Html.Raw(Model.TemplateTitle)</td>
+        <td class="text-center" style="vertical-align:middle">@Model.EntryBy</td>
+        <td class="text-center" style="vertical-align:middle">
+            @Model.EntryDate.FormateDateWithFullYearUS()
+        </td>
+        <td>
+            <div class="btn-group center-block">
+                <center>
+                    <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false" rel="tooltip" title="" data-placement="top" data-original-title="<i class='fa fa-exclamation-circle fa-md fa-fw'></i> Alert Template" data-html="true">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" style="min-width:auto !important;">
+                        @if (ViewBag.BaseUserName == @Model.EntryBy && (ViewBag.PermissionTyp != "Administator"))
+                        {
+                            <li>
+                                <a href="@Url.Content("~/Master/AddTemplate/" + Model.ID)" rel="tooltip" title="" data-placement="left" data-original-title="Edit Template">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" id="i_@Model.ID" class="DeleteTemplate" rel="tooltip" title="" data-placement="left" data-original-title="Delete Template">
+                                    <i class="fa fa-trash-o"></i> Delete
+                                </a>
+                            </li>
+                        }
+                        @if (ViewBag.PermissionTyp == "Administator")
+                        {
+                            <li>
+                                <a href="@Url.Content("~/Master/AddTemplate/" + Model.ID)" rel="tooltip" title="" data-placement="left" data-original-title="Edit Template">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" id="i_@Model.ID" class="DeleteTemplate" rel="tooltip" title="" data-placement="left" data-original-title="Delete Template">
+                                    <i class="fa fa-trash-o"></i> Delete
+                                </a>
+                            </li>
+                        }
+                        <li>
+                            <a href="javascript:void(0);" class="anchorDetail" data-id=@Model.ID rel="tooltip" title="" data-placement="left" data-original-title="Preview Template">
+                                <i class="fa fa-eye"></i> Preview
+                            </a>
+                        </li>
+                    </ul>
+                </center>
+            </div>
+        </td>
+    }
+</tr>

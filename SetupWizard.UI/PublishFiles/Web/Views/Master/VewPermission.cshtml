@@ -1,0 +1,665 @@
+﻿@model XCommsWeb.Models.PermisionModel
+@using System.Configuration;
+
+@{
+    ViewBag.Title = "View Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var text = "Save";
+    if (Model.Id > 0)
+    {
+        text = "Update";
+    }
+}
+<style>
+    .checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {
+        position: absolute;
+        margin-left: 0px !important;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        padding: 8px 32px !important;
+    }
+
+    .mrgtp10 {
+        margin-top: 10px;
+    }
+
+    .form-control-unique {
+        display: block;
+        width: 100%;
+        height: 21px;
+        padding: 0px 5px;
+        font-size: 13px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .lable-unique {
+        font-size: 14px;
+        margin-bottom: 16px;
+        margin-left: 10px;
+        color: #fff;
+    }
+
+    .smart-accordion-default .panel-default > .panel-heading {
+        background-color: #3c3a39;
+        color: #FFF;
+        margin-bottom: 5px;
+    }
+
+    .smart-accordion-default.panel-group .panel-title a {
+        font-weight: 700;
+        padding: 5px 10px;
+    }
+
+    .smart-accordion-default.panel-group .panel + .panel {
+        margin-top: 5px;
+    }
+
+    .smart-accordion-default .panel-default {
+        border-color: #c3c3c300;
+    }
+
+    .txt-color-yellow {
+        color: #ffb848 !important;
+    }
+
+    .note-editable > ol {
+        margin-top: 0 !important;
+        margin-bottom: 9px !important;
+        padding-left: 40px !important;
+    }
+
+    .note-editor.note-frame {
+        border: 1px solid #a9a9a9 !important;
+    }
+
+    .smart-form .checkbox, .smart-form .radio {
+        margin-bottom: 4px;
+        padding-left: 25px;
+        line-height: 25px;
+        color: #a1a1a1;
+        cursor: pointer;
+        font-size: 13px;
+        padding-top: 0px;
+    }
+</style>
+<div class="row">
+    <article class="col-sm-3 col-md-3 col-lg-3 sortable-grid ui-sortable">
+    </article>
+    <article class="col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable">
+        <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-8" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header role="heading">
+                <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                <h2>View Permission Level</h2>
+                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+            </header>
+            <div role="content">
+                <div class="widget-body no-padding ">
+                    @using (Html.BeginForm("PermissionMasterSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        <div class="panel-group smart-accordion-default" id="accordion-2">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse1" class="" aria-expanded="true">
+                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> View Permission Level
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse in" aria-expanded="true" style="">
+                                    <div class="panel-body" style="border-radius: 10px;">
+                                        <fieldset>
+                                            <article class="col-sm-6 col-md-12 col-lg-12 sortable-grid ui-sortable">
+                                                <div role="content">
+                                                    <div class="widget-body no-padding ">
+                                                        <section class="col-md-12">
+                                                            <div class="row smart-form">
+                                                                <div class="row col-md-12">
+                                                                    <label class="col-md-3" style="color:#a1a1a1;">Permission Level Name :</label>
+                                                                    <div class="col-md-5">
+                                                                        @Html.TextBoxFor(c => c.PermissionlevelName, new { @class = "form-control input-xs", @readonly = true })
+                                                                        @Html.HiddenFor(c => c.Administator)
+                                                                        @Html.HiddenFor(c => c.ContentManager)
+                                                                        @Html.HiddenFor(c => c.Custom)
+                                                                        @Html.HiddenFor(c => c.Id)
+                                                                        @Html.HiddenFor(c => c.PermissionType)
+                                                                        @Html.HiddenFor(c => c.Administator1)
+                                                                        @Html.HiddenFor(c => c.ContentManager1)
+                                                                        @Html.HiddenFor(c => c.Custom1)
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row col-md-12">
+                                                                    <label class="radio">
+                                                                        <input type="radio" name="radioPosition" id="Admin" value="1" class="radiobox" disabled />
+                                                                        <i></i>Full System Administrator(Full system Control,all alert tools and full targeting)
+                                                                    </label>
+                                                                    <label class="radio">
+                                                                        <input type="radio" name="radioPosition" id="CntManager" value="2" class="radiobox" disabled />
+                                                                        <i></i>Full Content Manager(Full Access to all alert tools and full targeting Only.No System admin Permissions)
+                                                                    </label>
+                                                                    <label class="radio">
+                                                                        <input type="radio" name="radioPosition" id="Cust" value="3" class="radiobox" disabled />
+                                                                        <i></i>Set Custom Permission Levels.
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="jarviswidget well" id="wid-id-3" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-custombutton="false" data-widget-sortable="false">
+                                                                <div class="widget-body no-padding">
+                                                                    <div class="form-group">
+                                                                        <div class="col-md-12">
+                                                                            <section class="col-md-12 smart-form">
+                                                                                <ul id="myTab1" class="nav nav-tabs bordered pull-left in">
+                                                                                    <li class="active">
+                                                                                        <a href="#tab_1" data-toggle="tab" aria-expanded="true">
+                                                                                            Tools
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <a href="#tab_2" data-toggle="tab" aria-expanded="true">
+                                                                                            Targeting
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <a href="#tab_3" data-toggle="tab" aria-expanded="true">
+                                                                                            Viewing
+                                                                                        </a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </section>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="tab-content">
+                                                                        <div class="tab-pane active" id="tab_1">
+                                                                            <div class="margin-bottom-10 float-lg-right col-md-12">
+                                                                                <div class="custom-scroll table-responsive" style="max-height:200px; overflow-y: scroll;">
+                                                                                    <table class="table table-bordered">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th class="text-center">#</th>
+                                                                                                <th>Description</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody id="containerTblSubItem1">
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="tab-pane" id="tab_2">
+                                                                            <section class="col-md-12">
+                                                                                <div class="row smart-form">
+                                                                                    <div class="col-md-6">
+                                                                                        <label class="radio">
+                                                                                            <input type="radio" name="radioTarget" id="rbtTarget1" value="1" class="radiobox" disabled />
+                                                                                            <i></i>Permitted To Target Entire Organization
+                                                                                        </label>
+                                                                                        @Html.HiddenFor(m => m.PermittedToTarget)
+                                                                                        @Html.HiddenFor(m => m.CustomizeTarget)
+                                                                                        @Html.HiddenFor(m => m.PermittedToTarget1)
+                                                                                        @Html.HiddenFor(m => m.CustomizeTarget1)
+                                                                                        <label class="radio">
+                                                                                            <input type="radio" name="radioTarget" id="rbtTarget2" value="2" class="radiobox" disabled />
+                                                                                            <i></i>Customize Targeting Permissions
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div class="jarviswidget well" id="wid-id-33" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-custombutton="false" data-widget-sortable="false">
+                                                                                    <div class="widget-body no-padding">
+                                                                                        <!--<div class="form-group">
+                                                                                            <div class="col-md-12">
+                                                                                                <section class="col-md-12 smart-form">
+                                                                                                    <ul id="myTab2" class="nav nav-tabs bordered pull-left in">-->
+                                                                                        @*<li class="active">
+                                                                                                <a href="#tab_21" data-toggle="tab" aria-expanded="true">
+                                                                                                    User Targets
+                                                                                                </a>
+                                                                                            </li>
+                                                                                            <li>
+                                                                                                <a href="#tab_22" data-toggle="tab" aria-expanded="true">
+                                                                                                    AD Groups
+                                                                                                </a>
+                                                                                            </li>*@
+                                                                                        <!--</ul>
+                                                                                                </section>
+                                                                                            </div>
+                                                                                        </div>-->
+
+                                                                                        <div class="tab-content">
+                                                                                            <div class="tab-pane active" id="tab_21">
+                                                                                                <div class="row margin-bottom-10 float-lg-right col-md-12">
+                                                                                                    <div class="custom-scroll table-responsive" style="max-height:290px; overflow-y: scroll;">
+                                                                                                        <table class="table table-bordered" id="UserList">
+                                                                                                            <thead>
+                                                                                                                <tr>
+                                                                                                                    <th class="text-center"> <input type="checkbox" id="chkCheckAll" /></th>
+                                                                                                                    <th>Name</th>
+                                                                                                                    <th>Display Name</th>
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody id="containerTblSubItem">
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+
+                                                                                            <div class="tab-pane" id="tab_22">
+                                                                                                <br />
+                                                                                                <section class="col-md-12">
+                                                                                                    <div class="row smart-form">
+                                                                                                        <div class="col-md-6">
+
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </section>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </section>
+                                                                        </div>
+
+                                                                        <div class="tab-pane" id="tab_3">
+                                                                            <br />
+                                                                            <section class="col-md-12">
+                                                                                <div class="row smart-form">
+                                                                                    <div class="col-md-12">
+                                                                                        <label class="radio">
+                                                                                            <input type="radio" name="radioContent" id="OnlyPersonalContent" value="1" class="radiobox" disabled />
+                                                                                            <i></i>Personal Content Only<br />(Permitted Only to View Personal Sent Folder,Drafts,Templates,Analytics and Personal Targeting Groups.)
+                                                                                        </label>
+                                                                                        @Html.HiddenFor(m => m.PersonalContent)
+                                                                                        @Html.HiddenFor(m => m.FullPermission)
+                                                                                        @Html.HiddenFor(m => m.PersonalContent1)
+                                                                                        @Html.HiddenFor(m => m.FullPermission1)
+                                                                                        <label class="radio">
+                                                                                            <input type="radio" name="radioContent" id="FullViewPermission" value="2" class="radiobox" disabled />
+                                                                                            <i></i>Full viewing Permissions<br />(Permitted to View Sent Folder,Drafts,Templates,Analytics and Personal Targeting Groups.)
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </section>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </section>
+                                                    </div>
+                                                </div>
+                                            </article>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <div class="col-md-12">
+                                    <div class="pull-right">
+                                        <ul class="demo-btns">
+                                            <li>
+                                                <a href="@Url.Content("~/Master/ContentManagerList")" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Back To List">
+                                                    <span class="btn-label"><i class="fa fa-arrow-circle-left"></i></span>Back To List
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </article>
+    <article class="col-sm-3 col-md-3 col-lg-3 sortable-grid ui-sortable">
+    </article>
+</div>
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+         var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                // Rules for form validation
+                rules: {
+                },
+                // Messages for form validation
+                messages: {
+                },
+                // Do not change code below
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+        var GetUserData = function (DomainName) {
+            App.blockUI({ boxed: true });
+            var StrURL1 = DomainName + "/Master/GetUserList?Id=" + $("#Id").val();
+            $.ajax({
+                url: StrURL1,
+                cache: false,
+                data: {},
+                type: 'POST',
+                success: function (data) {
+                    $("#containerTblSubItem").html(data);
+                    if ($.fn.DataTable.isDataTable('#UserList')) {
+                        $('#UserList').DataTable().destroy();
+                    }
+                    dataTableWithId("UserList");
+                    $("#UserList_info").hide();
+                    $("#UserList_paginate").hide();
+                    $("#UserList_length").hide();
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    alert("error " + req + " " + status + " " + error);
+                    App.unblockUI();
+                }
+            });
+        }
+
+        var dataTableWithId = function (tableId, sortingColumn) {
+            var responsiveHelper_dt_basic = undefined;
+            var responsiveHelper_datatable_fixed_column = undefined;
+            var responsiveHelper_datatable_col_reorder = undefined;
+            var responsiveHelper_datatable_tabletools = undefined;
+            sortingColumn = (sortingColumn == "undefine" || sortingColumn == null || sortingColumn == "") ? 0 : sortingColumn;
+
+            var breakpointDefinition = {
+                tablet: 1024,
+                phone: 480
+            };
+            $('#' + tableId).dataTable({
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
+                "autoWidth": true,
+                "preDrawCallback": function () {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#' + tableId), breakpointDefinition);
+                    }
+                },
+                "rowCallback": function (nRow) {
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback": function (oSettings) {
+                    responsiveHelper_dt_basic.respond();
+                },
+                "aLengthMenu": [
+                    [5, 10, 15, 20, -1],
+                    [5, 10, 15, 20, "All"]
+                ],
+                "iDisplayLength": -1,
+                "order": [[sortingColumn, 'desc']],
+                "bSort": true
+            });
+            $(".dataTables_filter input").attr("placeholder", "Search here...")
+        }
+
+        var GetAlertTypeList = function (DomainName) {
+            App.blockUI({ boxed: true });
+            var StrURL1 = DomainName + "/Master/GetAlertTypeList?Id="+ $("#Id").val();
+            $.ajax({
+                url: StrURL1,
+                cache: false,
+                data: {},
+                type: 'POST',
+                success: function (data) {
+                    $("#containerTblSubItem1").html(data);
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    alert("error " + req + " " + status + " " + error);
+                    App.unblockUI();
+                }
+            });
+           
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                if ('@Model.Id' > 0) {
+                    $("#wid-id-33").hide();
+                    $("#wid-id-3").hide();
+
+                    //GetAlertTypeList(DomainName);
+
+                    if ($("#Administator1").val() == 1) {
+                        $("input[name=radioPosition][value=" + $("#Administator1").val() + "]").prop('checked', true);
+                        $("#Administator").val(true);
+                    }
+                   // else
+                        if ($("#CntManager").val() == 2) {
+                        $("input[name=radioPosition][value=" + $("#ContentManager1").val() + "]").prop('checked', true);
+                        $("#ContentManager").val(true);
+                    }
+                  //  else
+                        if ($("#Custom1").val() == 3) {
+                        $("input[name=radioPosition][value=" + $("#Custom1").val() + "]").prop('checked', true);
+                        $("#Custom").val(true);
+                        $("#Cust").val(true);
+                        $("#wid-id-3").show();
+                        GetAlertTypeList(DomainName);
+                     }
+
+                    if ($("#PermittedToTarget1").val() == 1) {
+                        $("input[name=radioTarget][value=" + $("#PermittedToTarget1").val() + "]").prop('checked', true);
+                        $("#PermittedToTarget").val(true);
+                    }
+                    else if ($("#CustomizeTarget1").val() == 2) {
+                        $("input[name=radioTarget][value=" + $("#CustomizeTarget1").val() + "]").prop('checked', true);
+                        $("#CustomizeTarget").val(true);
+                        $("#wid-id-33").show();
+                        GetUserData(DomainName);
+                    }
+
+                    if ($("#PersonalContent1").val() == 1) {
+                        $("input[name=radioContent][value=" + $("#PersonalContent1").val() + "]").prop('checked', true);
+                        $("#PersonalContent").val(true);
+                    }
+                    else if ($("#FullPermission1").val() == 2) {
+                        $("input[name=radioContent][value=" + $("#FullPermission1").val() + "]").prop('checked', true);
+                        $("#FullPermission").val(true);
+                    }
+
+                    $("input[name='radioPosition']").click(function () {
+
+                        if ($("#Admin").is(":checked")) {
+                            $("#Administator").val(true);
+                        }
+                        else {
+                            $("#Administator").val(false);
+                        }
+                        if ($("#CntManager").is(":checked")) {
+                            $("#ContentManager").val(true);
+                        }
+                        else {
+                            $("#ContentManager").val(false);
+                        }
+                        if ($("#Cust").is(":checked")) {
+                            $("#Custom").val(true);
+                            $("#wid-id-3").show();
+                            $("#wid-id-33").hide();
+                            //GetAlertTypeList(DomainName);
+                        }
+                        else {
+                            $("#Custom").val(false);
+                            $("#wid-id-3").hide();
+                        }
+                    });
+
+                    $("input[name='radioTarget']").click(function () {
+                        if ($("#rbtTarget1").is(":checked")) {
+                            $("#PermittedToTarget").val(true);
+                        }
+                        else {
+                            $("#PermittedToTarget").val(false);
+                        }
+
+                        if ($("#rbtTarget2").is(":checked")) {
+                            $("#CustomizeTarget").val(true);
+                            $("#wid-id-33").show();
+                            GetUserData(DomainName);
+
+                            $(document).on('click', '#chkCheckAll', function () {
+                                $('.IsCheck').prop('checked', $(this).prop('checked'));
+                                if ($(this).prop('checked')) {
+                                    $('.IsCheck').parent('span').addClass('checked');
+                                    $('.IsCheck').val("true");
+                                }
+                                else {
+                                    $('.IsCheck').parent('span').removeClass('checked');
+                                    $('.IsCheck').val("false");
+                                }
+                            });
+                        }
+                        else {
+                            $("#CustomizeTarget").val(false);
+                            $("#wid-id-33").hide();
+                        }
+                    });
+
+                    $("input[name='radioContent']").click(function () {
+                        if ($("#OnlyPersonalContent").is(":checked")) {
+                            $("#PersonalContent").val(true);
+                        }
+                        else {
+                            $("#PersonalContent").val(false);
+                        }
+                        if ($("#FullViewPermission").is(":checked")) {
+                            $("#FullPermission").val(true);
+                        }
+                        else {
+                            $("#FullPermission").val(false);
+                        }
+                    });
+
+                }
+                else {
+                    $("#PermissionlevelName").blur(function (e) {
+                        if ($("#PermissionlevelName").val() == "") {
+                            return false;
+                        } else {
+                            var strUrl = DomainName + '/Master/CheckDuplicatePermissionlevelName?Id=' + $(this).val();
+                            $.ajax({
+                                url: strUrl,
+                                success: function (data) {
+                                    if (data == 'False') {
+                                        $('#PermissionlevelName').val('');
+                                        $('#PermissionlevelName').focus();
+                                        TosterNotification("error", "This Permission level Name Already exist..", "Oppps..!!");
+                                    }
+                                    else {
+                                        $('#PermissionlevelName').val($(this).val());
+                                        $('#PermissionlevelName').focusin();
+                                        $('#PermissionlevelName').select();
+                                    }
+                                    //App.unblockUI();
+                                    return data;
+                                },
+                                error: function (req, status, error) {
+                                    $('#PermissionlevelName').val('');
+                                    $('#PermissionlevelName').focus();
+                                    //App.unblockUI();
+                                    TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                                    return false;
+                                }
+                            });
+                        }
+                    });
+
+                    $("#wid-id-3").hide();
+
+                    $("input[name='radioPosition']").click(function () {
+                        $("#PermissionType").val(this.value);
+                        GetAlertTypeList(DomainName);
+
+                        if ($("#Admin").is(":checked")) {
+                            $("#Administator").val(true);
+                        }
+                        else {
+                            $("#Administator").val(false);
+                        }
+                        if ($("#CntManager").is(":checked")) {
+                            $("#ContentManager").val(true);
+                        }
+                        else {
+                            $("#ContentManager").val(false);
+                        }
+                        if ($("#Cust").is(":checked")) {
+                            $("#Custom").val(true);
+                            $("#wid-id-3").show();
+                            $("#wid-id-33").hide();
+                            //GetAlertTypeList(DomainName);
+
+                        }
+                        else {
+                            $("#Custom").val(false);
+                            $("#wid-id-3").hide();
+                        }
+                    });
+
+                    $("input[name='radioTarget']").click(function () {
+                        if ($("#rbtTarget1").is(":checked")) {
+                            $("#PermittedToTarget").val(true);
+                        }
+                        else {
+                            $("#PermittedToTarget").val(false);
+                        }
+
+                        if ($("#rbtTarget2").is(":checked")) {
+                            $("#CustomizeTarget").val(true);
+                            $("#wid-id-33").show();
+                            GetUserData(DomainName);
+
+                            $(document).on('click', '#chkCheckAll', function () {
+                                $('.IsCheck').prop('checked', $(this).prop('checked'));
+                                if ($(this).prop('checked')) {
+                                    $('.IsCheck').parent('span').addClass('checked');
+                                    $('.IsCheck').val("true");
+                                }
+                                else {
+                                    $('.IsCheck').parent('span').removeClass('checked');
+                                    $('.IsCheck').val("false");
+                                }
+                            });
+                        }
+                        else {
+                            $("#CustomizeTarget").val(false);
+                            $("#wid-id-33").hide();
+                        }
+                    });
+
+                    $("input[name='radioContent']").click(function () {
+                        if ($("#OnlyPersonalContent").is(":checked")) {
+                            $("#PersonalContent").val(true);
+                        }
+                        else {
+                            $("#PersonalContent").val(false);
+                        }
+                        if ($("#FullViewPermission").is(":checked")) {
+                            $("#FullPermission").val(true);
+                        }
+                        else {
+                            $("#FullPermission").val(false);
+                        }
+                    });
+                    $('#CntManager').prop('checked', true);
+                }
+
+
+
+            }
+        }
+    }();
+</script>

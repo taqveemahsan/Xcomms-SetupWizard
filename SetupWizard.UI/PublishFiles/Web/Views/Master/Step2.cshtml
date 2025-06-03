@@ -1,0 +1,536 @@
+﻿@model XCommsWeb.Models.AlertStep2ViewModel
+@{
+    ViewBag.Title = "Wallpaper";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SelectListItem> RecipientsType = new List<SelectListItem>(){
+        new SelectListItem { Text = "Broadcast", Value = "BC"},
+        new SelectListItem { Text = "Recipients", Value = "SR"},
+        new SelectListItem { Text = "IP Groups", Value = "IG"}
+    };
+}
+<style type="text/css">
+    .table-bordered > thead > tr > th {
+        position: sticky;
+        top: 0;
+        background-color: #ebebeb;
+    }
+
+    .online {
+        background: #0f9f59;
+        -webkit-animation: pulse-animation 2s infinite linear;
+    }
+
+    .offline {
+        background: #da1515;
+    }
+
+    .indicator {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+    }
+
+    .icon-btn {
+        height: 60px;
+        padding: 12px 0px 0px 0px;
+        min-width: 80px;
+    }
+
+        .icon-btn > i {
+            font-size: 18px;
+        }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="jarviswidget" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-sortable="false">
+            <header role="heading">
+                <div class="jarviswidget-ctrls" role="menu">
+                    <a href="javascript:void(0);" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse">
+                        <i class="fa fa-minus "></i>
+                    </a>
+                </div>
+                <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                <h2><b>Wallpaper Step 2</b></h2>
+                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+            </header>
+            <div>
+                <div class="widget-body">
+                    @using (Html.BeginForm("AlertStep2Submit", "Master", FormMethod.Post, new { id = "form_Template", @class = "form-horizontal", enctype = "multipart/form-data", novalidate = "novalidate" }))
+                    {
+                        <fieldset style="min-height: calc(70vh);">
+                            <div class="col-md-12 form-group">
+                                <div class="col-md-6">
+
+                                    <label><strong>Send to :</strong></label>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        @*<label class="btn btn-default icon-btn">
+                                                <input type="radio" name="SendtoType" value="BC" data-bv-field="SendtoType">
+                                                <i class="fa fa-users"></i>
+                                                <div>Broadcast</div>
+                                            </label>*@
+                                        <label class="btn btn-default icon-btn active">
+                                            <input type="radio" name="SendtoType" value="SR" data-bv-field="SendtoType">
+                                            <i class="fa fa-users"></i>
+                                            <div>Recipients</div>
+                                        </label>
+                                        <label class="btn btn-default icon-btn">
+                                            <input type="radio" name="SendtoType" value="IG" data-bv-field="SendtoType">
+                                            <i class="fa fa-send"></i>
+                                            <div>IP Groups</div>
+                                        </label>
+                                    </div>
+                                    @Html.HiddenFor(c => c.SA2.AlertType)
+                                    @Html.HiddenFor(m => m.SA2.AlertId2)
+
+                                    @*<label class="col-md-3 control-label">Send to :</label>
+                                        <div class="col-md-9">
+
+                                        </div>*@
+                                </div>
+                            </div>
+                            <section class="row col-md-12 clsBC">
+                                <div class="alert alert-block alert-warning no-margin">
+                                    <h4 class="alert-heading"><i class="fa fa-warning"></i> Caution!</h4>
+                                    <h5>Sending the content via Broadcast will deliver it to every User/Group/Computer/Organizational Unit within your policy. Please note the following :</h5>
+                                    <ul>
+                                        <li>
+                                            If the alert is received by a <strong>Computer</strong>, it is immediately stored for all users working on it.
+                                            So, if you want to send the message only to <strong>users currently online</strong>, sending to  <strong>Computers (or by Broadcast)</strong> is  <strong>not a good idea.</strong>
+                                        </li>
+                                        <li>
+                                            <strong>Emails</strong> are delivered to <strong>any users</strong> with <strong>email addresses</strong> specified,
+                                            even if they do not have <strong>XCommAlerts</strong> clients. This may lead to the <strong>license limit</strong> exceeding and/or <strong>additional costs</strong>.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </section>
+                            <div class=" form-group clsSR">
+                                <div class="col-md-12">
+                                    <div class="col-md-5">
+                                        <label><strong>Show :</strong></label>
+                                        @Html.CheckBoxFor(m => m.SA2.SRUsertpy, new { @class = "AlertSetting  " }) Users
+                                        @Html.CheckBoxFor(m => m.SA2.SRGrouptyp, new { @class = "AlertSetting " }) Groups
+                                    </div>
+                                    <div class="col-md-offset-2 col-md-5">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                            <input class="form-control" id="tctSearchRecipients" placeholder="Search Recipients" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 custom-scroll table-responsive margin-top-10" style="max-height: calc(56vh); overflow-y: scroll;">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center"> <input type="checkbox" id="chkCheckAll" /></th>
+                                                <th>Name</th>
+                                                <th>Computer Name</th>
+                                                <th><i class="fa fa-key text-warning"></i> Desktop Key</th>
+                                                <th>Type</th>
+                                                <th>Online</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="containerTblSubItem">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-6 pull-left" id="ugt">
+                                        Select &nbsp;<label id="LblGUChk"> 0</label>&nbsp;out of &nbsp;
+                                        <label id="lblGP"></label>&nbsp; Group and &nbsp; <label id="lblUsecnt">0</label> &nbsp; out of  &nbsp;<label id="lblUser"></label>&nbsp; Users
+                                    </div>
+                                    <div class="col-md-6 pull-left" id="ug">
+                                        Select &nbsp;<label id="lblchk"> 0</label>  &nbsp; Out of &nbsp;
+                                        <label id="lblDT"></label>&nbsp; <label id="lbluser_grp"></label>
+                                    </div>
+                                    <button class="btn btn-primary" type="button" id="btnSubmit">
+                                        <i class="fa fa-send"></i>
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @Html.HiddenFor(c => c.AM.SchedulePatternType)
+                    }
+                    @Html.HiddenFor(c => c.AM.AlertId)
+                    @Html.HiddenFor(c => c.AM.AlertTital)
+                    @Html.HiddenFor(c => c.AM.AlertBody)
+                    @Html.HiddenFor(c => c.AM.ThemeId)
+                    @Html.HiddenFor(c => c.AM.AlertPosition)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $(function () {
+            $('#TxtMessage').focus();
+            $('#btnSubmit').click(function () {
+                var form = $("#form_Template");
+                if (form.valid() == false) {
+                    return false;
+                }
+                else {
+                    $.ajax({
+                        url: $('#form_Template').attr('action'),
+                        cache: false,
+                        type: 'POST',
+                        data: $('#form_Template').serialize(),
+                        success: function (data) {
+                            if (data.Status == 1) {
+                                TosterNotification("success", "Record has been updated successfully..!!", "Success");
+                                setTimeout(function () {
+                                    window.location = DomainName + "/Master/AddWallPaper"
+                                }, 1500);
+                            }
+                            else if (data.Message == "Fail") {
+                                TosterNotification("error", "Please check atleast one checkbox", "Oppps..!!");
+                            }
+                            else {
+                                TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                            }
+                        },
+                        error: function (jqXHR, exception) {
+                            TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                        }
+                    });
+                }
+            });
+        });
+
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+    </script>
+}
+<script>
+    var FormComponents = function (DomainName) {
+        var FormValidate = function (DomainName) {
+
+            var form = $('#form_Template');
+            var error = $('.alert-danger', form);
+            var success = $('.alert-success', form);
+
+            $("#form_Template").validate({
+
+                // Rules for form validation
+                rules: {
+
+                },
+
+                // Messages for form validation
+                messages: {
+
+                },
+
+                // Do not change code below
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                },
+                submitHandler: function (form) {
+                    success.show();
+                    error.hide();
+                    //document.forms["form_Template"].submit();
+                }
+            });
+        }
+
+        var GetData = function (DomainName, Usertpy, Grouptyp) {
+
+            var Utype = "true";
+            var Gtype = "true";
+            if (Usertpy == 'false' && Grouptyp == 'false') {
+                $('#SA2_SRUsertpy').prop('checked', true);
+                Utype = 'true';
+                Gtype = 'false';
+            }
+            else if (Usertpy == 'true' && Grouptyp == 'true') {
+                $('#SA2_SRUsertpy').prop('checked', true);
+                $('#SA2_SRGrouptyp').prop('checked', true);
+                Utype = 'true';
+                Gtype = 'true';
+            }
+            else if (Usertpy == 'false' && Grouptyp == 'true') {
+                $('#SA2_SRUsertpy').prop('checked', false);
+                $('#SA2_SRGrouptyp').prop('checked', true);
+                Utype = 'false';
+                Gtype = 'true';
+            }
+            else if (Usertpy == 'true' && Grouptyp == 'false') {
+                $('#SA2_SRUsertpy').prop('checked', true);
+                $('#SA2_SRGrouptyp').prop('checked', false);
+                Utype = 'true';
+                Gtype = 'false';
+            }
+            var StrURL1 = DomainName + "/Master/TaskDataList?Usertpy=" + Utype + "&Grouptyp=" + Gtype;
+            $.ajax({
+                url: StrURL1,
+                cache: false,
+                data: {},
+                type: 'POST',
+                success: function (data) {
+                    $("#containerTblSubItem").html(data);
+                    var UserCount1 = 0;
+                    var GroupCount1 = 0;
+                    $('#lblUsecnt').text(0);
+                    $('#lblchk').text(0);
+                    $('#LblGUChk').text(0);
+                    $('#lblGP').text($('#SendAlertUserList_1__Grp1').val());
+                    $('#lblUser').text($('#SendAlertUserList_1__User1').val());
+                    $('.IsCheck').change('on', function () {
+                        var Ischeck = $(this).val();
+                        if (jQuery(this).is(":checked")) {
+                            $(this).val("true");
+                            var Id = $(this).attr("id");
+                            var UserType = $('#UserType_' + Id).val();
+                            if (UserType == 'User') {
+                                UserCount1 = parseInt(UserCount1) + 1;
+                            }
+                            if (UserType == 'Group') {
+                                GroupCount1 = parseInt(GroupCount1) + 1;
+                            }
+                        }
+                        else {
+                            var Id = $(this).attr("id");
+                            var UserType = $('#UserType_' + Id).val();
+                            if (UserType == 'User') {
+                                UserCount1 = parseInt(UserCount1) - 1;
+                            }
+                            if (UserType == 'Group') {
+                                GroupCount1 = parseInt(GroupCount1) - 1;
+                            }
+                            $(this).val("false");
+                        }
+                        $('#LblGUChk').text(GroupCount1);
+                        $('#lblUsecnt').text(UserCount1);
+                    });
+
+                    if (Usertpy == 'false' && Grouptyp == 'false') {
+                        var rowCount = $(".table tr").length - 1;
+                        $('#lblDT').text(rowCount);
+                        $('.IsCheck').change('on', function () {
+                            var Ischeck = $(this).val();
+                            if (jQuery(this).is(":checked")) {
+                                $(this).val("true");
+                            }
+                            else {
+                                $(this).val("false");
+                            }
+                            var chk = $('.IsCheck:checked').size();
+                            $('#lblchk').text(chk);
+                        });
+                    }
+                    else if (Usertpy == 'true' && Grouptyp == 'true') {
+                        var UserCount = 0;
+                        var GroupCount = 0;
+                        $('#ug').hide();
+                        $('#ugt').show();
+                        var rowCount = $(".table tr").length - 1;
+                        $('#lblGP').text($('#SendAlertUserList_1__Grp1').val());
+                        $('#lblUser').text($('#SendAlertUserList_1__User1').val());
+                        $('.IsCheck').change('on', function () {
+                            var Ischeck = $(this).val();
+                            if (jQuery(this).is(":checked")) {
+                                $(this).val("true");
+                                var Id = $(this).attr("id");
+                                var UserType = $('#UserType_' + Id).val();
+                                if (UserType == 'User') {
+
+                                    UserCount = parseInt(UserCount) + 1;
+                                }
+                                if (UserType == 'Group') {
+                                    GroupCount = parseInt(GroupCount) + 1;
+                                }
+                            }
+                            else {
+                                var Id = $(this).attr("id");
+                                var UserType = $('#UserType_' + Id).val();
+                                if (UserType == 'User') {
+                                    UserCount1 = parseInt(UserCount1) - 1;
+                                }
+                                if (UserType == 'Group') {
+                                    GroupCount1 = parseInt(GroupCount1) - 1;
+                                }
+                                $(this).val("false");
+                                return false;
+                            }
+                            $('#LblGUChk').text(GroupCount);
+                            $('#lblUsecnt').text(UserCount);
+                        });
+                    }
+                    else if (Usertpy == 'false' && Grouptyp == 'true') {
+                        $('#ug').show();
+                        $('#ugt').hide();
+                        $('#lbluser_grp').text('Group');
+                        var rowCount = $(".table tr").length - 1;
+                        $('#lblDT').text(rowCount);
+                        $('.IsCheck').change('on', function () {
+                            var Ischeck = $(this).val();
+                            if (jQuery(this).is(":checked")) {
+                                $(this).val("true");
+                            }
+                            else {
+                                $(this).val("false");
+                            }
+                            var chk = $('.IsCheck:checked').size();
+                            $('#lblchk').text(chk);
+                        });
+                    }
+                    else if (Usertpy == 'true' && Grouptyp == 'false') {
+                        $('#ug').show();
+                        $('#ugt').hide();
+                        $('#lbluser_grp').text('User');
+                        var rowCount = $(".table tr").length - 1;
+                        $('#lblDT').text(rowCount);
+                        $('.IsCheck').change('on', function () {
+                            var Ischeck = $(this).val();
+                            if (jQuery(this).is(":checked")) {
+                                $(this).val("true");
+                            }
+                            else {
+                                $(this).val("false");
+                            }
+                            var chk = $('.IsCheck:checked').size();
+                            $('#lblchk').text(chk);
+                        });
+                    }
+
+                },
+                error: function (req, status, error) {
+                    alert("error " + req + " " + status + " " + error);
+                }
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                $('#ug').hide();
+                $('#ugt').hide();
+                GetData(DomainName, true, true);
+
+                $(".clsBC").hide();
+                $(".clsSR").hide();
+
+                $('#SA2_AlertType').change(function () {
+                    $(".clsBC").hide();
+                    $(".clsSR").hide();
+                    if ($(this).val() == "BC") {
+                        $('#ug').hide();
+                        $('#ugt').hide();
+                        $(".clsBC").show();
+                        $(".clsSR").hide();
+                    }
+                    if ($(this).val() == "SR") {
+                        $('#ug').hide();
+                        $('#ugt').show();
+                        $(".clsBC").hide();
+                        $(".clsSR").show();
+                    }
+                    if ($(this).val() == "IG") {
+                        $('#ug').hide();
+                        $('#ugt').hide();
+                        $(".clsBC").hide();
+                        $(".clsSR").hide();
+                    }
+                });
+
+                $(document).on('click', '#chkCheckAll', function () {
+                    $('.IsCheck').prop('checked', $(this).prop('checked'));
+                    if ($(this).prop('checked')) {
+                        $('.IsCheck').parent('span').addClass('checked');
+                        $('.IsCheck').val("true");
+                        $('#LblGUChk').text($('#SendAlertUserList_1__Grp1').val());
+                        $('#lblUsecnt').text($('#SendAlertUserList_1__User1').val());
+                        var rowCount = $(".table tr").length - 1;
+                        $('#lblchk').text(rowCount);
+                    }
+                    else {
+                        $('.IsCheck').parent('span').removeClass('checked');
+                        $('.IsCheck').val("false");
+                        $('#LblGUChk').text(0);
+                        $('#lblUsecnt').text(0);
+                        $('#lblchk').text(0);
+                    }
+                });
+
+                $('.IsCheck').change('on', function () {
+
+                    var Ischeck = $(this).val();
+                    if (jQuery(this).is(":checked")) {
+                        $(this).val("true");
+                    }
+                    else {
+                        $(this).val("false");
+                    }
+
+                });
+
+                //CallSubmitClick(DomainName);
+                $("#SA2_SRUsertpy").change(function () {
+                    if ($('#SA2_SRUsertpy').val() == "true") {
+                        $('#SA2_SRUsertpy').val("false");
+                    }
+                    else {
+                        $('#SA2_SRUsertpy').val("true");
+                    }
+                    GetData(DomainName, $('#SA2_SRUsertpy').val(), $('#SA2_SRGrouptyp').val());
+                });
+
+                $("#SA2_SRGrouptyp").change(function () {
+                    if ($('#SA2_SRGrouptyp').val() == "true") {
+                        $('#SA2_SRGrouptyp').val("false");
+                    }
+                    else {
+                        $('#SA2_SRGrouptyp').val("true");
+                    }
+                    GetData(DomainName, $('#SA2_SRUsertpy').val(), $('#SA2_SRGrouptyp').val());
+                });
+
+                $("#tctSearchRecipients").on("keyup", function () {
+                    var value = $(this).val().toLowerCase();
+                    $("#containerTblSubItem tr").filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+                $("input[name='SendtoType']").change(function () {
+                    $("#SA2_AlertType").val(this.value);
+                    $(".clsBC").hide();
+                    $(".clsSR").hide();
+                    if ($(this).val() == "BC") {
+                        $('#ug').hide();
+                        $('#ugt').hide();
+                        $(".clsBC").show();
+                        $(".clsSR").hide();
+                    }
+                    if ($(this).val() == "SR") {
+                        $('#ug').hide();
+                        $('#ugt').show();
+                        $(".clsBC").hide();
+                        $(".clsSR").show();
+                    }
+                    if ($(this).val() == "IG") {
+                        $('#ug').hide();
+                        $('#ugt').hide();
+                        $(".clsBC").hide();
+                        $(".clsSR").hide();
+                    }
+                });
+                $("input[name=SendtoType][value=SR]").prop('checked', true).change();
+            }
+        }
+    }();
+</script>
+

@@ -1,0 +1,14 @@
+﻿@using ServerWeb.Helper
+@using XCommsWeb.Models
+<aside id="left-panel">    
+    @{ Html.RenderPartial("_CurrentUser"); }    
+    @{
+        MvcHtmlString Menustr = MvcHtmlString.Create(Html.SiteMenuAsUnorderedList(ViewBag.SiteLinks as List<ISiteLink>, 1).ToString());
+    }    
+    <nav>
+        @Menustr
+    </nav>
+    <span class="minifyme" data-action="minifyMenu">
+        <i class="fa fa-arrow-circle-left hit"></i>
+    </span>
+</aside>

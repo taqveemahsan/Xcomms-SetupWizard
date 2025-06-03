@@ -1,0 +1,101 @@
+﻿@model XCommsWeb.Models.AlertModel
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@{
+    string AlertTital = !string.IsNullOrEmpty(Model.AlertTital) ? Model.AlertTital.StripHTML() : "";
+    int rowNo = 0;
+}
+<tr class="editorRow">
+    @using (Html.BeginCollectionItem("ListHistoryDelete", Model.AlertId.ToString()))
+    {
+        <td class="text-center" style="width: 25px !important;">
+            @if (ViewBag.BaseUserName == @Model.EntryBy && (ViewBag.PermissionTyp != "Administator"))
+            {
+                <div class="smart-form text-center">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.IsChecked, new { @class = "chkCheck" })
+                        <i></i>
+                    </label>
+                </div>
+            }
+            @if (ViewBag.PermissionTyp == "Administator")
+            {
+                <div class="smart-form text-center">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.IsChecked, new { @class = "chkCheck" })
+                        <i></i>
+                    </label>
+                </div>
+            }
+            @Html.HiddenFor(m => m.AlertId)
+            <input type="hidden" value="@Model.SrNo" />
+        </td>
+        <td class="TxtVerticalAlign">
+            @Html.HiddenFor(m => m.AlertId)
+            @if (@Model.AlertParentId == 0)
+            {
+                @AlertTital
+            }
+            else
+            {
+                <i class="fa fa-share-square txt-color-green"></i> @AlertTital
+            }
+        </td>
+        <td class="text-center TxtVerticalAlign">
+            @Model.EntryDate.FormateDateWithFullYearUS()
+        </td>
+        <td class="text-center TxtVerticalAlign">@Model.EntryBy</td>
+        <td class="text-center TxtVerticalAlign @Html.Raw(Model.Status == "Sent" || Model.Status == "Send" ? "success" : Model.Status == "Drafts" ? "warning" : "")">
+            <i class="fa fa-@Html.Raw(Model.Status == "Sent" || Model.Status == "Send" ? "check-circle txt-color-green fa-md" : Model.Status == "Drafts" ? "folder-open txt-color-green fa-md" : "")"></i>  @Model.Status
+        </td>
+        <td>
+            @if (ViewBag.BaseUserName == @Model.EntryBy)
+            {
+                <div class="btn-group center-block">
+                    <center>
+                        <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false" rel="tooltip" title="" data-placement="top" data-original-title="<i class='fa fa-envelope fa-md fa-fw'></i> Email History" data-html="true">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu pull-left" style="min-width:auto !important;">
+                            @if (ViewBag.BaseUserName == @Model.EntryBy)
+                            {
+                                if (Model.Status == "Sent" || Model.Status == "Send")
+                                {
+                                    <li>
+                                        <a href="javascript:;" class="ClsReSend" data-alertid="@Model.AlertId" data-type="@Model.Typ" data-fun="R">
+                                            <i class="fa fa-share-square"></i><span class="mrgleft5">Resend</span>
+                                        </a>
+                                    </li>
+                                }
+                                else if (Model.Status == "Drafts" || Model.Status == "Draft")
+                                {
+                                    if (ViewBag.BaseUserName == @Model.EntryBy)
+                                    {
+                                        <li>
+                                            <a href="javascript:;" data-id="@Model.AlertId" class="clseditsend"><i class="fa fa-pencil"></i><span class="mrgleft5"> Edit</span></a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:;" class="ClsSend" data-alertid="@Model.AlertId" data-type="5" data-fun="S">
+                                                <i class="fa fa-share-square"></i><span class="mrgleft5">Send</span>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+
+                                <li>
+                                    <a href="javascript:;" class="ClsCopy" data-alertid="@Model.AlertId" data-type="5" data-fun="C">
+                                        <i class="fa fa-copy"></i><span class="mrgleft5">Copy</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </center>
+                </div>
+            }
+            else
+            {
+                <div class="text-center TxtVerticalAlign"> - </div>
+            }
+        </td>
+    }
+</tr>

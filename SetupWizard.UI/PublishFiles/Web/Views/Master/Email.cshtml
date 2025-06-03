@@ -1,0 +1,255 @@
+﻿@model XCommsWeb.Models.AlertModel
+@{
+    ViewBag.Title = "Email";
+}
+
+<style type="text/css">
+    .note-editable {
+        font-size: 14px !important;
+    }
+
+        .note-editable > ol {
+            margin-top: 0 !important;
+            margin-bottom: 9px !important;
+            padding-left: 40px !important;
+        }
+
+    .note-editor.note-frame {
+        border: 1px solid #a9a9a9 !important;
+    }
+
+    button[disabled] {
+        background-color: #CCC;
+    }
+
+    .hasbgcolor {
+        color: red;
+    }
+
+    .TxtVerticalAlign {
+        vertical-align: middle !important;
+    }
+
+    .MainBox {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+<div class="row">
+    <article class="col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-8" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header role="heading">
+                <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                <h2>Email</h2>
+                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+            </header>
+            <div role="content" class="MainBox">
+                <div class="widget-body no-padding">
+                    @using (Html.BeginForm("EmailSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "", enctype = "multipart/form-data" }))
+                    {
+                        <fieldset>
+                            <div class="row form-horizontal">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <label><b>Email Subject <span class="hasbgcolor">*</span> : </b></label>   <label id="AlertT" style="color:red;display:none"><b>This Field Is Required</b></label>
+                                            <div class="no-padding">
+                                                @Html.TextBoxFor(c => c.AlertTital, new { @class = "form-control", @placeholder = "Email Subject" })
+                                                @Html.HiddenFor(m => m.AlertId)
+                                                @Html.HiddenFor(m => m.EditFlag)
+                                                @Html.HiddenFor(m => m.SaveAndNext)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <label><b>Email Body <span class="hasbgcolor">*</span> : </b></label>   <label id="AlertB" style="color:red;display:none"><b>This Field Is Required</b></label>
+                                            <div class="widget-body no-padding">
+                                                @Html.TextBoxFor(c => c.AlertBody, new { @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="clearfix"></div>
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSubmit" class="btnSubmitAlt btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Save Email">
+                                                <span class="btn-label"><i class="fa fa-save"></i></span>Save Email
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSaveNext" class="btnSaveNextAlt btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Save Setting">
+                                                <span class="btn-label"><i class="fa fa-arrow-right"></i></span>Save And Next
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                rules: { },
+                messages: { },
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+        var CallSubmitClick = function (DomainName) {
+            $(".btnSubmitAlt").click(function (e) {
+
+                $("#AlertBody").val($("#AlertBody").summernote('code'));
+
+                var form = $("#contact-form");
+                if (form.valid() == false) {
+                    $("#AlertT").hide();
+                    $("#AlertB").hide();
+                    return false;
+                }
+                else if ($("#AlertTital").val() == "") {
+                    Swal.fire('Please add email subject ..!', '', 'error');
+                    $("#AlertT").show();
+                    $("#AlertB").hide();
+                    return false;
+                }
+                else if ($("#AlertBody").summernote('isEmpty')) {
+                    Swal.fire('Please add email text ..!', '', 'error');
+                    $("#AlertB").show();
+                    $("#AlertT").hide();
+                    return false;
+                }
+                else {
+                    $("#AlertT").hide();
+                    $("#AlertB").hide();
+                    App.blockUI({ boxed: true });
+
+                    $.ajax({
+                        url: $('#contact-form').attr('action'),
+                        cache: false,
+                        type: 'POST',
+                        data: $('#contact-form').serialize(),
+                        success: function (data) {
+                            if (data.Status == true) {
+                                Swal.fire('Data has been updated successfully!', '', 'success');
+                                setTimeout(function () {
+                                    window.location = DomainName + "/Master/EmailHistory";
+                                }, 1500);
+                                App.unblockUI();
+                            }
+                            else {
+                                Swal.fire('Opration fail..!!' + data.ErrMsg , '', 'error');
+                                App.unblockUI();
+                            }
+                        },
+                        error: function (req, status, error) {
+                            Swal.fire('Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', '', 'error');
+                            App.unblockUI();
+                        }
+                    });
+                }
+            });
+
+            $(".btnSaveNextAlt").on("click", function () {
+                $("#SaveAndNext").val("Y");
+                $("#AlertBody").val($("#AlertBody").summernote('code'));
+                if ($("#AlertTital").val() == "") {
+                    Swal.fire('Please add email subject ..!', '', 'error');
+                    $("#AlertT").show();
+                    $("#AlertB").hide();
+                    App.unblockUI();
+                    return false;
+                }
+                else if ($("#AlertBody").summernote('isEmpty')) {
+                    Swal.fire('Please add email text ..!', '', 'error');
+                    $("#AlertB").show();
+                    $("#AlertT").hide();
+                    App.unblockUI();
+                    return false;
+                }
+                else {
+                    App.blockUI({ boxed: true });
+                    document.forms["contact-form"].submit();
+                }
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                if ('@Model.EditFlag' == "Y") {
+                    $('#AlertBody').summernote({
+                        height: 550,
+                        focus: true,
+                        codemirror: { // codemirror options
+                            theme: 'journal'
+                        },
+                        toolbar: [
+                            /* ["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                            /*['table', ['table']],*/
+                            ['insert', ['link', 'picture', 'video']],
+                            ['view', ['fullscreen', 'codeview', 'help']],
+                        ]
+                    });
+                    $("#AlertBody").summernote('code', '@Html.Raw(@Model.AlertBody)');
+
+                    $("#AlertTital").val('@Model.AlertTital');
+
+                }
+                else {
+
+
+                    $('#AlertBody').summernote({
+                        height: 550,
+                        toolbar: [
+                            /* ["style", ["style"]],*/
+                            ["font", ["fontsize","bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                            /*['table', ['table']],*/
+                            ['insert', ['link', 'picture', 'video']],
+                            ['view', ['fullscreen', 'codeview']],
+                        ],
+                        codemirror: { // codemirror options
+
+                            theme: 'journal'
+                        },
+                        placeholder: 'Add Email body here...',
+                    });
+                }
+
+
+                CallSubmitClick(DomainName);
+
+
+
+                  if ('@Model.IsExpired' == 1) {
+                      $('#btnSubmit').hide();
+                      $('#btnSaveNext').hide();
+                }
+                $(".link-dialog").find(".checkbox").remove();
+            }
+        }
+    }();
+</script>
+

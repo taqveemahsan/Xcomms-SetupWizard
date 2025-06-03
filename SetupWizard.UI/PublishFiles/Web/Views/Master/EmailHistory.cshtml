@@ -1,0 +1,289 @@
+﻿@model IEnumerable<XCommsWeb.Models.AlertModel>
+@{
+    ViewBag.Title = "Email History List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    .mrgleft5 {
+        margin-left: 5px
+    }
+
+    .mrgleft10 {
+        margin-left: 10px
+    }
+
+    .mrgtop10 {
+        margin-top: 10px
+    }
+
+    .mrgtop20 {
+        margin-top: 20px
+    }
+
+    .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+        text-decoration: none;
+        color: #fff;
+        background-color: #a90329 !important;
+    }
+
+    .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #a90329;
+        border-color: #a90329;
+    }
+
+    .modal-header .close {
+        margin-top: -20px;
+    }
+
+    .squarered {
+        height: 10px;
+        width: 10px;
+        background-color: #a90329;
+    }
+
+    .squaregreen {
+        height: 10px;
+        width: 10px;
+        background-color: #739e73;
+    }
+
+    .ifAlertPreview {
+        position: absolute !important;
+        /* top: 0px !important;
+            left: 350px !important;*/
+        z-index: 99999 !important;
+        border: 1px solid #CCC !important;
+        border-radius: 10px !important;
+        box-shadow: 8px 8px 5px grey !important;
+    }
+
+    .dt-toolbar {
+        padding: 6px 0px 1px;
+    }
+
+    .dt-toolbar-footer {
+        border-top: 0px;
+    }
+
+    a[disabled] {
+        background-color: #CCC;
+    }
+
+    .TxtVerticalAlign {
+        vertical-align: middle !important;
+    }
+
+    .MainBox {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+@using (Html.BeginForm("EmailHistoryMultipleDelete", "Master", FormMethod.Post, new { id = "form_sample" }))
+{
+    <div class="row">
+        <article class="col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-8" data-widget-editbutton="false" data-widget-custombutton="false" role="widget">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-list"></i> </span>
+                    <h2>Email History List</h2>
+                </header>
+                <div class="widget-body MainBox">
+                    <div class="col-md-12">
+                        <div class="pull-left">
+                            <ul class="demo-btns">
+                                <li>
+                                    <a href="javascript:void(0);" class="clsAdd btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Add New Email">
+                                        <span class="btn-label"><i class="fa fa-plus"></i></span>Add Email
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="btnDelete btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Delete Email">
+                                        <span class="btn-label"><i class="fa fa-trash-o"></i></span>Delete Email
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 mrgtop10">
+                        <table id="dt_EmailHistory" class="table table-striped table-bordered table-hover" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center no-sort">
+                                        <div class="smart-form text-center" style="width: 25px !important;">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="checkbox" id="chkCheckAll"><i></i>
+                                            </label>
+                                        </div>
+                                    </th>
+                                    <th class="text-center"><i class="fa fa-envelope txt-color-blueDark fa-lg"></i> Email Title</th>
+                                    <th class="text-center"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Sent Date/Time (EST)</th>
+                                    <th class="text-center"><i class="fa fa-user txt-color-blueDark fa-lg"></i> Sent By</th>
+                                    <th class="text-center"><i class="fa fa-check-circle-o txt-color-blueDark fa-lg"></i> Status</th>
+                                    <th class="text-center"><i class="fa fa-pencil-square txt-color-blueDark fa-lg"></i> Options</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    Html.RenderPartial("_HistoryEmailListPartial", item);
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+}
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+
+                $("#chkCheckAll").click(function () {
+                    if (this.checked) {
+                        $('.chkCheck').each(function () {
+                            $(".chkCheck").prop('checked', true);
+                        })
+                    } else {
+                        $('.chkCheck').each(function () {
+                            $(".chkCheck").prop('checked', false);
+                        })
+                    }
+                });
+                var TotalCount = 5;
+                $(".chkCheck").click(function () {
+                    var SelectCount = 0;
+                    $(".chkCheck").each(function () {
+                        if (this.checked) {
+                            SelectCount = SelectCount + 1;
+                        }
+                    });
+                    if (SelectCount == TotalCount) {
+                        $("#chkCheckAll").prop('checked', true);
+                    }
+                    else {
+                        $("#chkCheckAll").prop('checked', false);
+                    }
+                });
+
+
+
+                $(".btnDelete").click("on", function () {
+                    App.blockUI({ boxed: true });
+
+                    var count = 0;
+                    $(".chkCheck").each(function () {
+                        if (this.checked) {
+                            count = count + 1;
+                        }
+                    });
+                    if (count == 0) {
+                        Swal.fire('Please select at least one record', '', 'error');
+                        $(".checkbox").addClass("state-error").change();
+                        App.unblockUI();
+                        return false;
+                    }
+                    else {
+                        $(".checkbox").addClass("state-success").change();
+                    }
+                    var form = $('#form_sample');
+                    var table = $('#dt_RecentActivity').DataTable();
+                    table.destroy();
+                    if (form.valid() == false) {
+                        App.unblockUI();
+                        return false;
+                    }
+                    else {
+                        document.forms["form_sample"].submit();
+                        return true;
+                        App.unblockUI();
+                    }
+                });
+
+                $(".ClsReSend").on("click", function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('alertid');
+                    var Type = $(this).data('type');
+                    var StrURL = DomainName + '/Master/ResendAlert?AlertId=' + $(this).data('alertid');
+                    $.ajax({
+                        type: "GET",
+                        url: StrURL,
+                        contentType: "application/json; charset=utf-8",
+                        datatype: "json",
+                        success: function (data) {
+                            Swal.fire('Resend has been Successfully', '', 'success');
+                            window.location = DomainName + "/Master/EmailHistory";
+                            App.unblockUI();
+                        },
+                        error: function (jqXHR, exception) {
+                            Swal.fire('Oops ! <br/><br/>' + errorResult(jqXHR, exception), '', 'error');
+                            App.blockUI();
+                        }
+                    });
+                });
+                $(".ClsSend").on("click", function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('alertid');
+                    var Type = $(this).data('type');
+                    window.location = DomainName + "/Master/AlertStep2?AlertId=" + Id + "&Typ=" + Type;
+                });
+                $('.ClsCopy').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('alertid');
+                    var Type = $(this).data('type');
+                    var Fun = $(this).data('Fun');
+                    $.ajax({
+                        async: true,
+                        type: 'POST',
+                        url: DomainName + "/Master/CopyWallpaperHistory",
+                        data: { 'Type': Type, 'AlertId': Id },
+                        success: function (data) {
+                            App.blockUI({ boxed: true });
+                            console.log('Copy Email : ' + data);
+                            console.log('Copy Email Id : ' + data.AlertId);
+                            if (data.status == "1")
+                            {
+                                window.location = DomainName + "/Master/Email?AlertId=" + data.AlertId;
+                            }
+                            else
+                            {
+                                Swal.fire('Oops ! <br/><br/> There was an error Copying the Email.', '', 'error');
+                            }
+                            App.unblockUI();
+                        },
+                        error: function (jqXHR, exception)
+                        {
+                            Swal.fire('Oops ! <br/><br/>' + errorResult(jqXHR, exception), '', 'error');
+                            App.unblockUI();
+                        }
+                    });
+                   /* window.location = DomainName + "/Master/CopyWallpaperHistory?AlertId=" + Id + "&Type=" + Type;*/
+                });
+
+                $('.clseditsend').click(function () {
+                    App.blockUI({ boxed: true });
+                    var Id = $(this).data('id');
+                    window.location = DomainName + "/Master/Email?AlertId=" + Id;
+                });
+
+
+                $('.clsAdd').click(function () {
+                    App.blockUI({ boxed: true });
+                    window.location = DomainName + "/Master/Email?AlertId=0";
+                });
+                 if ('@ViewBag.IsExpired' == 1) {
+                     $('.clsAdd ').hide();
+                }
+                dataTableById("dt_EmailHistory", 2, "desc", true);
+            }
+        }
+    }();
+</script>

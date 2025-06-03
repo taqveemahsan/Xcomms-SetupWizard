@@ -1,0 +1,354 @@
+﻿@{
+    ViewBag.Title = "Desktop History";
+    Layout = "~/Views/Shared/_LayoutDesktop.cshtml";
+}
+<style type="text/css">
+    .card-body-bg {
+        overflow-y: auto;
+        padding: 0;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey;
+        border-radius: 10px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #0d1723;
+        border-radius: 10px;
+    }
+
+    .close {
+        margin-top: 0.5vh;
+    }
+
+    .jarviswidget {
+        margin: 10px 0 0 0;
+    }
+
+    tr {
+        cursor: pointer;
+    }
+
+    .glyphicon-refresh {
+        right: 10px;
+        font-size: 20px;
+        top: 6px;
+        color: #900323;
+    }
+
+        .glyphicon-refresh:hover {
+            color: #540114;
+        }
+
+    a.morelink {
+        text-decoration: none;
+        outline: none;
+    }
+
+    .morecontent span {
+        display: none;
+    }
+
+    .tdTitle {
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .dt-toolbar-footer {
+        padding: 5px 0px;
+    }
+</style>
+<div class="widget-body">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+            <div class="widget-body no-padding">
+                <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+                    <ul id="myTab1" class="nav nav-tabs bordered">
+                        <li class="active">
+                            <a data-toggle="tab" href="#tab1" aria-expanded="true"><i class="fa fa-lg fa-exclamation-circle"></i>&nbsp;New XComms</a>
+                        </li>
+                        <li class="">
+                            <a data-toggle="tab" href="#tab2" aria-expanded="false"><i class="fa fa-lg fa-history"></i>&nbsp;XComms History</a>
+                        </li>
+                        @*<li class="">
+                                <a data-toggle="tab" href="#tab3" aria-expanded="false"><i class="fa fa-lg fa-user"></i>&nbsp;My Info</a>
+                            </li>*@
+                    </ul>
+                    <div class="tab-content col-md-12" id="myTabContent1" style="padding:0px;">
+                        <div class="tab-pane DivCustomBorder fade in active table-responsive" id="tab1">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <table id="dt_UnreadActivity" class="table table-bordered table-hover" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hide"></th>
+                                            <th class="hide"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dt_UnreadActivityTbody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane DivCustomBorder fade in active table-responsive" id="tab2">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <table id="dt_RecentActivity" class="table table-bordered table-hover" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hide"></th>
+                                            <th class="hide"></th>
+                                            @if (ViewBag.History == "Y")
+                                            {
+                                                <th class="hide"></th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dt_RecentActivityTbody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!--<div class="tab-pane DivCustomBorder fade table-responsive" id="tab3">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+                                <a id="btn-backToList" class="btn btn-primary" href="javascript:;">
+                                    <i class="fa fa-plus"></i>&nbsp;Add IP Group
+                                </a>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">-->
+                        @*<table class="table table-striped table-bordered table-hover" id="dtIPGroups">
+                                <thead>
+                                    <tr>
+                                        <td class="text-center"><b>#</b></td>
+                                        <td><b>Group Name</b></td>
+                                        <td><b>Users</b></td>
+                                        <td><b>Groups</b></td>
+                                        <td><b>Created On</b></td>
+                                        <td><b>Action</b></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"><input type="checkbox" name="checkbox"></td>
+                                        <td>Human Resources</td>
+                                        <td>15</td>
+                                        <td>3</td>
+                                        <td>0</td>
+                                        <td><i class="fa fa-edit"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>*@
+                        <!--</div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+    <article class="col-xs-12 col-sm-12" style=" background-color: #262626; position: absolute; top: 92%; z-index: 9;">
+        <article class="col-xs-6 col-sm-6" style="padding-top: 5px;">
+            <span id="btnAppVersionNo" style="text-shadow: none !important; color: #595959; font-size: 14px;">
+            </span>
+        </article>
+        <article class="col-xs-6 col-sm-6 text-right">
+            <span>
+                <a href="http://www.xcomms.com" id="btnSiteName" style="text-shadow: none !important; color: #FFF; font-size: 17px;">www.xcomms.com</a>
+            </span>
+        </article>       
+    </article>
+</div>
+@*<div class="widget-body">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+                <div class="widget-body no-padding">
+                    <table id="dt_RecentActivity" class="table table-bordered table-hover" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="hide"></th>
+                                <th class="hide"></th>
+                                @if (ViewBag.History == "Y")
+                                {
+                                    <th class="hide"></th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody id="dt_RecentActivityTbody">
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </article>
+        <article class="col-xs-12 col-sm-12 text-right" style=" background-color: #262626; position: absolute; top: 92%; z-index: 9; }">
+            <span>
+                <a href="http://www.xcomms.com" id="btnSiteName" style="text-shadow: none !important; color: #FFF; font-size: 17px;">www.xcomms.com</a>
+            </span>
+        </article>
+    </div>*@
+<script type="text/javascript">
+
+        var FormComponents = function (DomainName) {
+            var dataTableById = function (tableId,Read) {
+                var responsiveHelper_dt_basic = undefined;
+                var responsiveHelper_datatable_fixed_column = undefined;
+                var responsiveHelper_datatable_col_reorder = undefined;
+                var responsiveHelper_datatable_tabletools = undefined;
+
+                var breakpointDefinition = {
+                    tablet: 1024,
+                    phone: 480
+                };
+                $('#' + tableId).dataTable({
+
+                    "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>" +
+                        "t" +
+                        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
+                    "autoWidth": true,
+                    "preDrawCallback": function () {
+                        // Initialize the responsive datatables helper once.
+                        if (!responsiveHelper_dt_basic) {
+                            responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#' + tableId), breakpointDefinition);
+                        }
+                    },
+                    "rowCallback": function (nRow) {
+                        responsiveHelper_dt_basic.createExpandIcon(nRow);
+                    },
+                    "drawCallback": function (oSettings) {
+                        responsiveHelper_dt_basic.respond();
+                    },
+                    "iDisplayLength": 7,
+                    /*"order": [orderBy],*/
+                    "bSort": false,
+                    "bLengthChange": false,
+                    initComplete: function () {
+                        //$(".dt-toolbar > div").eq(0)
+                        //    .append('<button type="button" id="any_button">Click Me!</button>');
+                        $(".dt-toolbar > div").eq(0).removeClass("col-xs-12 col-sm-6").addClass("col-md-12");
+                        $(".dataTables_filter > label").eq(0).attr("style", "float: right !important;");
+                        if ("@ViewBag.History" == "Y")
+                        {
+                            if (Read == "1") {
+                                $("#dt_RecentActivity_filter").eq(0)@*.append("<a href=\"@Url.Content("~/Desktop/ClearDesktopHistory?DeskbarId="+ @ViewBag.DeskbarId + "&Id=0&Type=All")\" id=\"btnClearHistory\" class=\"btn btn-danger btnClearHistory\"> <i class=\"fa fa-close\"></i> Clear History</a>")*@
+                                    .append("<a href=\"javascript:;\" id=\"btnRefresh\" class=\"pull-right\" title=\"Refresh\"><i class=\"glyphicon glyphicon-refresh\"></i></a>");
+                                $("#dt_RecentActivity_paginate").parent('div').append("<a href=\"@Url.Content("~/Desktop/ClearDesktopHistory?DeskbarId="+ @ViewBag.DeskbarId + "&Id=0&Type=All")\" id=\"btnClearHistory\" class=\"btn btn-danger btnClearHistory\"> <i class=\"fa fa-close\"></i> Clear History</a>");
+                            }
+                        }
+                        //$(".dt-toolbar").append("<div class=\"col-xs-12 col-sm-6\"><a href=\"javascript;:\" class=\"btn btn-danger\"> <i class=\"fa fa-close\"></i> Clear History</a></div>");
+                    }
+                });
+                $(".dataTables_filter input").attr("placeholder", "Search here...");
+                $(".dataTables_empty").html('<p style="font-size:13px;">Currently there are no new XComms to view.</p>');//No data available in table
+            }
+            var GetHistoryByUser = function (DomainName, Read) {
+
+                var strUrl = DomainName + "/Desktop/GetHistoryByUser?DeskbarId=@ViewBag.DeskbarId&Read=" + Read;
+                $.ajax({
+                    async: true,
+                    type: 'POST',
+                    url: strUrl,
+                    data: { 'AlertId': $(this).data('alertid'), 'Status': $(this).data('status') },
+                    success: function (data) {
+                        //setTimeout(function () {
+                        if (Read == "1") {
+                            $('#dt_RecentActivity').dataTable().fnClearTable();
+                            $('#dt_RecentActivity').dataTable().fnDestroy();
+                            $("#dt_RecentActivityTbody").html("");
+                            $("#dt_RecentActivityTbody").html(data);
+                            dataTableById("dt_RecentActivity", Read);
+                            App.unblockUI("#DivCustomBorder");
+                        }
+                        else {
+                            $('#dt_UnreadActivity').dataTable().fnClearTable();
+                            $('#dt_UnreadActivity').dataTable().fnDestroy();
+                            $("#dt_UnreadActivityTbody").html("");
+                            $("#dt_UnreadActivityTbody").html(data);
+                            dataTableById("dt_UnreadActivity", Read);
+                            App.unblockUI("#DivCustomBorder");
+                        }
+                        $("#btnRefresh").click(function () {
+                            App.blockUI({ target: "#DivCustomBorder" });
+                            GetHistoryByUser(DomainName, "1");
+                        });
+                        $(".tdTitle").on("click", function () {
+                            var tabId = $("#myTab1 li.active").find('a').attr('href');
+                            if (tabId == "#tab1") {
+                                setTimeout(function () {
+                                    GetHistoryByUser(DomainName, "0");
+                                }, 30000);
+                            }
+                        });
+                        //}, 500);
+                        //var showChar = 100;
+                        //var ellipsestext = "...";
+                        //var moretext = "more";
+                        //var lesstext = "less";
+                        //$('.more').each(function () {
+                        //    var content = $(this).html();
+
+                        //    if (content.length > showChar) {
+
+                        //        var c = content.substr(0, showChar);
+                        //        var h = content.substr(showChar - 1, content.length - showChar);
+                        //        var html = "";
+                        //        if (content.indexOf('img') < 0)
+                        //            html = c + '<span class="moreelipses">' + ellipsestext + '</span>&nbsp;<span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+
+                        //        $(this).html(html);
+                        //    }
+                        //});
+
+                        //$(".morelink").click(function () {
+                        //    if ($(this).hasClass("less")) {
+                        //        $(this).removeClass("less");
+                        //        $(this).html(moretext);
+                        //    } else {
+                        //        $(this).addClass("less");
+                        //        $(this).html(lesstext);
+                        //    }
+                        //    $(this).parent().prev().toggle();
+                        //    $(this).prev().toggle();
+                        //    return false;
+                        //});
+                    },
+                    error: function (jqXHR, exception) {
+                        App.unblockUI("#DivCustomBorder");
+                    }
+                });
+            }
+            return {
+                //main function to initiate the module
+                init: function (DomainName) {
+                    App.blockUI({ target: "#DivCustomBorder" });
+                    //GetHistoryByUser(DomainName, "1");
+                    //GetHistoryByUser(DomainName, "0");
+                    if (window.location.href.indexOf("#tab2") > 0) {
+                        GetHistoryByUser(DomainName, "1");
+                    }
+                    else if (window.location.href.indexOf("#tab3") > 0) {
+                        App.unblockUI("#DivCustomBorder");
+                    }
+                    else {
+                        GetHistoryByUser(DomainName, "0");
+                    }
+                    $("a").on("click", function () {
+                        App.blockUI({ target: "#DivCustomBorder" });
+                        if ($(this).attr('href') == "#tab1") {
+                            GetHistoryByUser(DomainName, "0");
+                        } else if ($(this).attr('href') == "#tab2") {
+                            GetHistoryByUser(DomainName, "1");
+                        }
+                        else {
+                            App.unblockUI("#DivCustomBorder");
+                        }
+                    });
+                }
+            }
+        }();
+</script>

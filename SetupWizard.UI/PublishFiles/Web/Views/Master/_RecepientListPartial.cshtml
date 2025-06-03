@@ -1,0 +1,145 @@
+﻿
+@model IEnumerable<XCommsWeb.Models.Tbl_Users>
+@using ServerWeb.Helper;
+@using XCommsWeb.Classes;
+@{
+    int index = 1;
+}
+
+<table class="table table-striped table-bordered table-hover table-responsive" id="dtReceipent" style="overflow:scroll" width="100%">
+    <thead>
+        <tr>
+            @*<th><b>Sr No.</b></th>*@
+            <td class="text-center no-sort"><i class="fa fa-user txt-color-blueDark fa-lg"></i> Synchronized</td>
+            <th class="text-center"><i class="fa fa-user txt-color-blueDark fa-lg"></i> User Name</th>
+            <th class="text-center"><i class="fa fa-envelope txt-color-blueDark fa-lg"></i> Email</th>
+            <th class="text-center"><i class="fa fa-phone-square txt-color-blueDark fa-lg"></i> Mobile</th>
+            <th class="text-center"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Registered Date</th>
+            <th class="text-center"><i class="fa fa-exclamation-circle txt-color-blueDark fa-lg"></i> Pop Up Alerts</th>
+            <th class="text-center"><i class="fa fa-ellipsis-h txt-color-blueDark fa-lg"></i> Ticker</th>
+            <th class="text-center"><i class="fa fa-desktop txt-color-blueDark fa-lg"></i> WallPaper</th>
+            <th class="text-center"><i class="fa fa-laptop txt-color-blueDark fa-lg"></i> Screen Saver</th>
+            <th class="text-center"><i class="fa fa-desktop txt-color-blueDark fa-lg"></i> Lock Screen</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @*<td>@item.SrNo</td>*@
+                @*<input type="hidden" value="@item.SrNo" />*@
+                <td class="text-center col-md-1 text-ValignMiddle @Html.Raw(item.Is_AD_User == true ? "success" : "")">
+                    <i class="fa fa-@Html.Raw(item.Is_AD_User == true ? "check-circle-o txt-color-green" : "times-circle-o txt-color-red") fa-lg"></i>
+                </td>
+                <td class="col-md-1">
+                    <span>
+                        @item.UserName
+                    </span>
+                    @if (item.Is_AD_User == true && item.IsADSync == true)
+                    {
+                        <span class="pull-right" rel="tooltip" data-placement="top" data-original-title="<i class='fa fa-check text-success fa-lg'></i> Synched With AD" data-html="true">
+                            <i class="fa fa-refresh fa-spin fa-lg txt-color-green"></i>
+                        </span>
+                    }
+                </td>
+                <td class="col-md-1">@item.email</td>
+                <td class="text-center col-md-1">@item.mobile_phone</td>
+                <td class="text-center col-md-1">
+                    <input type="hidden" value="@index" />
+                    @item.reg_date.FormateDateWithFullYearUS()
+                </td>
+                <td class="text-center @Html.Raw(item.AlertCnt == 0 ? "danger" : "success") col-md-1">
+                    @if (item.AlertCnt > 0)
+                    {
+                        <strong>
+                            <a href="javascript:;" class="ClsAnalytics" data-userid="@item.id" data-noofrecepient="@item.AlertCnt" data-type="1">
+                                <span class="txt-color-green">
+                                    @item.AlertCnt
+                                </span>
+                            </a>
+                        </strong>
+                    }
+                    else
+                    {
+                        <span class="txt-color-red">
+                            @item.AlertCnt
+                        </span>
+                    }
+                </td>
+                <td class="text-center @Html.Raw(item.TickerCnt == 0 ? "danger" : "success") col-md-1" style="vertical-align:middle;">
+                    @if (item.TickerCnt > 0)
+                    {
+                        <strong>
+                            <a href="javascript:;" class="ClsAnalytics" data-userid="@item.id" data-type="2">
+                                <span class="txt-color-green">
+                                    @item.TickerCnt
+                                </span>
+                            </a>
+                        </strong>
+                    }
+                    else
+                    {
+                        <span class="txt-color-red">
+                            @item.TickerCnt
+                        </span>
+                    }
+                </td>
+                <td class="text-center @Html.Raw(item.WallpaperCnt == 0 ? "danger" : "success") col-md-1">
+                    @if (item.WallpaperCnt > 0)
+                    {
+                        <strong>
+                            <a href="javascript:;" class="ClsAnalytics" data-userid="@item.id" data-type="3">
+                                <span class="txt-color-green">
+                                    @item.WallpaperCnt
+                                </span>
+                            </a>
+                        </strong>
+                    }
+                    else
+                    {
+                        <span class="txt-color-red">
+                            @item.WallpaperCnt
+                        </span>
+                    }
+                </td>
+                <td class="text-center @Html.Raw(item.ScreenSaverCnt == 0 ? "danger" : "success") col-md-1">
+                    @if (item.ScreenSaverCnt > 0)
+                    {
+                        <strong>
+                            <a href="javascript:;" class="ClsAnalytics" data-userid="@item.id" data-type="4">
+                                <span class="txt-color-green">
+                                    @item.ScreenSaverCnt
+                                </span>
+                            </a>
+                        </strong>
+                    }
+                    else
+                    {
+                        <span class="txt-color-red">
+                            @item.ScreenSaverCnt
+                        </span>
+                    }
+                </td>
+                <td class="text-center @Html.Raw(item.LockScreenCnt == 0 ? "danger" : "success") col-md-1">
+                    @if (item.LockScreenCnt > 0)
+                    {
+                        <strong>
+                            <a href="javascript:;" class="ClsAnalytics" data-userid="@item.id" data-type="7">
+                                <span class="txt-color-green">
+                                    @item.LockScreenCnt
+                                </span>
+                            </a>
+                        </strong>
+                    }
+                    else
+                    {
+                        <span class="txt-color-red">
+                            @item.LockScreenCnt
+                        </span>
+                    }
+                </td>
+            </tr>
+            index++;
+        }
+    </tbody>
+</table>

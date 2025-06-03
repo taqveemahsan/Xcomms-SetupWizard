@@ -1,0 +1,463 @@
+﻿@using XCommsWeb.Models;
+@using System.Configuration
+@{
+    ViewBag.Title = "Welcome to ";
+    ViewBag.ListTitleSales = "Sales Bill";
+    ViewBag.ListTitlePurchase = "Purchase Bill";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+
+    .smart-form fieldset {
+        display: block;
+        padding: 6px 5px 5px;
+        border: none;
+        background: rgba(255, 255, 255, .9);
+        position: relative;
+    }
+
+    .jarviswidget .widget-body {
+         min-height: 10px;  
+        position: relative;
+        padding-bottom: 13px;
+    }
+
+    .bootstrap-select {
+        width:100%;
+    }
+</style>
+
+
+
+<section id="widget-grid" class="">
+
+
+    <!-- START ROW -->
+
+    <div class="row">
+
+        <!-- NEW COL START -->
+        <article class="col-sm-12 col-md-12 col-lg-12">
+            <!-- Widget ID (each widget will need unique ID)-->
+            <div class="jarviswidget" id="wid-id-7" data-widget-editbutton="false" data-widget-custombutton="false">
+                <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                -->
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                    <h2>Create Alert </h2>
+
+                </header>
+
+                <div class="widget-body">
+
+                    <form class="form-horizontal">
+                        <div class="col-lg-6">
+                            <fieldset>
+                                <legend>Enter Titels </legend>
+
+                                <div class="form-group">
+
+                                    <label class="control-label col-md-2" for="prepend">Message Templates</label>
+                                   
+                                        <div class="col-md-7">
+                                            <div class="icon-addon addon-md">
+                                                <select class="form-control">
+
+                                                    <option>Message Templates</option>
+                                                    <option>Arrival Announcement</option>
+                                                    <option>  Corporate news</option>
+                                                    <option>  Email outage</option>
+                                                    <option>  Event</option>
+                                                    <option>  Monthly digest</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+
+
+                              
+                                </div>
+                       
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Title</label>
+                            <div class="col-md-10">
+                                <div class="widget-body no-padding">
+                                    <div class="superbox ">
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/01.jpg" data-img="./../assets/img/PopUpUI/01.jpg" alt=" " title=" " class="superbox-img">
+                                        </div>
+                                        <!--
+    -->
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/02.jpg" data-img="./../assets/img/PopUpUI/02.jpg" alt="My first photoshop layer mask on a high end PSD template theme" title="Chirag " class="superbox-img">
+                                        </div>
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/03.jpg" data-img="./../assets/img/PopUpUI/03.jpg" alt="My first photoshop layer mask on a high end PSD template theme" title="Bridge of Edgen" class="superbox-img">
+                                        </div>
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/04.jpg" data-img="./../assets/img/PopUpUI/04.jpg" alt="My first photoshop layer mask on a high end PSD template theme" title="Bridge of Edgen" class="superbox-img">
+                                        </div>
+
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/05.jpg" data-img="./../assets/img/PopUpUI/05.jpg" alt="My first photoshop layer mask on a high end PSD template theme" title="Bridge of Edgen" class="superbox-img">
+                                        </div>
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/06.jpg" data-img="./../assets/img/PopUpUI/06.jpg" alt="My first photoshop layer mask on a high end PSD template theme" title="Bridge of Edgen" class="superbox-img">
+                                        </div>
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/07.jpg" data-img="./../assets/img/PopUpUI/07.jpg" alt="My first photoshop layer mask on a high end PSD template theme" title="Bridge of Edgen" class="superbox-img">
+                                        </div>
+                                        <div class="superbox-list">
+                                            <img src="./../assets/img/PopUpUI/08.jpg" data-img="./../assets/img/PopUpUI/08.jpg" alt="My first photoshop layer mask on a high end PSD template theme" title="Bridge of Edgen" class="superbox-img">
+                                        </div>
+
+                                        <div class="superbox-float"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Title</label>
+                            <div class="col-md-10">
+                                <div class="widget-body no-padding">
+
+                                    <textarea id="mymarkdown" class="custom-scroll" style="max-height:150px;">
+                            ### Meeting
+ 					
+						                   </textarea>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Title</label>
+                            <div class="col-md-10">
+                                <div class="widget-body no-padding">
+
+                                    <div class="summernote">
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        </fieldset>
+</div>
+                        <div class="col-lg-6">
+
+
+                            <fieldset>
+                                <legend>Alert Setting</legend>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label"> </label>
+                                    <div class="col-md-10">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox">
+                                                High-priority alert
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox">
+                                                Acknowledgement
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox">
+                                                Self-destructing alert
+                                            </label>
+                                        </div>
+
+                                     
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox">
+                                                Add print button
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+
+
+                            <fieldset>
+                                <legend>Schedule alert</legend>
+                                <div class="form-group">
+
+                                    <label class="col-md-2 control-label"> </label>
+                                    <div class="col-md-10">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Once
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Daily
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Weekly
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Monthaly
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Yearly
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Alert apperance</legend>
+                                <div class="form-group">
+
+                                    <label class="col-md-2 control-label"></label>
+                                    <div class="col-md-10">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Radiobox 1
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Radiobox 2
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio">
+                                                Radiobox 3
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </fieldset>
+
+                            <fieldset>
+                                <legend> Messaging channels</legend>
+                                <div class="form-group">
+
+                                    <label class="col-md-2 control-label"> </label>
+                                    <div class="col-md-10">
+
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox">
+                                           Email
+                                        </label>
+
+                                     
+
+                                    </div>
+                                </div>
+
+
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Device type</legend>
+                                <div class="form-group">
+
+                                    <label class="col-md-2 control-label"> </label>
+                                    <div class="col-md-10">
+
+                                        <label class="radio radio-inline">
+                                            <input type="radio">
+                                            All devices
+                                        </label>
+
+                                        <label class="radio radio-inline">
+                                            <input type="radio">
+                                            Desktop
+                                        </label>
+
+                                        <label class="radio radio-inline">
+                                            <input type="radio">
+                                            Mobile
+                                        </label>
+
+                                    </div>
+                                </div>
+
+
+                            </fieldset>
+
+                        </div>
+
+                        <div class="col-lg-12">
+                            <footer>
+                                <button type="submit" class="btn btn-primary">
+                                    Validate Form
+                                </button>
+                            </footer>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- end widget content -->
+                <!-- end widget div -->
+
+            </div>
+            <!-- end widget -->
+        </article>
+    </div>
+</section>
+
+
+
+
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+        var Formvalidate = function (DomainName) {
+            var form1 = $('#form_sample');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
+            form1.validate({
+                doNotHideMessage: true,
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                // errorClass: 'validate-inline',
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",
+
+                rules: {
+                },
+
+                messages: {
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success1.hide();
+                    error1.show();
+                    App.scrollTo(error1, -200);
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+
+                submitHandler: function (form) {
+                    success1.show();
+                    error1.hide();
+                    App.blockUI({ boxed: true });
+                    $("#btnSubmit").hide();
+                    document.forms["form_sample"].submit();
+                }
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                Formvalidate(DomainName);
+
+
+                $('.summernote').summernote({
+                    height: 180,
+                    focus: false,
+                    tabsize: 2
+                });
+                $("#mymarkdown").markdown({
+                    autofocus: false,
+                    savable: true
+                })
+
+                $('select.selectpicker').selectpicker({
+                    caretIcon: 'glyphicon glyphicon-menu-down'
+                });
+
+
+                $.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+                    _title: function (title) {
+                        if (!this.options.title) {
+                            title.html("&#160;");
+                        } else {
+                            title.html(this.options.title);
+                        }
+                    }
+                }));
+
+
+
+                $('#dialog_link').click(function () {
+                    $('#dialog_simple').dialog('open');
+                    return false;
+
+                });
+
+                $('#dialog_simple').dialog({
+                    autoOpen: false,
+                    width: 600,
+                    resizable: false,
+                    modal: true,
+                    title: "<div class='widget-header' style='width:50%px' ><h4> Popup Template</h4></div>",
+                    buttons: [{
+                        html: "<i class='fa-file-image-o'></i>&nbsp; Select",
+                        "class": "btn btn-success",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }, {
+                        html: "<i class='fa fa-times'></i>&nbsp; Cancel",
+                        "class": "btn btn-default",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }]
+                });
+
+
+                $('.superbox').SuperBox();
+
+            }
+        }
+    }();
+</script>

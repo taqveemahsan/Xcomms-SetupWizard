@@ -1,0 +1,44 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="col-md-offset-3 col-md-6" style="margin-top:10%;">
+    <div class="portlet box @ViewBag.TableBoxColor">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-check"></i>@ViewBag.Title
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="margin-top-10 margin-bottom-10 clearfix">
+                <table class="table table-bordered table-striped">
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <b>@ViewBag.Title</b>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <span class="label label-danger">
+                NOTE!
+
+            </span>&nbsp;
+            <span>
+                @if (ViewBag.Name == "CONTRACTUAL VENDOR")
+                {
+                    <a href="@Url.Content("~/Master/PDCattachedvendormaster?type=2")">Click to Add more @ViewBag.Name</a>
+                }
+                else if (ViewBag.Name == "Customer to Customer Mapping")
+                {
+                    <a href="@Url.Content("~/Master/PDCattachedvendormaster?type=1")">Click to Edit more @ViewBag.Title</a>
+                }
+            </span>
+        </div>
+    </div>
+</div>
+

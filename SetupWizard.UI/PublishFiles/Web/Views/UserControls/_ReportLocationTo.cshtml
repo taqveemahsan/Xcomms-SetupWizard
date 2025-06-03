@@ -1,0 +1,109 @@
+﻿@{
+
+
+    List<SelectListItem> BlankList = new List<SelectListItem>();
+
+
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    string currBranchCode = Convert.ToString(ViewBag.MainLocCode).ToUpper();
+
+    //  int CurrLocLevel =Convert.ToInt32( MS.GetLocationDetails().Where(c => c.LocCode.ToUpper() == currBranchCode).FirstOrDefault().Loc_Level);
+    int CurrLocLevel = 1;
+
+    var GNList = MS.GetGeneralMasterObject().Where(c => c.CodeType.ToUpper() == "HRCHY" && Convert.ToInt32(c.CodeId) >= CurrLocLevel).ToList();
+    int MaxIdTo = GNList.Max(c => Convert.ToInt32(c.CodeId));
+    string CurrLoccd = CurrLocLevel == 1 ? "All" : currBranchCode;
+}
+
+@using XCommsWeb.Models
+
+
+@foreach (var itm in GNList)
+{
+    List<SelectListItem> LocationList = new List<SelectListItem>();
+
+    if (Convert.ToInt32(itm.CodeId) == CurrLocLevel)
+    {
+        LocationList.Add(new SelectListItem() { Text = currBranchCode + " : " + MS.GetLocationDetails().Where(c => c.LocCode.ToUpper() == currBranchCode).FirstOrDefault().LocName, Value = currBranchCode });
+    }
+    else if (Convert.ToInt32(itm.CodeId) == CurrLocLevel + 1)
+    {
+        //c.LocCode == currBranchCode ||
+        var LocList = MS.GetLocationDetails().Where(c => c.Report_Loc == currBranchCode).ToList();
+
+        LocationList.Add(new SelectListItem() { Text = "All", Value = "All" });
+
+        foreach (var itm1 in LocList)
+        {
+            LocationList.Add(new SelectListItem() { Text = itm1.LocCode + " : " + itm1.LocName, Value = itm1.LocCode });
+        }
+    }
+    else
+    {
+        LocationList.Add(new SelectListItem() { Text = "All", Value = "All" });
+    }
+
+    string CURRCode = LocationList.First().Value;
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label class="control-label col-md-3">@itm.CodeDesc </label>
+                <div class="col-md-6">
+
+                    @Html.DropDownList("LOCTo" + itm.CodeId, new SelectList(LocationList, "Value", "Text"), null, new { @class = "form-control select2 required2 required dropdown2 clsLocation" })
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@Html.Hidden("LocationTo", CurrLoccd)
+@Html.Hidden("LocationLevelTo", CurrLocLevel)
+@Html.Hidden("MaxIdTo", MaxIdTo)
+@*@Html.TextBox("LocationTo", CurrLoccd)
+    @Html.TextBox("LocationLevelTo", CurrLocLevel)*@
+
+<script type="text/javascript">
+
+    var LocationContraol = function () {
+
+        $(".clsLocation").change(function () {
+
+            $("#LocationTo").val($(this).val());
+
+            //alert("Hello");
+            //   App.blockUI({ boxed: true });
+            var StrURL1 = DomainName + "/Reporting/GetLocationLevel/" + $(this).val();
+            // alert("Hello " + StrURL1);
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                url: StrURL1,
+                dataType: 'json',
+                data: {},
+                success: function (data1) {
+
+
+                    $("#LocationLevelTo").val(data1.LocationLevel);
+
+                    //  alert("error");
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+            var ContId = parseInt($(this).attr("id").replace("LOCTo", "")) + 1;
+
+            if (ContId == $("#MaxIdTo").val()) {
+
+                var StrURL = DomainName + "/Reporting/GetLocationFromRegion/" + $(this).val();
+                FillDropDownfromOtherSelectFirst("LOCTo" + ContId, StrURL, "Location");
+            }
+
+
+        });
+
+
+    }</script>

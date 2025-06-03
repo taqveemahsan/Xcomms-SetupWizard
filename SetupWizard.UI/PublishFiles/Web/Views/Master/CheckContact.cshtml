@@ -1,0 +1,156 @@
+﻿@model XCommsWeb.Models.CheckContact
+@{
+    ViewBag.Title = "CheckContact";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var CountryCode = new List<SelectListItem>
+{
+        new SelectListItem{Text="+91",Value="91"},
+        new SelectListItem{Text="+1",Value="1"},
+    };
+}
+
+<h2>CheckContact</h2>
+
+@using (Html.BeginForm("Contactsubmit", "Master", FormMethod.Post, new { id = "Contact_Form", @class = "needs-validation", @novalidate = true }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>CheckContact</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AllContact, htmlAttributes: new { @class = "control-label col-md-2" })
+            @*<div class="col-md-1">
+                @Html.DropDownListFor(model => model.CountryCode, new SelectList(CountryCode, "Value", "Text"), "", new { @class = "form-control select2", @placeholder = "Select Code" })
+                </div>*@
+            <div class="col-md-8">
+                @Html.EditorFor(model => model.AllContact, new { htmlAttributes = new { @class = "form-control required required2" } })
+                @Html.ValidationMessageFor(model => model.AllContact, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Force_check, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Force_check)
+                    @Html.ValidationMessageFor(model => model.Force_check, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions fluid">
+            <div class="col-md-offset-4 col-md-8">
+                <button type="button" id="btnSubmit" class="btn btn-sm green ClsbtnSave"><i class="fa fa-check"></i>&nbsp;Submit</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="ResultRegion">
+        <div class="portlet box @ViewBag.TableBoxColor">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-list"></i>@ViewBag.ListTitle
+                </div>
+                <div class="actions">
+                    <a class="btn btn-xs default tooltips" title="Add New Product" href="@Url.Content("~/Master/ProductMaster")" data-placement="left">
+                        <i class="fa fa-plus"></i>&nbsp;Add New Product
+                    </a>
+                </div>
+            </div>
+
+            <div class="portlet-body" id="ResultData">
+
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var Formvalidate = function (DomainName) {
+
+            var form1 = $('#Contact_Form');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
+
+            form1.validate({
+                doNotHideMessage: true,
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                // errorClass: 'validate-inline',
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",
+                messages: {
+
+                },
+                errorPlacement: function (error, element) {
+                    var group = element.closest('.input-group');
+                    if (group.length) {
+                        group.after(error.addClass('invalid-feedback'));
+                    } else {
+                        element.after(error.addClass('invalid-feedback'));
+                    }
+                },
+
+                //display error alert on form submit
+                invalidHandler: function (event, validator) {
+
+                },
+
+                submitHandler: function (form) {
+                    success1.show();
+                    error1.hide();
+                }
+            });
+        }
+
+        var Submit = function (DomainName) {
+            $("#btnSubmit").on("click", function () {
+               // App.blockUI({ boxed: true });
+                var form = $("#Contact_Form");
+                if (form.valid() == false) {
+                   // App.unblockUI();
+                    return false;
+                }
+                else {
+
+                    $.ajax({
+                        url: DomainName + '/Master/Contactsubmit',
+                        data: new FormData(this.form),
+                        type: 'POST',
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        timeout: 600000,
+                        success: function (data) {
+                            $("#ResultData").html(data);
+                            $("#ResultRegion").show();
+                            //Event(DomainName);
+                           // App.unblockUI();
+                        },
+                        error: function (req, status, error) {
+                            alert("error in Order Details Retrival. Please try again later.");
+                           // App.unblockUI();
+                        }
+                    });
+                   // App.unblockUI();
+                }
+            });
+        }
+        return {
+            init: function (DomainName) {
+                Formvalidate(DomainName);
+                Submit(DomainName);
+            }
+        }
+    }();
+</script>
+
+
+

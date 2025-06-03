@@ -1,0 +1,9 @@
+﻿ Welcome to XComms!<br/><br/>
+To gain immeditate access to your XComms tools, please click the link provided to you. This page will prompt you to enter your login id and password.<br/><br/>
+Your login id is your email address and your temporary password is : <b>" + [PASSWORD] + "</b> <br/><br/>
+You can easily change your password when you login. <br/><br/>
+After you login with your temporary password, click the icon with a blank profile image that is above your name in the top left. This will expand a toolbar.<br/><br/>
+Click on the 'Profile' icon on the far right of that toolbar. <br/><br/>
+Click 'Change Password', enter your assigned password (provided above), enter in your new password, confirm by entering the new password again and click the 'Submit' button. <br/><br/>
+Enjoy using XComms! <br/><br/>
+<b>-The XComms Team.</b>

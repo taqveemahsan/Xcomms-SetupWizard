@@ -1,0 +1,78 @@
+﻿@model IEnumerable<XCommsWeb.Models.CYGNUS_Master_CodeTypes>
+@{
+    ViewBag.Title = "List of General Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int noOfRow = 10, noOfCoulmn = 0, count = 0;
+    noOfCoulmn = Model.Count() / noOfRow + (Model.Count() / noOfRow > 0 ? 1 : 0);
+}
+<div class="row" style="display:none;">
+    <div class="col-md-12">
+        <div class="portlet box @ViewBag.TableBoxColor">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-list"></i>&nbsp;@ViewBag.Title
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-striped table-bordered table-hover" id="ListGeneralMaster">
+                    <thead style="display:none;">
+                        <tr>
+                    @for (int i = 0; i < noOfCoulmn; i++)
+                    {
+                        <th class="center">General Masters</th>
+                    }
+                </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int j = 0; j < noOfRow; j++)
+                        {
+                            if (Model.Count() > count)
+                            {
+                                <tr>
+
+                                    @for (int i = 0; i < noOfCoulmn; i++)
+                                    {
+                                        if (Model.Count() > count)
+                                        {
+                                            <td><a href="@Url.Content("~/Master/GeneralMaster/"+@Model.ElementAt(count).HeaderCode)">@Model.ElementAt(count).HeaderDesc</a></td>
+                                            count++;
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                    }
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+        function initTable(tblId) {
+            $('#' + tblId).dataTable({
+                "bPaginate": false,
+                "bDestroy": true,
+                "bInfo": false,
+            });
+
+            jQuery('#' + tblId + '_wrapper .dataTables_filter input').addClass("form-control input-medium input-inline"); // modify table search input
+            jQuery('#' + tblId + '_wrapper .dataTables_filter').addClass("pull-right");
+        }
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                initTable("ListGeneralMaster");
+                $("#ListGeneralMaster").parents('.row').show(500);
+            }
+        }
+    }();
+</script>

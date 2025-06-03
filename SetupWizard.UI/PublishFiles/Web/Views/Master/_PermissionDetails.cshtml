@@ -1,0 +1,20 @@
+﻿@model XCommsWeb.Models.Tbl_Permission
+@using ServerWeb.Helper;
+
+<tr class="editorRow">
+    <td>@Model.PermissionName</td>
+    <td>@Model.Permissioncount</td>
+    <td class="text-center col-md-1">
+        <div class="btn-group center-block">
+            <button class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-bars"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="@Url.Content("~/Master/CreateNewPermission?Id=" + Model.Id)"><i class="fa fa-pencil"></i><span class="mrgleft5"> Edit</span></a></li>
+                <li><a href="@Url.Content("~/Master/CopyDeletePermission?Type=C&ID=" + Model.Id)"><i class="fa fa-link"></i><span class="mrgleft5"> Copy</span></a></li>
+                <li><a href="@Url.Content("~/Master/VewPermission/" + Model.Id)"><i class="fa fa-eye"></i><span class="mrgleft5"> View</span></a></li>
+                <li><a href="@Url.Content("~/Master/CopyDeletePermission?Type=D&ID=" + Model.Id)"><i class="fa fa-trash-o"></i><span class="mrgleft5"> Delete</span></a></li>
+            </ul>
+        </div>
+    </td>
+</tr>

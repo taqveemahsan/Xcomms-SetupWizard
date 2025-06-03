@@ -1,0 +1,849 @@
+﻿@model IEnumerable<XCommsWeb.Models.AlertModel>
+@{
+    ViewBag.Title = "Ticker History List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+
+    .smart-form fieldset {
+        display: block;
+        padding: 6px 5px 5px;
+        border: none;
+        background: rgba(255, 255, 255, .9);
+        position: relative;
+    }
+
+    .jarviswidget .widget-body {
+        min-height: 10px;
+        position: relative;
+        padding-bottom: 13px;
+    }
+
+    .bootstrap-select {
+        width: 100%;
+    }
+
+    .mrgleft5 {
+        margin-left: 5px
+    }
+
+    .mrgleft10 {
+        margin-left: 10px
+    }
+
+    .mrgleft20 {
+        margin-left: 20px
+    }
+
+    .mrgtop10 {
+        margin-top: 10px
+    }
+
+    .mrgtop20 {
+        margin-top: 20px
+    }
+
+    .mrgtop30 {
+        margin-top: 30px
+    }
+
+    .mrgtop40 {
+        margin-top: 40px
+    }
+
+    .mrgtop50 {
+        margin-top: 50px
+    }
+
+    .mrgtop60 {
+        margin-top: 60px
+    }
+
+    h3 {
+        display: block;
+        font-size: 18px;
+        font-weight: 400;
+        margin: 15px 0px 0px 0px;
+        line-height: normal;
+        color: #b72125;
+    }
+
+    .tabletr {
+        background-color: #efefef;
+        font-weight: bold;
+    }
+
+    .dropdown-menu > li > a {
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+        font-size: 12px !important;
+    }
+
+        .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+            text-decoration: none;
+            color: #fff;
+            background-color: #a90329 !important;
+        }
+
+    .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #a90329;
+        border-color: #a90329;
+    }
+
+    .modal-header .close {
+        margin-top: -20px;
+    }
+
+    .squarered {
+        height: 10px;
+        width: 10px;
+        background-color: #a90329;
+    }
+
+    .squaregreen {
+        height: 10px;
+        width: 10px;
+        background-color: #739e73;
+    }
+
+    .ifAlertPreview {
+        position: absolute !important;
+        /*  top: 0px !important;*/
+        left: 0px !important;
+        z-index: 99999 !important;
+        /*border: 1px solid #CCC !important;*/
+        box-shadow: 8px 8px 5px grey !important;
+    }
+
+    .dt-toolbar {
+        padding: 6px 0px 1px;
+    }
+
+    .dt-toolbar-footer {
+        border-top: 0px;
+    }
+
+    a[disabled] {
+        background-color: #CCC;
+    }
+
+    .disabled-link {
+        pointer-events: none;
+        background-color: #b5aeaecc;
+        color: unset !important;
+    }
+
+    .TxtVerticalAlign
+    {
+        vertical-align: middle !important;
+    }
+
+    .MainBox
+    {
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+    }
+</style>
+
+@using (Html.BeginForm("TickerHistoryMultipleDelete", "Master", FormMethod.Post, new { id = "form_sample" }))
+{
+    <div class="row">
+        <article class="col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-list"></i> </span>
+                    <h2>Ticker History List</h2>
+                </header>
+                <div class="widget-body MainBox">
+
+                    <div class="clearfix"></div>
+                    <div class="col-md-12">
+                        <div class="pull-left">
+                            <ul class="demo-btns">
+                                <li>
+                                    <a href="javascript:void(0);" class="ClsAdd btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Add New Ticker">
+                                        <span class="btn-label"><i class="fa fa-plus"></i></span>Add Ticker
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" id="btnStopTicker" class="btn btn-labeled btn-warning" rel="tooltip" title="" data-placement="bottom" data-original-title="Stop Ticker">
+                                        <span class="btn-label"><i class="fa fa-close"></i></span>Stop Ticker
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" id="btnDelete" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Delete Ticker">
+                                        <span class="btn-label"><i class="fa fa-trash-o"></i></span>Delete Ticker
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-12 mrgtop10">
+                        <table id="dt_TickerHistory" class="table table-striped table-bordered table-hover" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center no-sort" style="width:25px;">
+                                        <div class="smart-form">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="checkbox" id="chkCheckAll">
+                                                <i></i>
+                                            </label>
+                                        </div>
+                                    </th>
+                                    @*<th>Ticker</th>*@
+                                    <th class="text-center"><i class="fa fa-ellipsis-h txt-color-blueDark fa-lg"></i> Ticker Title</th>
+                                    <th class="text-center col-md-2"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i> Sent Date/Time (EST)</th>
+                                    <th class="text-center col-md-2"><i class="fa fa-user txt-color-blueDark fa-lg"></i> Sent By</th>
+                                    <th class="text-center col-md-1"><i class="fa fa-thumb-tack txt-color-blueDark fa-lg"></i> Recurring</th>
+                                    <th class="text-center col-md-1"><i class="fa fa-paper-plane txt-color-blueDark fa-lg"></i> Resent</th>
+                                    <th class="text-center col-md-1"><i class="fa fa-check-circle-o txt-color-blueDark fa-lg"></i> Active</th>
+                                    <th class="text-center col-md-1"><i class="fa fa-pencil-square txt-color-blueDark fa-lg"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="DivListTickerHistoryBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+}
+<div id="divPreview" style="display:none;">
+    <iframe id="iframe" class="ifAlertPreview" name="myFrame" frameborder="0" scrolling="no" height="44px;" width="100%">
+    </iframe>
+</div>
+<!-- Modal -->
+<a href="#exampleModal" data-toggle="modal" id="exampleModals" style="display:none;"></a>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-bar-chart"></i></span>
+                                <h2>Activity Analytics Report</h2>
+                            </header>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div id="pie-chart" class="chart"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class=" mrgtop20 table table-responsive table-bordered" id="tblData">
+                                        @*<tr>
+                                                <td><div class="squaregreen"></div></td>
+                                                <td><span class="mrgleft5">Delivered</span></td>
+                                                <td><a href="#"><span class="mrgleft10">85</span></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td><div class="squarered"></div></td>
+                                                <td><span class="mrgleft5">Not Delivered</span></td>
+                                                <td><a href="#"><span class="mrgleft10">15</span></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td><div class=""></div></td>
+                                                <td><span class="mrgleft5">Acknowleged</span></td>
+                                                <td><a href="#"><span class="mrgleft10">100</span></a></td>
+                                            </tr>*@
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <ul class="demo-btns">
+                            <li>
+                                <a href="javascript:void(0);" id="exportpiedata" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Export Details">
+                                    <span class="btn-label"><i class="fa fa-download"></i></span>Export
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                    <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalTbl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid">
+                        <div class="jarviswidget jarviswidget-color-darken" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"></div>
+                                <span class="widget-icon"><i class="fa fa-user"></i></span>
+                                <h2>Recipients List</h2>
+                            </header>
+                            <div class="row">
+                                <table class=" mrgtop20 table table-responsive table-bordered" id="tblData2" width="100%"></table>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:10px;">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <ul class="demo-btns">
+                            <li>
+                                <a href="javascript:void(0);" id="exportPopAlert" class="btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Export Data">
+                                    <span class="btn-label"><i class="fa fa-download"></i></span>Export
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                    <span class="btn-label"><i class="fa fa-close"></i></span>Dismiss
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ConfirmationMessage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title"><strong>Confirmation</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="message">
+                    <h5>
+                        <span class="control-label">Are you sure you want to delete  </span><b><span id="DeleteSr"> </span></b> ?
+                        <br />
+                        <br />
+                        <span class="control-label">If yes then please press <b>"Confirm"</b> other wise kindly press "Close".</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:10px !important;">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="pull-right">
+                            <ul class="demo-btns">
+                                <li>
+                                    <a href="javascript:void(0);" id="DeleteRow" class="btn btn-labeled btn-primary DeleteRow" value="1" rel="tooltip" title="" data-placement="bottom" data-original-title="Confirm">
+                                        <span class="btn-label"><i class="fa fa-check-circle"></i></span> Confirm
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" data-dismiss="modal" class="btn btn-labeled btn-danger" rel="tooltip" title="" data-placement="bottom" data-original-title="Close">
+                                        <span class="btn-label"><i class="fa fa-close"></i></span> Dismiss
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/assets/plugins/easy-pie-chart/jquery.easy-pie-chart.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.cust.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.resize.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.fillbetween.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.orderBar.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.pie.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.time.min.js"></script>
+    <script src="~/assets/plugins/flot/jquery.flot.tooltip.min.js"></script>
+
+}
+<script type="text/javascript">
+
+    var FormComponents = function (DomainName) {
+
+        var GetTickerHistory = function (DomainName) {
+            App.blockUI();
+            var strUrl = DomainName + "/Master/GetTickerHistory";
+            $.ajax({
+                async: true,
+                type: 'POST',
+                url: strUrl,
+                data: {},
+                success: function (data) {
+                    $('#dt_TickerHistory').dataTable().fnClearTable();
+                    $('#dt_TickerHistory').dataTable().fnDestroy();
+                    $("#DivListTickerHistoryBody").html(data);
+                    /*GetAnalytic(DomainName);*/
+                    Events(DomainName);
+                    dataTableById("dt_TickerHistory", 2, "desc", true);
+                    App.unblockUI();
+                },
+                error: function (req, status, error) {
+                    App.unblockUI();
+                    alert(error);
+                }
+            });
+        }
+
+        var Events = function (DomainName) {
+            $("#chkCheckAll").click(function () {
+                if (this.checked) {
+                    $('.chkCheck').each(function () {
+                        $(".chkCheck").prop('checked', true);
+                    })
+                } else {
+                    $('.chkCheck').each(function () {
+                        $(".chkCheck").prop('checked', false);
+                    })
+                }
+            });
+
+            var TotalCount = 5;
+            $(".chkCheck").click(function () {
+                var SelectCount = 0;
+                $(".chkCheck").each(function () {
+                    if (this.checked) {
+                        SelectCount = SelectCount + 1;
+                    }
+                });
+
+                if (SelectCount == TotalCount) {
+                    $("#chkCheckAll").prop('checked', true);
+                }
+                else {
+                    $("#chkCheckAll").prop('checked', false);
+                }
+
+                var Control_ID = $(this).attr('id');
+                console.log("Control_ID : " + Control_ID);
+                if ($("#" + Control_ID).is(':checked')) {
+                    $(this).prop('checked', true);
+                    $(this).val(true);
+                }
+                else {
+                    $(this).prop('checked', false);
+                    $(this).val(false);
+                }
+            });
+
+            
+
+            $(".showTickerPreview").click(function () {
+                App.blockUI({ boxed: true });
+                var TickerId = $(this).data('tickerid');
+                var TickerPosition = $(this).data("tickerposition");
+                $.ajax({
+                    url: DomainName + "/Master/TickerPreviewPopup?TickerID=" + TickerId,
+                    cache: false,
+                    type: 'POST',
+                    data: $('#contact-form').serialize(),
+                    success: function (data) {
+                        $(".ifAlertPreview").parent('div').attr("style", "display:none;");
+                        $("iframe").contents().find("body").html(data)
+                        $(this).attr("target", "myFrame");
+                        $("#divPreview").toggle('show').change();
+
+                        /*var TickerSpeed = $(this).data("tickerspeed");*/
+                        var wt = "";
+                        var ht = "";
+                        if (TickerPosition == 1) {
+                            ht = '0px !important;';
+                        }
+                        if (TickerPosition == 2) {
+                            ht = ((window.innerHeight - 141 - 45) / 2) + 'px !important;';
+                        }
+                        if (TickerPosition == 3) {
+                            ht = (window.innerHeight - 141 - 45) + 'px;!important;';
+                        }
+                        $(".ifAlertPreview").attr("style", "top:" + ht);
+                        App.unblockUI();
+                    },
+                    error: function (req, status, error) {
+                        TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                        App.unblockUI();
+                    }
+                });
+            });
+
+            $(".clsResend").on("click", function () {
+                App.blockUI({ boxed: true });
+                var StrURL = DomainName + '/Master/ResendAlert?AlertId=' + $(this).attr('id');
+                $.ajax({
+                    type: "GET",
+                    url: StrURL,
+                    contentType: "application/json; charset=utf-8",
+                    datatype: "json",
+                    success: function (data) {
+                        /*console.log(data);*/
+
+                        Swal.fire({
+                            title: "Ticker has been sent successfully",
+                            text: "",
+                            icon: "success",
+                            confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                            confirmButtonClass: "btn btn-success clsConfirmYes",
+                            confirmButtonColor: '#7367f0',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        });
+
+                        $(".clsConfirmYes").on("click", function () {
+                            App.unblockUI();
+                            window.location = DomainName + "/Master/TickerHistory";
+                        });
+
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception) {
+                        TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                        App.unblockUI();
+                    }
+                });
+            });
+
+            $(".ClsAnalytics").on("click", function () {
+                App.blockUI({ boxed: true });
+                var strUrl = DomainName + "/Home/GetData";
+                var parameters = {};
+                parameters['Type'] = "2";
+                parameters['AlertId'] = $(this).data('alertid');
+                parameters['TenantId'] = '@ViewBag.TenantId';
+                parameters['BaseUserName'] = '@ViewBag.UserName';
+                parameters['ViewingType'] = '@ViewBag.ViewingType';
+                var strUrl1 = DomainName + "/Home/ExportData";
+                $('#exportpiedata').attr("href", strUrl1 + "?AlertId=" + $(this).data('alertid') + "&Status=" + "" + "&ModuleType=" + $(this).data('type'));
+                $.ajax({
+                    async: false,
+                    type: 'POST',
+                    url: strUrl,
+                    dataType: 'json',
+                    data: {
+                        Method: 'USP_GetPopUpAnalyticsDataV1',
+                        parameters: parameters
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        $("#exampleModals").click();
+                        setTimeout(function () {
+                            if ($('#pie-chart').length) {
+                                var data_pie = [];
+                                //var series = 2;
+                                //for (var i = 0; i < data.length; i++) {
+                                //    data_pie[i] = {
+                                //        label: "Series" + (i + 1),
+                                //        data: Math.floor(Math.random() * 100) + 1
+                                //    }
+                                //}
+                                data_pie[0] = {
+                                    label: "ND : " + data[0]["NotDelivered"],
+                                    data: data[0]["NotDelivered"],
+                                }
+                                data_pie[1] = {
+                                    label: "Delivered : " + data[0]["Delivered"],
+                                    data: data[0]["Delivered"]
+                                }
+
+                                $.plot($("#pie-chart"), data_pie, {
+                                    series: {
+                                        pie: {
+                                            show: true,
+                                            innerRadius: 0,
+                                            radius: 1,
+                                            label: {
+                                                show: true,
+                                                radius: 2 / 4,
+                                                formatter: function (label, series) {
+                                                    return '<div style="font-size:11px;text-align:center;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                                },
+                                                threshold: 0.1
+                                            }
+                                        }
+                                    },
+                                    legend: {
+                                        show: false,
+                                        noColumns: 1, // number of colums in legend table
+                                        labelFormatter: null, // fn: string -> string
+                                        labelBoxBorderColor: "#000", // border color for the little label boxes
+                                        container: null, // container (as jQuery object) to put legend in, null means default on top of graph
+                                        position: "ne", // position of default legend container within plot
+                                        margin: [5, 10], // distance from grid edge to default legend container within plot
+                                        backgroundColor: "#efefef", // null means auto-detect
+                                        backgroundOpacity: 1 // set to 0 to avoid background
+                                    },
+                                    grid: {
+                                        hoverable: true,
+                                        clickable: true
+                                    },
+                                });
+
+                                var tblString = "";
+                                tblString += '<tr><td colspan="2"><b>Total Recepient</b></td><td class="text-left" colspan="2"><b>' + data[0]["NoOfRecipientes"] + '</b></td></tr>';
+                                tblString += '<tr><td><div class="squaregreen"></div></td><td><span class="mrgleft5">Delivered</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="Deliverd" data-type="' + data[0]["Type"] + '"><span class="mrgleft10">' + data[0]["Delivered"] + '</span></a></td><td><label><span class="mrgleft5">' + data[0]["Delivered_Per"] + '</span></label></td></tr>';
+                                tblString += '<tr><td><div class="squarered"></div></td><td><span class="mrgleft5">Not Delivered</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="NotDeliverd" data-type="' + data[0]["Type"] + '"><span class="mrgleft10">' + data[0]["NotDelivered"] + '</span></a></td><td><label><span class="mrgleft5">' + data[0]["NotDelivered_Per"] + '</span></label></td></tr>';
+                                tblString += '<tr><td><div></div></td><td><span class="mrgleft5">Acknowleged</span></td><td><a href="javascript:;" class="ClsAnalTbl" data-alertid="' + data[0]["AlertId"] + '" data-status="Acknowleged" data-type="' + data[0]["Type"] + '"><span class="mrgleft10">' + data[0]["Acknowledged"] + '</span></a></td><td><label><span class="mrgleft5">' + data[0]["Acknowledged_Per"] + '</span></label></td></tr>';
+                                $("#tblData").html(tblString);
+                                GetAnalyticDetail(DomainName);
+                            }
+                        }, 500);
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception) {
+                        TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                        App.unblockUI();
+                    }
+                });
+            });
+
+            $('.ClsAdd').click(function () {
+                App.blockUI({ boxed: true });
+                window.location = DomainName + "/Master/TickerAlert?TickerID=0";
+            });
+            $(".clsShortcut").click(function () {
+                App.blockUI({ boxed: true });
+                var alertid = $(this).data("alertid");
+                $.ajax({
+                    url: DomainName + "/Master/CreateShortcut?AlertId=" + alertid,
+                    cache: false,
+                    type: 'GET',
+                    success: function (data) {
+                        Swal.fire({
+                            title: "Your XComms On Demand Ticker Shortcut has been created successfully and placed on your desktop.",
+                            text: "",
+                            icon: "success",
+                            confirmButtonText:
+                                '<i class="fa fa-check"></i> Okay !',
+                            showCancelButton: false,
+                            cancelButtonColor: '#d33',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        });
+                        App.unblockUI();
+                    },
+                    error: function (req, status, error) {
+                        TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                        App.unblockUI();
+                    }
+                });
+            });
+        }
+
+        var GetAnalyticDetail = function (DomainName) {
+            $(".ClsAnalTbl").on("click", function () {
+                App.blockUI({ boxed: true });
+                var strUrl = DomainName + "/Master/GetAnalyticData";
+                var strUrl1 = DomainName + "/Home/ExportData";
+                $('#exportPopAlert').attr("href", strUrl1 + "?AlertId=" + $(this).data('alertid') + "&Status=" + $(this).data('status') + "&ModuleType=" + $(this).data('type'));
+                $.ajax({
+                    async: false,
+                    type: 'POST',
+                    url: strUrl,
+                    data: { 'AlertId': $(this).data('alertid'), 'Status': $(this).data('status'), 'ModuleType': $(this).data('type') },
+                    success: function (data) {
+                        if (data == "1") {
+
+                        } else {
+                            $("#tblData2").html(data);
+                            $('#exampleModalTbl').modal('show');
+
+                            dataTableById("tblData2");
+                        }
+                        App.unblockUI();
+                    },
+                    error: function (jqXHR, exception) {
+                        TosterNotification("error", errorResult(jqXHR, exception), "Error");
+                        App.unblockUI();
+                    }
+                });
+            });
+        }
+
+        var StopTickerEvent = function (DomainName) {
+            $("#btnStopTicker").on("click", function () {
+                var count = 0;
+                $(".chkCheck").each(function () {
+                    if (this.checked) {
+                        count = count + 1;
+                    }
+                });
+                if (count == 0) {
+                    Swal.fire({
+                        title: "Please select at least one record !",
+                        text: "",
+                        icon: "error",
+                        confirmButtonText: '<i class="fa fa-thumbs-up"></i> Okay !',
+                        showCancelButton: false,
+                        cancelButtonColor: '#d33'
+                    });
+                    return false;
+                }
+                else {
+                    Swal.fire({
+                        title: "Are you sure? </br></br> You want to stop this selected Ticker.",
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Stop It !'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            App.blockUI({ boxed: true });
+                            $.ajax({
+                                url: DomainName + "/Master/StopAlert",
+                                cache: false,
+                                type: 'POST',
+                                data: $('#form_sample').serialize(),
+                                success: function (data) {
+
+                                    Swal.fire({
+                                        title: "<i class='fa fa-fa-ellipsis-h txt-color-blue fa-md'></i> Ticker has been stopped successfully",
+                                        text: "",
+                                        icon: "success",
+                                        confirmButtonText: '<i class="fa fa-check-circle"></i> Okay ',
+                                        confirmButtonClass: "btn btn-success clsConfirmYes",
+                                        confirmButtonColor: '#7367f0'
+                                    });
+
+                                    $(".clsConfirmYes").on("click", function () {
+                                        App.unblockUI();
+                                        window.location = DomainName + "/Master/TickerHistory";
+                                    });
+
+                                    App.unblockUI();
+                                },
+                                error: function (req, status, error) {
+                                    TosterNotification("error", 'Operation fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                                    App.unblockUI();
+                                }
+                            });
+                        }
+                        else {
+                            App.unblockUI();
+                        }
+                    });
+                }
+            });
+        }
+
+        var DeleteTickerEvent = function (DomainName) {
+            $("#btnDelete").click("on", function () {
+                var count = 0;
+                $(".chkCheck").each(function () {
+                    if (this.checked) {
+                        count = count + 1;
+                    }
+                });
+                if (count == 0) {
+                    Swal.fire({
+                        title: "Please select at least one record !",
+                        text: "",
+                        icon: "error",
+                        confirmButtonText: '<i class="fa fa-thumbs-up"></i> Okay !',
+                        showCancelButton: false,
+                        cancelButtonColor: '#d33'
+                    });
+                    return false;
+                }
+                var form = $('#form_sample');
+                var table = $('#dt_RecentActivity').DataTable();
+                table.destroy();
+                if (form.valid() == false) {
+                    return false;
+                }
+                else {
+                    App.blockUI();
+
+                    Swal.fire({
+                        title: "Are you sure? </br></br> You want to delete <i class='fa fa-trash-o txt-color-red fa-md'></i>",
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Remove It !'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            Swal.fire({
+                                title: "<i class='fa fa-check-circle txt-color-blue fa-md'></i> Data has been deleted successfully.",
+                                text: "",
+                                icon: "success",
+                                confirmButtonText: '<i class="fa fa-check-circle"></i> Okay',
+                                confirmButtonClass: "btn btn-success clsConfirmYes",
+                                confirmButtonColor: '#7367f0'
+                            });
+
+                            $(".clsConfirmYes").on("click", function () {
+                                App.blockUI();
+                                window.location = DomainName + "/Master/TickerHistory";
+                            });
+
+                            setTimeout(function () {
+                                document.forms["form_sample"].submit();
+                            }, 1000);
+                        }
+                        else {
+                            App.unblockUI();
+                        }
+                    });
+
+                    //$('#ConfirmationMessage').modal('show');
+                    //$(".DeleteRow").on("click", function () {
+                    //    Swal.fire('Data has been deleted successfully.', '', 'success');
+                    //    document.forms["form_sample"].submit();
+                    //    return true;
+                    //    //var result = $(this).val();
+                    //    //if (result == 1) {
+                    //    //document.forms["form_sample"].submit();
+                    //    //return true;
+                    //    /*}*/
+                    //});
+                }
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function (DomainName) {
+                GetTickerHistory(DomainName);
+                Events(DomainName);
+                dataTableById("dt_TickerHistory", 2, "desc", true);
+
+                //$(".TickerTital").each(function (key, value) {
+                //    $(this).text(removeTags($(this).text()).replace(/\&nbsp;/g, ''));
+                //});
+                 if ('@ViewBag.IsExpired' == 1) {
+                     $('.ClsAdd ').hide();
+                     $('#btnStopTicker ').hide();
+                     $('#btnDelete ').hide();
+                     $('.clsResend').addClass('disabled-link');
+                     $('.clscopy').addClass('disabled-link');
+                }
+
+                StopTickerEvent(DomainName);
+                DeleteTickerEvent(DomainName);
+            }
+        }
+    }();
+</script>

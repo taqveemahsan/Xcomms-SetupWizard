@@ -1,0 +1,50 @@
+﻿@model IEnumerable<XCommsWeb.Models.CYGNUX_Master_Reports>
+@using XCommsWeb.Models;
+@using XCommsWeb.Helpers
+
+@{
+    List<CYGNUX_Master_Reports> ReportTypes = Model.GroupBy(c => c.ReportType).Select(c => c.First()).ToList();
+}
+@foreach (var reportType in ReportTypes.OrderBy(c => c.ReportType))
+{
+    var outCount = Model.Where(c => c.ReportType.ToUpper() == reportType.ReportType.ToUpper()).Count();
+    int i = 1;
+    List<CYGNUX_Master_Reports> ReportSubTypes = Model.Where(c => c.ReportType.ToUpper() == reportType.ReportType.ToUpper()).GroupBy(c => c.ReportSubType).Select(c => c.First()).ToList();
+
+    foreach (var item in ReportSubTypes.OrderBy(c => c.ReprotName))
+    {
+        var inCount = Model.Where(c => c.ReportSubType.ToUpper() == item.ReportSubType.ToUpper()).Count();
+        int j = 1;
+        {
+            foreach (var items in Model.Where(c => c.ReportSubType.ToUpper() == item.ReportSubType.ToUpper()).OrderBy(c => c.ReprotName))
+            {
+                MvcHtmlString ReportName = MvcHtmlString.Create(items.DisplayName);
+                <tr>
+                    @using (Html.BeginCollectionItem("Report", items.ID.ToString()))
+                    {
+                        item.UserName = @ViewBag.UserId;
+                        <td>
+                            @Html.CheckBox("HasAccess", @items.HasAccess, new { @class = "clsCheckBox checkboxes" })
+                            @Html.Hidden("UserName", @items.UserName)
+                            @Html.Hidden("ID", @items.ID.ToString())
+                            @Html.Hidden("ReportType", @items.ReportType)
+                            @Html.Hidden("ReportSubType", @items.ReportSubType)
+                        </td>
+                        if (i == 1)
+                        {
+                            <td rowspan="@outCount" style="vertical-align:middle;text-align:center;">@items.ReportType</td>
+                            i = 0;
+                        }
+                        if (j == 1)
+                        {
+                            <td rowspan="@inCount" style="vertical-align:middle;text-align:center;">@items.ReportSubType</td>
+                            j = 0;
+                        }
+                        <td>@ReportName</td>
+                        <td>@items.Description</td>
+                    }
+                </tr>
+            }
+        }
+    }
+}

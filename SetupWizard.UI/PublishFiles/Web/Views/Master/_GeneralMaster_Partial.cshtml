@@ -1,0 +1,94 @@
+﻿@model XCommsWeb.Models.CYGNUS_Master_GeneralViewModel
+@using XCommsWeb.Models
+@{
+    var Text = "";
+    if (Model.WMG.CodeId != null || Model.WMG.CodeId != "")
+    {
+        Text = "Update";
+    }
+    if (Model.WMG.CodeId == null || Model.WMG.CodeId == "")
+    {
+        Text = "Save";
+    }
+
+    bool Status = false;
+    if (Model.WMG.StatusCode == null || Model.WMG.StatusCode == "Y" || Model.WMG.StatusCode == "")
+    {
+        Status = true;
+    }
+    List<CYGNUS_location> mainZoneList = new List<CYGNUS_location>();
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    if (Model.WMG.CodeType.ToUpper() == "ZONE")
+    {
+        mainZoneList = MS.GetLocationDetails().Where(c => c.Loc_Level == 2 && c.ActiveFlag == "Y").ToList();
+    }
+}
+
+<div class="portlet box @ViewBag.TableBoxColor">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-edit"></i>&nbsp;@Model.WMCT.HeaderDesc Master
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-body">
+            <div class="alert alert-danger display-hide">
+                <button class="close" data-close="alert"></button>
+                You have some form errors. Please check below.
+            </div>
+
+            <div class="alert alert-success display-hide">
+                <button class="close" data-close="alert"></button>
+                Your form validation is successful!
+            </div>
+
+            @using (Html.BeginForm("AddEditGeneralMaster", "Master", FormMethod.Post, new { id = "form_sample", @class = "form-horizontal row-fluid", enctype = "multipart/form-data" }))
+            {
+                <div>
+                    <div class="col-md-12">
+                        <label class="control-label col-md-3">@Model.WMCT.ID_desc</label>
+                        <div class="form-group col-md-8">
+                            @Html.TextBoxFor(c => c.WMG.CodeId, new { placeholder = "System Generated", @class = "form-control", @readonly = "true" })
+                            @Html.ValidationMessageFor(m => m.WMG.CodeId)
+                            @Html.HiddenFor(c => c.WMG.CodeId)
+                            @Html.HiddenFor(c => c.WMG.CodeType)
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="col-md-12">
+                        <label class="control-label col-md-3">@Model.WMCT.Name_Desc</label>
+                        <div class="form-group col-md-8">
+                            @Html.TextBoxFor(m => m.WMG.CodeDesc, new { placeholder = @Model.WMCT.Name_Desc, @class = "required required2 form-control text-uppercase" })
+                            @Html.ValidationMessageFor(m => m.WMG.CodeDesc)
+                        </div>
+                    </div>
+                </div>
+                if (@Model.WMG.CodeType.ToUpper() == "ZONE")
+                {
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label col-md-3">Main Zone</label>
+                            <div class="col-md-8">
+                                @Html.DropDownListFor(m => m.WMG.codefor, new SelectList(mainZoneList, "LocCode", "LocName", Model.WMG.codefor), Model.WMG.codefor, new { @class = "select2 form-control required2 required", placeholder = "Select Main Zone" })
+                                @Html.ValidationMessageFor(m => m.WMG.codefor)
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label col-md-3">Active</label>
+                        <div class="col-md-8 chkactive">
+                            @Html.CheckBox("WMG_StatusCode", @Status)
+                            <button type="button" id="btnSave" class="btn btn-sm green controls ClsbtnSave pull-right" style="margin-left: 1%;">
+                                <i class="fa fa-check"></i>&nbsp;@Text
+                            </button>
+                            <button type="button" id="btnCancel" class="btn btn-sm defualt controls pull-right" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

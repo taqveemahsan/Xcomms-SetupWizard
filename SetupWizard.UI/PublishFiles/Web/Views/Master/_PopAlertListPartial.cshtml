@@ -1,0 +1,294 @@
+﻿@model IEnumerable<XCommsWeb.Models.PopAlert>
+@using XCommsWeb.Classes;
+@using HtmlAgilityPack;
+@using System.Text.RegularExpressions;
+@{
+    var Type = Model.Select(c => c.Type).FirstOrDefault();
+}
+
+<style type="text/css">
+    .TxtVerAlign {
+        vertical-align: middle !important;
+    }
+</style>
+
+@*<table class="table table-striped table-hover table-responsive table-forum" id="dtPopAlert">
+        <thead>
+            <tr>
+                <th class="hide"></th>
+                <th class="text-center"><strong>Title</strong></th>
+                @if (Type == "1" || Type == "2")
+                {
+                    <th class="text-center" title="Acknowledged Requested">Ack. Requested</th>
+                }
+                <th class="text-center">Recurring</th>
+                <th class="text-center">Active</th>
+                <th class="text-center">No Of Recipients</th>
+                <th class="text-center">Delivered #</th>
+                <th class="text-center">Delivered %</th>
+                <th class="text-center">Not Delivered #</th>
+                <th class="text-center">Not Delivered %</th>
+                @if (Type == "1" || Type == "2")
+                {
+                    <th class="text-center">Acknowledged #</th>
+                    <th class="text-center">Acknowledged %</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                if (Type == "3" || Type == "7")
+                {
+                    item.AlertTital = item.AlertBody;
+                }
+                string Title = item.AlertTital;
+                string AlertTital = !string.IsNullOrEmpty(item.AlertTital) ? item.AlertTital.StripHTML() : "";
+
+                Regex rx = new Regex("<[^>]*>");
+                Regex rxPtoDivOpen = new Regex("<p>");
+                Regex rxPtoDivClose = new Regex("</p>");
+                Regex rxRemovebr = new Regex("<br>");
+                AlertTital = item.AlertTital;
+                HtmlDocument documentAlertTital = new HtmlDocument();
+                AlertTital = rxPtoDivOpen.Replace(AlertTital, "<div>");
+                AlertTital = rxPtoDivClose.Replace(AlertTital, "</div>");
+                AlertTital = rxRemovebr.Replace(AlertTital, "");
+                documentAlertTital.LoadHtml(AlertTital);
+                GeneralFuncations GF = new GeneralFuncations();
+                GF.SetDisplayInlineForList(documentAlertTital.DocumentNode);
+                item.AlertTital = documentAlertTital.DocumentNode.InnerHtml.ToString();
+                <tr>
+                    <td class="hide">@item.EntryDate</td>
+                    <td class="tdTitle" title="@item.AlertTital">
+                        <h4>
+                            <a href="javascript:;" style="text-decoration: none; cursor: pointer;">
+                                @Html.Raw(item.AlertTital)
+                                <input type="hidden" value="@item.SrNo" />
+                            </a>
+                            <small>
+                                <a href="javascript:;" style="text-decoration: none; cursor: pointer; text-transform: capitalize;">@item.EntryBy.ToLower()</a> on <i class="fa fa-calendar txt-color-blueDark"></i> <em>@item.EntryDate.FormateDateWithFullYearUS()</em>
+                            </small>
+                        </h4>
+                    </td>
+                    @if (Type == "1" || Type == "2")
+                    {
+                        <td class="text-center col-md-1">
+                            @if (@Html.Raw(item.AcknowledgementRequested).ToString().Contains("Yes"))
+                            {
+                                <span rel="tooltip" data-placement="left" data-original-title="Acknowledgement Requested"><i class="fa fa-thumbs-up fa-2x"></i></span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                    }
+                    <td class="text-center col-md-1">
+                        @if (@Html.Raw(item.Recurring).ToString().Contains("Yes"))
+                        {
+                            <span rel="tooltip" data-placement="left" data-original-title="Recurring">
+                                <img src="~/assets/img/calendar icon.png" />
+                            </span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                    <td class="text-center col-md-1">
+                        @if (@Html.Raw(item.Active).ToString().Contains("Yes"))
+                        {
+                            <span rel="tooltip" data-placement="left" data-original-title="Active" class="indicator online"></span>
+                        }
+                        else
+                        {
+                            <span rel="tooltip" data-placement="left" data-original-title="In Active" class="indicator offline"></span>
+                        }
+                    </td>
+                    <td class="text-center col-md-1 @Html.Raw(item.NoOfRecipientes == 0 ? "danger" : "success")" style="vertical-align:middle;">
+                        @if (@item.NoOfRecipientes == 0)
+                        {
+                            <span class="txt-color-red">
+                                @item.NoOfRecipientes
+                            </span>
+                        }
+                        else
+                        {
+                            <strong>
+                                <a href="javascript:;" class="ClsAnalytics" data-alertid="@item.AlertId" data-noofrecepient="@item.NoOfRecipientes">
+                                    <span class="txt-color-green">
+                                        @item.NoOfRecipientes
+                                    </span>
+                                </a>
+                            </strong>
+                        }
+                    </td>
+                    <td class="text-center col-md-1 @Html.Raw(item.Delivered == 0 ? "danger" : "success")" style="vertical-align:middle;">@item.Delivered</td>
+                    <td class="text-center col-md-1" style="vertical-align:middle;">@item.Delivered_Per</td>
+                    <td class="text-center col-md-1 @Html.Raw(item.NotDelivered == 0 ? "danger" : "success")" style="vertical-align:middle;">@item.NotDelivered</td>
+                    <td class="text-center col-md-1" style="vertical-align:middle;">@item.NotDelivered_Per</td>
+                    @if (Type == "1" || Type == "2")
+                    {
+                        <td class="text-center col-md-1 @Html.Raw(item.Acknowledged == 0 ? "danger" : "success")" style="vertical-align:middle;">@item.Acknowledged</td>
+                        <td class="text-center col-md-1" style="vertical-align:middle;">@item.Acknowledged_Per</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>*@
+
+<table class="table table-striped table-bordered table-hover table-responsive" style="overflow:scroll" border="1" id="dtPopAlert">
+    <thead>
+        <tr>
+            <th class="text-center TxtVerAlign col-md-2"><i class="fa fa-calendar txt-color-blueDark fa-lg"></i>  Sent Date/Time (EST)</th>
+            @if (Type == "1")
+            {
+                <th class="text-center TxtVerAlign"><i class="fa fa-exclamation-circle txt-color-blueDark fa-lg"></i> Alert Title</th>
+            }
+            else if (Type == "2")
+            {
+                <th class="text-center TxtVerAlign"><i class="fa fa-ellipsis-h txt-color-blueDark fa-lg"></i> Ticker Title</th>
+            }
+            else if (Type == "3")
+            {
+                <th class="text-center TxtVerAlign"><i class="fa fa-deskleft txt-color-blueDark fa-lg"></i> WallPaper Title</th>
+            }
+            else if (Type == "7")
+            {
+                <th class="text-center TxtVerAlign"><i class="fa fa-deskleft txt-color-blueDark fa-lg"></i> LockScreen Title</th>
+            }
+            else if (Type == "4")
+            {
+                <th class="text-center TxtVerAlign"><i class="fa fa-lapleft txt-color-blueDark fa-lg"></i> ScreenSaver Title</th>
+            }
+            else if (Type == "5")
+            {
+                <th class="text-center TxtVerAlign"><i class="fa fa-envelope txt-color-blueDark fa-lg"></i> Email Title</th>
+            }
+            <th class="text-center TxtVerAlign"><i class="fa fa-users txt-color-blueDark fa-lg"></i> Recipients</th>
+            @if (Type == "1" || Type == "2")
+            {
+                <th class="text-center TxtVerAlign">Acknow. <br /> Requested</th>
+            }
+            @if (Type != "5")
+            {
+                <th class="text-center TxtVerAlign"><i class="fa fa-check-circle txt-color-blueDark fa-lg"></i> Active</th>
+                <th class="text-center TxtVerAlign"><i class="fa fa-question-circle txt-color-blueDark fa-lg"></i> Recurring</th>
+                <th class="text-center TxtVerAlign"><i class="fa fa-check-circle txt-color-blueDark fa-lg"></i> Delivered #</th>
+                <th class="text-center TxtVerAlign">Delivered %</th>
+                <th class="text-center TxtVerAlign"><i class="fa fa-times-circle txt-color-blueDark fa-lg"></i> Not Delivered #</th>
+                <th class="text-center TxtVerAlign">Not Delivered %</th>
+                if (Type == "1" || Type == "2")
+                {
+                    <th class="text-center TxtVerAlign"> Acknowledged #</th>
+                    <th class="text-center TxtVerAlign"> Acknowledged %</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@Html.Raw(item.Active == "N" ? "danger" : "")">
+                <input type="hidden" value="@item.SrNo" />
+                <td class="text-center TxtVerAlign col-md-2">
+                    @item.EntryDate.FormateDateWithFullYearUS()
+                </td>
+                @if (Type == "3" || Type == "7")
+                {
+                    <td class="col-md-3 TxtVerAlign">@item.AlertBody</td>
+                }
+                else
+                {
+                    string AlertTital = !string.IsNullOrEmpty(item.AlertTital) ? item.AlertTital.StripHTML() : "";
+                    if (string.IsNullOrEmpty(AlertTital))
+                    {
+                        AlertTital = "<i class='fa fa-file-image-o'></i> Image Only Used In Title";
+                    }
+
+                    //Regex rx = new Regex("<[^>]*>");
+                    //Regex rxPtoDivOpen = new Regex("<p>");
+                    //Regex rxPtoDivClose = new Regex("</p>");
+                    //Regex rxRemovebr = new Regex("<br>");
+                    //AlertTital = item.AlertTital;
+                    //HtmlDocument documentAlertTital = new HtmlDocument();
+                    //AlertTital = rxPtoDivOpen.Replace(AlertTital, "<div>");
+                    //AlertTital = rxPtoDivClose.Replace(AlertTital, "</div>");
+                    //AlertTital = rxRemovebr.Replace(AlertTital, "");
+                    //documentAlertTital.LoadHtml(AlertTital);
+                    //GeneralFuncations GF = new GeneralFuncations();
+                    //GF.SetDisplayInlineForList(documentAlertTital.DocumentNode);
+                    //item.AlertTital = documentAlertTital.DocumentNode.InnerHtml.ToString();
+                    item.AlertTital = AlertTital;
+                    <td class="col-md-3">@Html.Raw(item.AlertTital)</td>
+                }
+                <td class="text-center TxtVerAlign col-md-1 @Html.Raw(item.NoOfRecipientes == 0 ? "danger" : "success")" style="vertical-align:middle;">
+                    @if (@item.NoOfRecipientes == 0)
+                    {
+                        <span class="txt-color-red">
+                            @item.NoOfRecipientes
+                        </span>
+                    }
+                    else
+                    {
+                        if (Type == "5")
+                        {
+                            <strong>
+                                <a href="javascript:;" class="ClsEmailNotDeliveredData TxtVerAlign" data-alertid="@item.AlertId" data-type="@item.Type" data-noofrecepient="@item.NoOfRecipientes">
+                                    <span class="txt-color-green TxtVerAlign">
+                                        @item.NoOfRecipientes
+                                    </span>
+                                </a>
+                            </strong>
+                        }
+                        else
+                        {
+                            <strong>
+                                <a href="javascript:;" class="ClsAnalytics TxtVerAlign" data-alertid="@item.AlertId" data-noofrecepient="@item.NoOfRecipientes">
+                                    <span class="txt-color-green TxtVerAlign">
+                                        @item.NoOfRecipientes
+                                    </span>
+                                </a>
+                            </strong>
+                        }
+                    }
+                </td>
+
+                @if (Type != "5")
+                {
+                    if (Type == "1" || Type == "2")
+                    {
+                        <td class="text-center TxtVerAlign col-md-1">
+                            <div class="badge bg-color-@Html.Raw(item.AcknowledgementRequested == "Y" ? "green" : "red") txt-color-white">
+                                <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.AcknowledgementRequested == "Y" ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                                <small> @Html.Raw(item.AcknowledgementRequested == "Y" ? "Yes" : "No") </small>
+                            </div>
+                        </td>
+                    }
+                    <td class="text-center col-md-1 TxtVerAlign">
+                        <div class="badge bg-color-@Html.Raw(item.Active == "Y" ? "green" : "red") txt-color-white">
+                            <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.Active == "Y" ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                            <small> @Html.Raw(item.Active == "Y" ? "Yes" : "No") </small>
+                        </div>
+                    </td>
+                    <td class="text-center col-md-1 TxtVerAlign">
+                        <div class="badge bg-color-@Html.Raw(item.Recurring == "Y" ? "green" : "red") txt-color-white">
+                            <i class="fa-sm txt-color-white fa fa-@Html.Raw(item.Recurring == "Y" ? "check-circle txt-color-greenLight" : "times-circle txt-color-red")"></i>
+                            <small> @Html.Raw(item.Recurring == "Y" ? "Yes" : "No") </small>
+                        </div>
+                    </td>
+                    <td class="text-center col-md-1 TxtVerAlign @Html.Raw(item.Delivered == 0 ? "danger" : "success")" style="vertical-align:middle;">@item.Delivered</td>
+                    <td class="text-center col-md-1 TxtVerAlign" style="vertical-align:middle;">@item.Delivered_Per</td>
+                    <td class="text-center col-md-1 TxtVerAlign @Html.Raw(item.NotDelivered == 0 ? "danger" : "success")" style="vertical-align:middle;">@item.NotDelivered</td>
+                    <td class="text-center col-md-1 TxtVerAlign" style="vertical-align:middle;">@item.NotDelivered_Per</td>
+                    if (Type == "1" || Type == "2")
+                    {
+                        <td class="text-center col-md-1 TxtVerAlign @Html.Raw(item.Acknowledged == 0 ? "danger" : "success")" style="vertical-align:middle;">@item.Acknowledged</td>
+                        <td class="text-center col-md-1 TxtVerAlign" style="vertical-align:middle;">@item.Acknowledged_Per</td>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>

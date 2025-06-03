@@ -1,0 +1,94 @@
+﻿@model XCommsWeb.Models.AlertStep2ViewModel
+@using ServerWeb.Helper;
+@{
+    var user = Model.ListUser.Where(c => c.UserType == "User").Count();
+    var group = Model.ListUser.Where(c => c.UserType == "Group").Count();
+}
+
+@foreach (var item in Model.ListUser.OrderByDescending(c => c.IsOnline == true))
+{
+    <tr class="editorRow @Html.Raw(item.IsOnline == true ? "success" : "")">
+        @using (Html.BeginCollectionItem("SendAlertUserList", item.SrNo.ToString()))
+        {
+            @Html.Hidden("SrNo", item.SrNo)
+    
+            @Html.Hidden("email", item.email)
+            <td class="text-center" width="20px;">
+                <div class="smart-form">
+                    <label class="checkbox">
+                        @Html.CheckBoxFor(m => m.Newchacked, new{@class = "IsCheck", @id = item.SrNo,data_userid = item.UserId, data_username = item.UserName, data_usertype = item.UserType, data_email = item.email })
+                        <i></i>
+                    </label>
+                </div>
+
+                @*@Html.CheckBoxFor(m => m.Newchacked, new { @class = "IsCheck", @id = +item.SrNo })*@
+                @Html.Hidden("UserId", Convert.ToInt64(item.UserId).ToString())
+                @*@Html.Hidden("SrNo", Convert.ToInt64(item.SrNo).ToString())*@
+            </td>
+            <td style="vertical-align:middle">
+                @item.UserName
+                @Html.Hidden("UserName", item.UserName)
+                @if (item.Is_AD_User == true && item.IsADSync == true)
+                {
+                    <span class="pull-right" rel="tooltip" data-placement="top" data-original-title="<i class='fa fa-check text-success fa-lg'></i> Synched With AD <br/> Domain : @item.AD_DomainName" data-html="true">
+                        <i class="fa fa-refresh fa-spin fa-lg txt-color-green"></i>
+                    </span>
+                }
+            </td>
+            <td style="vertical-align:middle">
+                @if (!string.IsNullOrEmpty(item.ComputerName))
+                {
+                    @item.ComputerName
+                }
+                else
+                {
+                    <span> - </span>
+                }
+
+            </td>
+            <td style="vertical-align:middle">
+                @if (!string.IsNullOrEmpty(item.email))
+                {
+                    @item.email
+                }
+                else
+                {
+                    <span> - </span>
+                }
+
+                @Html.Hidden("Email", item.email)
+            </td>
+            <td style="vertical-align:middle">
+                @if (!string.IsNullOrEmpty(item.mobile_phone))
+                {
+                    @item.mobile_phone
+                }
+                else
+                {
+                    <span> - </span>
+                }
+
+                @Html.Hidden("mobile_phone", item.mobile_phone)
+            </td>
+            <td class="text-center" style="vertical-align:middle">
+                 <i class="fa fa-@Html.Raw(item.UserType == "Group" ? "users" : "user") txt-color-blue"></i> @item.UserType
+                @Html.Hidden("UserType", item.UserType, new { @class = "UserType", @id = "UserType_" + item.SrNo })
+            </td>
+            <td class="text-center" style="vertical-align:middle">
+                @if (item.IsOnline)
+                {
+                    @Html.Hidden("Y")
+                    <span class="indicator online">
+                        <img src="~/assets/img/online.png" />
+                    </span>
+                }
+                else
+                {
+                    @Html.Hidden("N")
+                    <span class="indicator offline"></span>
+                }
+
+            </td>
+        }
+    </tr>
+}

@@ -1,0 +1,204 @@
+﻿@model XCommsWeb.Models.CreateQuizModel
+@using ServerWeb.Helper;
+@{
+    List<SelectListItem> ListQuestionType = new List<SelectListItem>(){
+        new SelectListItem { Text = "Multi Answers Choice", Value = "MCQ"},
+        new SelectListItem { Text = "Written Answers", Value = "SA"},
+        new SelectListItem { Text = "Single Answers Choice", Value = "SC"},
+        new SelectListItem { Text = "True OR False", Value = "TF"},
+    };
+}
+<tr class="editorRow success">
+    @Html.Hidden("hdnblnk", Model.Id, new { @class = "iHidden" })
+    @using (Html.BeginCollectionItem("QueList", (Model.Id).ToString()))
+    {
+        <td style="text-align: center;border-top: black 1px solid;">
+            <b class="rowNumber">@Html.DisplayFor(m => m.Id)</b>
+            @Html.HiddenFor(m => m.Id)
+        </td>
+        <td style="border-top: black 1px solid;">
+            <div class="form-group info">
+                <div>
+                    @Html.TextBoxFor(c => c.QuestionName, new { @class = "required2 required form-control", @placeholder = "Enter Question" })
+                </div>
+            </div>
+        </td>
+        <td style="border-top: black 1px solid;">
+            <div class="form-group info">
+                <div>
+                    @Html.DropDownListFor(m => m.QuestionType, new SelectList(ListQuestionType, "Value", "Text"), "", new { @class = "required select2 form-control ClsQusTyp", @placeholder = "Select an Option" })
+                </div>
+            </div>
+        </td>
+        <td style="border-top: black 1px solid;" class="text-center">
+
+            <button type="button" id="ClsShowRow_@Model.Id" class="btn btn-labeled btn-lg btn-primary ClsShowRow" style="padding: 5px 10px !important;">
+                <i class="fa fa-eye"></i>
+            </button>
+
+            <button type="button" id="ClshideRow_@Model.Id" class="btn btn-labeled btn-lg btn-danger ClshideRow" style="padding: 5px 10px !important;">
+                <i class="fa fa-eye-slash"></i>
+            </button>
+
+            @*<button type="button" id="ClsShowRow_@Model.Id" class="btn btn btn-primary controls ClsShowRow" style="width: 50px; height: 27px; margin-top: 4px;">&nbsp;Show</button>
+            <button type="button" id="ClshideRow_@Model.Id" class="btn btn btn-primary controls ClshideRow" style="width: 50px; height: 27px; margin-top: 4px;">&nbsp;Hide</button>*@
+            @if (Model.Id > 1)
+            {
+                <button type="button" id="orderdeleteRow_@Model.Id" class="btn btn-labeled orderdeleteRow" style="color: Maroon; font-size: 20px; font-weight: bolder;margin: 4px 0px 0px 15px;background-color: transparent;"><i class="glyphicon glyphicon-trash"></i></button>
+            }
+        </td>
+    }
+</tr>
+
+@*Multi Choice*@
+<tr id="editorRow1_@Model.Id" class="warning">
+    @using (Html.BeginCollectionItem("QueListMCQ", (Model.Id).ToString()))
+    {
+        <td style="border-color: #fcf8e3;"></td>
+        <td style="border-color: #fcf8e3;">
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.MCQ1, new { @class = "required2 required form-control", @placeholder = "a" })
+                    @Html.HiddenFor(m => m.Id)
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.MCQ2, new { @class = "required2 required form-control", @placeholder = "b" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.MCQ3, new { @class = "required2 required form-control", @placeholder = "c" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.MCQ4, new { @class = "required2 required form-control", @placeholder = "d" })
+                </div>
+            </div>
+        </td>
+        <td style="border-color: #fcf8e3;">
+            <div class="form-group">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsMCQ1, new { @class = " form-control IsCheck", @style = "width: 25px;" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsMCQ2, new { @class = " form-control IsCheck", @style = "width: 25px;" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsMCQ3, new { @class = " form-control IsCheck", @style = "width: 25px;" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsMCQ4, new { @class = " form-control IsCheck", @style = "width: 25px;" })
+                </div>
+            </div>
+        </td>
+        <td></td>
+    }
+</tr>
+
+@*Single Answer*@
+<tr id="editorRow2_@Model.Id" class="success">
+    @using (Html.BeginCollectionItem("QueListSA", (Model.Id).ToString()))
+    {
+        <td style="border-color: #dff0d8;"></td>
+        <td style="border-color: #dff0d8;">
+            <div class="form-group">
+                <div>
+                    @Html.TextBoxFor(c => c.TextAnswer, new { @class = "required2 required form-control", @placeholder = "Enter answer" })
+                    @Html.HiddenFor(m => m.Id)
+                </div>
+            </div>
+        </td>
+        <td style="border-color: #dff0d8;"></td>
+        <td style="border-color: #dff0d8;"></td>
+    }
+</tr>
+
+@*Single Choise*@
+<tr id="editorRow3_@Model.Id" style="background-color: #e8d6d6;">
+    @using (Html.BeginCollectionItem("QueListSC", (Model.Id).ToString()))
+    {
+        <td style="border-color: #e8d6d6;background-color: #e8d6d6;"></td>
+        <td style="border-color: #e8d6d6;background-color: #e8d6d6;">
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.SCQ1, new { @class = "required2 required form-control", @placeholder = "a" })
+                    @Html.HiddenFor(m => m.Id)
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.SCQ2, new { @class = "required2 required form-control", @placeholder = "b" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.SCQ3, new { @class = "required2 required form-control", @placeholder = "c" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.TextBoxFor(c => c.SCQ4, new { @class = "required2 required form-control", @placeholder = "d" })
+                </div>
+            </div>
+        </td>
+        <td style="border-color: #e8d6d6;background-color: #e8d6d6;">
+            <div class="form-group">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsSCQ1, new { @class = " form-control ClsSingleChoise_" + @Model.Id, @style = "width: 25px;" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsSCQ2, new { @class = " form-control ClsSingleChoise_" + @Model.Id, @style = "width: 25px;" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsSCQ3, new { @class = " form-control ClsSingleChoise_" + @Model.Id, @style = "width: 25px;" })
+                </div>
+            </div>
+            <div class="form-group clsmrg2">
+                <div>
+                    @Html.CheckBoxFor(m => m.AnsSCQ4, new { @class = " form-control ClsSingleChoise_" + @Model.Id, @style = "width: 25px;" })
+                </div>
+            </div>
+        </td>
+        <td style="border-color: #e8d6d6;background-color: #e8d6d6;"></td>
+    }
+</tr>
+
+@*True False*@
+<tr id="editorRow4_@Model.Id">
+    @using (Html.BeginCollectionItem("QueListTF", (Model.Id).ToString()))
+    {
+        <td style="border-color: #e6d1e4;background-color:#e6d1e4;"></td>
+        <td style="border-color: #e6d1e4;background-color:#e6d1e4;">
+            <div class="form-group">
+                @Html.HiddenFor(m => m.Id)
+                <label class="row" style="margin-left:50px;">
+                    <input type="radio" name="RadioTrueFalse_@Model.Id" id="True" value="True" class="radiobox" />
+                    <span style="color:black">True</span>
+                    @Html.HiddenFor(c => c.TFValT)
+                </label>
+                <label class="row" style="margin-left:50px;">
+                    <input type="radio" name="RadioTrueFalse_@Model.Id" id="False" value="False" class="radiobox" />
+                    <span style="color:black">False</span>
+                    @Html.HiddenFor(c => c.TFValF)
+                </label>
+                @Html.HiddenFor(c => c.TFTVal)
+                @Html.HiddenFor(c => c.TFFVal)
+            </div>
+        </td>
+        <td style="border-color: #e6d1e4;background-color:#e6d1e4;"></td>
+        <td style="border-color: #e6d1e4;background-color:#e6d1e4;"></td>
+    }
+</tr>

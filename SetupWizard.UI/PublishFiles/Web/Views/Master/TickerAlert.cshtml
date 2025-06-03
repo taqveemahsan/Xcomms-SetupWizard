@@ -1,0 +1,1493 @@
+﻿@model XCommsWeb.Models.AlertModel
+@using System.Configuration;
+@using System.Linq;
+@using XCommsWeb.Models;
+@using XCommsWeb;
+
+@{
+    ViewBag.Title = "Ticker Alert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    if (Model.OnceStartDateTime == DateTime.MinValue || Model.OnceStartDateTime == null)
+    {
+        Model.OnceStartDateTime = DateTime.Now;
+    }
+
+    if (Model.OnceEndDateTime == DateTime.MinValue || Model.OnceEndDateTime == null)
+    {
+        Model.OnceEndDateTime = DateTime.Now;
+    }
+
+    if (Model.StartDateComman == DateTime.MinValue || Model.StartDateComman == null)
+    {
+        Model.StartDateComman = DateTime.Now;
+    }
+
+    var Text = "Submit"; var type = "Create";
+    if (Model.EditFlag == "true")
+    {
+        Text = "Update";
+        type = "Edit";
+    }
+
+    Model.EndCommanBy = Model.StartDateComman.AddMonths(1);
+
+    XCommsWeb.MasterService MS = new XCommsWeb.MasterService();
+    int BaseTenantId = ViewBag.BaseTenantId;
+    List<CYGNUS_Master_General> GetGeneralMaster = MS.GetGeneralMasterObject(0, BaseTenantId);
+    List<CYGNUS_Master_General> ListLifeTimeType = GetGeneralMaster.Where(c => c.CodeType.ToUpper() == "LIFETIMETYPE").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListScheduleDaily = GetGeneralMaster.Where(c => c.CodeType.ToUpper() == "SCHEDULEDAILY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListMonthDay = GetGeneralMaster.Where(c => c.CodeType.ToUpper() == "MONTHDAY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListWeekinMontly = GetGeneralMaster.Where(c => c.CodeType.ToUpper() == "WEEKINMONTLY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListWeekDay = GetGeneralMaster.Where(c => c.CodeType.ToUpper() == "WEEKDAY").OrderBy(c => c.EntryDate).ToList();
+    List<CYGNUS_Master_General> ListYearlMonth = GetGeneralMaster.Where(c => c.CodeType.ToUpper() == "YEARLMONTH").OrderBy(c => c.EntryDate).ToList();
+
+    List<SelectListItem> BlankList = new List<SelectListItem>();
+    if (Model.AlertId == 0)
+    {
+        Model.MonthVal = "1";
+        Model.WeeklyMonthVal = "1";
+    }
+}
+
+<style type="text/css">
+    .note-editable {
+        font-size: 14px !important;
+    }
+
+    .checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {
+        position: absolute;
+        /*margin-left: 0px !important;*/
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        padding: 8px 32px !important;
+    }
+
+    .mrgtp10 {
+        margin-top: 10px;
+    }
+
+    .form-control-unique {
+        display: block;
+        width: 100%;
+        height: 21px;
+        padding: 0px 5px;
+        font-size: 13px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .lable-unique {
+        font-size: 14px;
+        margin-bottom: 16px;
+        margin-left: 10px;
+        color: #fff;
+    }
+
+    .smart-accordion-default .panel-default > .panel-heading {
+        background-color: #3c3a39;
+        color: #FFF;
+        margin-bottom: 5px;
+    }
+
+    .smart-accordion-default.panel-group .panel-title a {
+        font-weight: 700;
+        padding: 5px 10px;
+    }
+
+    .smart-accordion-default.panel-group .panel + .panel {
+        margin-top: 5px;
+    }
+
+    .smart-accordion-default .panel-default {
+        border-color: #c3c3c300;
+    }
+
+    .txt-color-yellow {
+        color: #ffb848 !important;
+    }
+
+    .note-editable > ol {
+        margin-top: 0 !important;
+        margin-bottom: 9px !important;
+        padding-left: 40px !important;
+    }
+
+    .slider.slider-vertical {
+        height: 150px;
+    }
+
+    .note-editor.note-frame {
+        border: 1px solid #a9a9a9 !important;
+    }
+
+    .smart-form .checkbox, .smart-form .radio {
+        margin-bottom: 4px;
+        padding-left: 25px;
+        line-height: 25px;
+        color: #a1a1a1;
+        cursor: pointer;
+        font-size: 13px;
+        padding-top: 0px;
+    }
+
+    .img-list {
+        width: calc(100vw/8);
+        margin-bottom: 1.2rem;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+        .img-list.selected {
+            border: none;
+            /*box-shadow: 0px 0px 6px 7px #2b2b2b;*/
+            box-shadow: 0px 12px 22px 1px #333;
+            z-index: 1;
+            /*transform: scale(1.2);*/
+            margin: 0 10px 0 10px;
+        }
+
+        .img-list > img {
+            width: 100%
+        }
+
+    .popover.bottom > .arrow:after {
+        border-bottom-color: #000;
+    }
+
+    .ifAlertPreview {
+        position: absolute !important;
+        /*  top: 0px !important;*/
+        left: 0px !important;
+        z-index: 99999 !important;
+        /* border: 1px solid #CCC !important;*/
+        box-shadow: 8px 8px 5px grey !important;
+    }
+
+    .icon-btn > i {
+        font-size: 18px;
+    }
+
+    .icon-btn {
+        height: 60px;
+        padding: 12px 0px 0px 0px;
+        min-width: 80px;
+    }
+
+        .icon-btn > i {
+            font-size: 18px;
+        }
+
+    .hasbgcolor {
+        color: red;
+    }
+
+    button[disabled] {
+        background-color: #CCC;
+    }
+
+    .chatGPTTextBoxDiv {
+        float: left;
+        width: 100%;
+        height: auto;
+    }
+
+
+
+    .chatGPTTextBox {
+        min-height: 110px;
+        float: left;
+        width: 100%;
+        border-radius: 5px !important;
+        vertical-align: top;
+        resize: none;
+    }
+
+    .chatGPTTextBoxResponse {
+        min-height: 110px;
+        float: left;
+        width: 100%;
+        border-radius: 5px !important;
+        vertical-align: top;
+        resize: none;
+    }
+
+    .rcornersbuttongreen {
+        border-radius: 2px;
+        color: black;
+        width: 100%;
+        height: 35px;
+        margin: 3px;
+    }
+
+        .rcornersbuttongreen:hover {
+            background: #0f9f59;
+            color: white;
+        }
+
+    .rcornersbuttongray {
+        border-radius: 2px;
+        color: black;
+        width: 100%;
+        height: 35px;
+        margin: 3px;
+    }
+
+        .rcornersbuttongray:hover {
+            background: #0f9f59;
+            color: white;
+        }
+
+    .transparentbutton {
+        background-color: transparent;
+        color: white;
+        margin-top: 20px;
+        padding: 0px;
+    }
+
+    .clipboardbutton {
+        background-color: transparent;
+        color: white;
+        margin: 3px;
+        padding: 0px;
+    }
+</style>
+
+<div class="row">
+    <article class="col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+        <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-fullscreenbutton="false">
+            <header role="heading">
+                @*<div class="jarviswidget-ctrls" role="menu">
+                        <a href="javascript:void(0);" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse">
+                            <i class="fa fa-minus "></i>
+                        </a>
+                    </div>*@
+                <span class="widget-icon"> <i class="fa fa-lg fa-fw fa fa-ellipsis-h"></i> </span>
+                <h2>New Ticker Alert</h2>
+                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+            </header>
+            <div>
+                <div class="widget-body no-padding">
+                    @using (Html.BeginForm("TickerSubmit", "Master", FormMethod.Post, new { id = "contact-form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        <div class="widget-body-toolbar" style="border:0px;">
+
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <ul class="demo-btns">
+                                        <li>
+                                            <a href="javascript:void(0);" class="showAlertPreview btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Preview Ticker">
+                                                <span class="btn-label"><i class="fa fa-eye"></i></span>Preview
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSubmit" class="btnSubmitTic btn btn-labeled btn-warning" rel="tooltip" title="" data-placement="bottom" data-original-title="Save In Draft">
+                                                <span class="btn-label"><i class="fa fa-save"></i></span>Draft
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" id="btnSaveNext" class="btnSaveNextTic btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Go To Next">
+                                                <span class="btn-label"><i class="fa fa-arrow-right"></i></span>Next
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <fieldset>
+                            <article class="col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <section class="col-md-12 smart-form">
+                                            <div class="">
+                                                <label class="label"><b>Select Theme : </b></label>
+                                                <div class="widget-body no-padding">
+                                                    <div class="img-list" data-themename="row theme-one" id="theme-one">
+                                                        <img src="~/assets/img/line-popup/Tol 01.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 01.jpg">
+                                                    </div>
+                                                    <div class="img-list" data-themename="row theme-two" id="theme-two">
+                                                        <img src="~/assets/img/line-popup/Tol 02.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 02.jpg">
+                                                    </div>
+                                                    <div class="img-list" data-themename="row theme-three" id="theme-three">
+                                                        <img src="~/assets/img/line-popup/Tol 03.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 03.jpg">
+                                                    </div>
+                                                    <div class="img-list" data-themename="row theme-four" id="theme-four">
+                                                        <img src="~/assets/img/line-popup/Tol 04.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 04.jpg">
+                                                    </div>
+                                                    <div class="img-list" data-themename="row theme-five" id="theme-five">
+                                                        <img src="~/assets/img/line-popup/Tol 05.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 05.jpg">
+                                                    </div>
+                                                    <div class="img-list" data-themename="row theme-six" id="theme-six">
+                                                        <img src="~/assets/img/line-popup/Tol 06.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 06.jpg">
+                                                    </div>
+                                                    <div class="img-list" data-themename="row theme-seven" id="theme-seven">
+                                                        <img src="~/assets/img/line-popup/Tol 07.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 07.jpg">
+                                                    </div>
+                                                    <div class="img-list" data-themename="row theme-eight" id="theme-eight">
+                                                        <img src="~/assets/img/line-popup/Tol 08.jpg" data-toggle="popover-hover" data-img="./../assets/img/line-popup/Tol 08.jpg">
+                                                    </div>
+                                                    @Html.HiddenFor(m => m.ThemeId)
+                                                    @Html.HiddenFor(m => m.ThemeIdTic)
+
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <label><b>Ticker Title <span class="hasbgcolor">*</span> : </b></label>   <label id="AlertT" style="color:red;display:none"><b>This Field Is Required</b></label>
+                                            <div class="widget-body no-padding">
+                                                @Html.TextBoxFor(c => c.AlertTital, new { @class = "form-control" })
+
+                                                @Html.HiddenFor(m => m.AlertId)
+                                                @Html.HiddenFor(m => m.EditFlag)
+                                                @Html.HiddenFor(m => m.SaveAndNext)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <label><b>Ticker Body <span class="hasbgcolor">*</span> : </b></label> <label id="AlertB" style="color:red;display:none"><b>This Field Is Required</b></label>
+                                            <div class="widget-body no-padding">
+                                                @Html.TextBoxFor(c => c.AlertBody, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </article>
+                            <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
+                                <div>
+                                    <div class="widget-body no-padding ">
+                                        <div class="panel-group smart-accordion-default" id="accordion-2">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse1" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Optional Display Setting
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse1" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <fieldset>
+                                                            <section class="col-md-6">
+                                                                <label class="lable-unique">Screen Delivery Position</label>
+                                                                <div class="widget-body no-padding smart-form" rel="popover-hover" data-placement="left" data-original-title="Screen Delivery Position" data-content="To change the alert’s position on the recipient’s screen, check the option for the screen position of your choice.">
+                                                                    <div class="col-md-6">
+                                                                        <label class="radio">
+                                                                            <input type="radio" name="ScreenDeliveryPositionRadios" id="top" value="1" class="radiobox" />
+                                                                            <i></i>Top
+                                                                        </label>
+                                                                        <label class="radio">
+                                                                            <input type="radio" name="ScreenDeliveryPositionRadios" id="middle" value="2" class="radiobox" />
+                                                                            <i></i>Middle
+                                                                        </label>
+                                                                        <label class="radio">
+                                                                            <input type="radio" name="ScreenDeliveryPositionRadios" id="bottom" value="3" class="radiobox" />
+                                                                            <i></i>Bottom
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <img src="~/assets/img/Screen/Tickers/3.png" class="img-responsive" id="tickerImage" />
+                                                                    </div>
+                                                                </div>
+                                                                @Html.HiddenFor(m => m.TickerPosition)
+                                                            </section>
+                                                            <label class="lable-unique">Set Scrolling Speed</label><br />
+                                                            <section class="col-md-offset-1 col-md-1" rel="popover-hover" data-placement="left" data-original-title="Screen Delivery Position" data-content="To change the alert’s position on the recipient’s screen, check the option for the screen position of your choice.">
+                                                                <input type="text" class="slider" value="@Model.TickerSpeed" id="slider"
+                                                                       data-slider-ticks-labels='["short", "medium", "long"]'
+                                                                       data-slider-min="5"
+                                                                       data-slider-max="15"
+                                                                       data-slider-step="5"
+                                                                       data-slider-value="@Model.TickerSpeed"
+                                                                       data-slider-selection="before"
+                                                                       data-slider-orientation="vertical"
+                                                                       data-slider-handle="round"
+                                                                       data-slider-tooltip="hide">
+                                                                @Html.HiddenFor(m => m.TickerSpeed)
+                                                            </section>
+                                                            <div class="col-md-3">
+                                                                <label class="lable-unique">Slow</label>
+                                                            </div>
+                                                            <div class="col-md-3" style="margin-top:30px">
+                                                                <label class="lable-unique">Medium</label>
+                                                            </div>
+                                                            <div class="col-md-3" style="margin-top:30px">
+                                                                <label class="lable-unique">Fast</label>
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse2" aria-expanded="true" class="">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i>  Optional Delivery Setting
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse2" class="panel-collapse collapse" aria-expanded="true" style="">
+
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <div class="col-md-9">
+                                                            @*<div class="form-inline">
+                                                                    <fieldset>
+                                                                        <div class="">
+                                                                            @Html.CheckBoxFor(m => m.CriticalAlert, new { @class = "AlertSetting" })
+                                                                            Critical Alert (Will Display Over Windows Locked Screens)
+                                                                        </div>
+                                                                    </fieldset>
+                                                                </div>*@
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset rel="popover-hover" data-placement="left" data-original-title="Expires in" data-content="To determine when an alert should expire and no longer delivered, check the box labeled “Expires in” and select your desired expiration time.">
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(m => m.ExpiresIn, new { @class = "AlertSetting" })
+                                                                        Expires in
+                                                                        @Html.TextBoxFor(c => c.ExpiresTimeValue, new { @class = "form-control input-xs ", style = "width: 50px; " })
+                                                                        @Html.DropDownListFor(m => m.ExpiresTimeType, new SelectList(ListLifeTimeType, "CodeId", "CodeDesc", Model.ExpiresTimeType), new { @class = "form-control input-xs" })
+                                                                        No Delivery Attempts After Expiration.
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset rel="popover-hover" data-placement="left" data-original-title="Automatically Close After" data-content="To have an alert close automatically, check the box labeled “Automatically Close After” and type the desired number of minutes you will like the alert to stay on screen for.">
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(m => m.AutoCloseIn, new { @class = "AlertSetting" })
+                                                                        Automatically Close Alert After
+                                                                        @Html.TextBoxFor(c => c.AutoCloseInMin, new { @class = "form-control input-xs required", @min = "0", style = "width: 50px;", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                        Minute(s)
+                                                                        @Html.Hidden("OldAutoCloseInMin", Model.AutoCloseInMin)
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset rel="popover-hover" data-placement="left" data-original-title="Tray Notification" data-content="To send an alert without covering work areas on a screen, check the box labeled “Tray Notification”. This will allow the alert to be delivered, but will only display on screen when their XComms tray icon is clicked.">
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(m => m.TrayNotification, new { @class = "AlertSetting" })
+                                                                        Tray Notification (Full Ticker Will Not Display Unless Tray Icon Message Is Clicked)
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div class="form-inline mrgtp10">
+                                                                <fieldset rel="popover-hover" data-placement="left" data-original-title="Receipt Acknowledgement Button" data-content="To add an alert acknowledgement button to your alert, check the box labeled “Add Alert Receipt Acknowledgement Button.” The user will not be able to close the alert without clicking “ok” ">
+                                                                    <div class="">
+                                                                        @Html.CheckBoxFor(m => m.AcknoledgrButton, new { @class = "AlertSetting" })
+                                                                        Add Alert Receipt Acknowledgement Button
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse3" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Optional Schedule Setting
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse3" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12">
+                                                                <div class="col-md-5">
+                                                                    <label rel="popover-hover" data-placement="left" data-original-title="One Time (Now)" data-content="To send this alert as soon you select your recipients in the second step, check the box labeled “One Time (Now)” ">
+                                                                        <input type="radio" name="optionsRadios2" id="Now" value="Now" class="radiobox" />
+                                                                        <span>One Time (Now)</span>
+                                                                    </label>
+                                                                    <label rel="popover-hover" data-placement="left" data-original-title="Alert Delivery Schedule" data-content="To create a delivery schedule, check the box labeled “Set Alert Delivery Schedule” and select your start and end date and time.">
+                                                                        <input type="radio" name="optionsRadios2" id="Once" value="Once" class="radiobox" />
+                                                                        <span>Set Alert Delivery Schedule</span>
+                                                                    </label>
+                                                                    @*<label class="row col-md-12" rel="popover-hover" data-placement="left" data-original-title="Daily Delivery" data-content="To set up an alert that will be delivered every day at a specific time, (1) check the box labeled “Daily Delivery”: (2) specify your desired time of day and how long the alert should deliver daily for. Note: You can set this by date range or number of occurrences.">
+                                                                            <input type="radio" name="optionsRadios2" id="Daily" value="Daily" class="radiobox" />
+                                                                            <span>Daily Delivery</span>
+                                                                        </label>*@
+                                                                    <label rel="popover-hover" data-placement="left" data-original-title="Specific Day Of Week" data-content="To set up an alert that will be delivered on specific days of the week and at a specific time, (1) check the box labeled “Specific Day Of Week: (2) specify your desired day(s) of the week and how long the alert should deliver weekly for. Note: You can set this by date range or number of occurrences.">
+                                                                        <input type="radio" name="optionsRadios2" id="Weekly" value="Weekly" class="radiobox" />
+                                                                        <span>Specific Day Of Week</span>
+                                                                    </label>
+                                                                    @*<label class="row col-md-12" rel="popover-hover" data-placement="left" data-original-title="Monthly" data-content="To set up an alert that will be delivered monthly and at a specific time, (1) check the box labeled “Monthly”: (2) specify your desired day of the month and how long the alert should deliver monthly for. Note: You can set this by date range or number of occurrences.">
+                                                                            <input type="radio" name="optionsRadios2" id="Monthly" value="Monthly" class="radiobox" />
+                                                                            <span>Monthly</span>
+                                                                        </label>*@
+                                                                    @*<label class="row col-md-12">
+                                                                            <input type="radio" name="optionsRadios2" id="Yearly" value="Yearly" class="radiobox" />
+                                                                            <span>Specific Day Of Year</span>
+                                                                        </label>*@
+                                                                    @Html.HiddenFor(c => c.SchedulePatternType)
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <div class="clsOnce">
+                                                                        <div class="row col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label class="col-md-4" style="margin-top:5px">Start Date :</label>
+                                                                                <div class="col-md-8">
+                                                                                    <div class="input-group date form_datetime">
+                                                                                        @Html.TextBoxFor(c => c.OnceStartDateTime, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.OnceStartDateTime), new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                                        <span class="input-group-btn">
+                                                                                            <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class=" row col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label class="col-md-4" style="margin-top:5px">End Date :</label>
+                                                                                <div class="col-md-8">
+                                                                                    <div class="input-group date to_datetime">
+                                                                                        @Html.TextBoxFor(c => c.OnceEndDateTime, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.OnceEndDateTime), new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                                        <span class="input-group-btn">
+                                                                                            <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        @*<div class="col-md-12">
+                                                                                <div class="form-group">
+                                                                                    <label class="checkbox-inline">
+                                                                                        @Html.CheckBoxFor(m => m.IsOnceReminder, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Enable reminder
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row col-md-12">
+                                                                                <div class="form-group">
+                                                                                    <div class="col-md-2">
+                                                                                        @Html.TextBoxFor(c => c.OnceReminderVal, new { @class = "form-control-unique" })
+                                                                                    </div>
+                                                                                    <label class="col-md-8">minutes before start date/time</label>
+                                                                                </div>
+                                                                            </div>*@
+                                                                    </div>
+                                                                    @*<div class="clsDaily">
+                                                                            <div class="form-inline">
+                                                                                <fieldset>
+                                                                                    <div class="form-group">
+                                                                                        @Html.DropDownListFor(m => m.DailyPatternVal, new SelectList(ListScheduleDaily, "CodeId", "CodeDesc", Model.DailyPatternVal), new { @class = "form-control input-xs" })
+                                                                                        &nbsp;day(s)
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </div>
+                                                                        </div>*@
+                                                                    <div class="row clsWeekly">
+                                                                        <div class="form-inline">
+                                                                            <fieldset>
+                                                                                <div class="col-md-12">
+                                                                                    Resend Every Week on next days
+                                                                                </div>
+                                                                            </fieldset>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div class="col-md-12">
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.WeeklydaySunday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Sunday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.WeeklydayMonday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Monday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.WeeklydayTuesday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Tuesday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.WeeklydayWednesday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Wednesday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.WeeklydayThursday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Thursday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.WeeklydayFriday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Friday
+                                                                                </label>
+                                                                                <label class="checkbox-inline">
+                                                                                    @Html.CheckBoxFor(m => m.WeeklydaySaturday, new { @class = "ScheduleOpetion", style = "margin-left: -20px !important" }) Saturday
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @*<div class="row clsMonthly">
+                                                                            <div class="form-inline">
+                                                                                <fieldset>
+                                                                                    <div class="col-md-12">
+                                                                                        <input type="radio" class="form-control" name="optionsRadiosMonthly" id="1" value="1" />
+                                                                                        Day
+                                                                                        @Html.DropDownListFor(m => m.MonthDay, new SelectList(ListMonthDay, "CodeId", "CodeDesc", Model.MonthDay), new { @class = "form-control input-xs" })
+                                                                                        of every
+                                                                                        @Html.TextBoxFor(c => c.WeeklyMonthVal, new { @class = "form-control input-xs ", style = "width: 50px;height:22px;", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                                        Month(s)
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </div>
+                                                                            <div class="form-inline">
+                                                                                <fieldset>
+                                                                                    <div class="col-md-12">
+                                                                                        <input type="radio" class="form-control" name="optionsRadiosMonthly" id="2" value="2" />
+                                                                                        The
+                                                                                        @Html.DropDownListFor(m => m.WeekinMontly, new SelectList(ListWeekinMontly, "CodeId", "CodeDesc", Model.WeekinMontly), new { @class = "form-control input-xs" })
+                                                                                        @Html.DropDownListFor(m => m.DayinWeek, new SelectList(ListWeekDay, "CodeId", "CodeDesc", Model.DayinWeek), new { @class = "form-control input-xs" })
+                                                                                        of every
+                                                                                        @Html.TextBoxFor(c => c.MonthVal, new { @class = "form-control input-xs ", style = "width: 50px;height:22px;", @onkeypress = "javascript:return validFloat(event,this.getAttribute('id'))" })
+                                                                                        Month(s)
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </div>
+                                                                            @Html.HiddenFor(c => c.MonthlyType)
+                                                                        </div>*@
+                                                                    @*<div class="clsYearly">
+                                                                            <div class="form-inline">
+                                                                                <fieldset>
+                                                                                    <div class="form-group">
+                                                                                        <input type="radio" class="form-control" name="optionsRadiosYearly" id="1" value="1" />
+                                                                                        on
+                                                                                        @Html.DropDownListFor(m => m.YearlyMonthDay, new SelectList(ListMonthDay, "Value", "Text", Model.YearlyMonthDay), new { @class = "form-control input-xs" })
+                                                                                        of
+                                                                                        @Html.DropDownListFor(m => m.YearlMonth, new SelectList(ListYearlMonth, "Value", "Text", Model.YearlMonth), new { @class = "form-control input-xs" })
+                                                                                        @Html.DropDownListFor(m => m.MonthVal, new SelectList(ListScheduleDaily, "Value", "Text", Model.MonthVal), new { @class = "form-control input-xs" })
+                                                                                        Month
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </div>
+                                                                            <div class="form-inline">
+                                                                                <fieldset>
+                                                                                    <div class="form-group">
+                                                                                        <input type="radio" class="form-control" name="optionsRadiosYearly" id="2" value="2" />
+                                                                                        on
+                                                                                        @Html.DropDownListFor(m => m.DayinWeekYearly, new SelectList(ListWeekDay, "Value", "Text", Model.DayinWeekYearly), new { @class = "form-control input-xs" })
+                                                                                        @Html.DropDownListFor(m => m.WeekinMontYearly, new SelectList(ListWeekinMontly, "Value", "Text", Model.WeekinMontYearly), new { @class = "form-control input-xs" })
+                                                                                        of
+                                                                                        @Html.DropDownListFor(m => m.MonthsYearl, new SelectList(ListYearlMonth, "Value", "Text", Model.MonthsYearl), new { @class = "form-control input-xs" })
+                                                                                        Month
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </div>
+                                                                            @Html.HiddenFor(c => c.YearlyType)
+                                                                        </div>*@
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clsComman">
+                                                            <div class="col-md-12">
+                                                                <div class="col-md-6">
+                                                                    <hr />
+                                                                    <label class="lable-unique">Start On:</label>
+                                                                    <div class="form-group">
+                                                                        @*<label class="control-label col-md-3">Start on: </label>*@
+                                                                        <div class="col-md-7">
+                                                                            <div class="input-group date form_datetime">
+                                                                                @Html.TextBoxFor(c => c.StartDateComman, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.StartDateComman), new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                                <span class="input-group-btn">
+                                                                                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                                </span>
+                                                                                @Html.HiddenFor(c => c.StartDateComman)
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <hr />
+                                                                    <label class="lable-unique">Ended By: </label>
+                                                                    <div class="form-group">
+                                                                        @*<label class="control-label col-md-3">Start on: </label>*@
+                                                                        <div class="col-md-7">
+                                                                            <div class="input-group date form_datetime">
+                                                                                @Html.TextBoxFor(c => c.EndCommanBy, String.Format("{0:dd MMM yyyy hh:mm tt}", Model.EndCommanBy), new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                                <span class="input-group-btn">
+                                                                                    <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                                </span>
+                                                                                @Html.HiddenFor(c => c.EndCommanBy)
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                    @Html.HiddenFor(c => c.CommanDateType)
+
+                                                                    @*<div class="input-group date time_datetime">
+                                                                            @Html.TextBox("OnceStartDateTime", "", new { @class = " form-control timepicker-default required", @readonly = true })
+                                                                            <span class="input-group-btn">
+                                                                                <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+                                                                            </span>
+                                                                        </div>*@
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse4" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Other Messaging Options
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse4" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <fieldset>
+                                                            <div class="col-md-12 form-group">
+                                                                <div class="col-md-7">
+                                                                    <div class="btn-group" data-toggle="buttons">
+                                                                        <label class="btn btn-default icon-btn clssms">
+                                                                            <input type="checkbox" name="RadioMessaging" value="SMS" data-bv-field="RadioMessaging">
+                                                                            <i class="fa fa-comment"></i>
+                                                                            <div>SMS</div>
+                                                                        </label>
+                                                                        <label class="btn btn-default icon-btn clsLableWhatsapp">
+                                                                            <input type="checkbox" name="RadioMessaging" value="Whatsapp" data-bv-field="RadioMessaging">
+                                                                            <img src="~/assets/img/Whatsapp.png" class="clsWhatsapp" style="width: 20px" />
+                                                                            <div>Whatsapp</div>
+                                                                        </label>
+                                                                        <label class="btn btn-default icon-btn clsmail">
+                                                                            <input type="checkbox" name="RadioMessaging" value="Mail" data-bv-field="RadioMessaging">
+                                                                            <i class="fa fa-envelope"></i>
+                                                                            <div>E-mail</div>
+                                                                        </label>
+                                                                        @Html.HiddenFor(c => c.MessagingType)
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                    <span style="font-size: 12px; color: #a6a6a6 !important;">
+                                                                        Other Messaging Options Note : <br />
+                                                                        Media files can and will be sent to email recipients. SMS and WhatsApp will only receive the text portion of your XComms message.
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion-2" href="#collapse5" class="" aria-expanded="true">
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-down txt-color-yellow" style="vertical-align: sub;"></i>
+                                                            <i class="fa fa-fw fa-2x fa-angle-double-up txt-color-yellow" style="vertical-align: sub;"></i> Smart Alerts <i class="fa fa-fw fa-.5x fa-lightbulb-o txt-color-grayDark" style="vertical-align: center; text-align:center;"></i>
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse5" class="panel-collapse collapse" aria-expanded="true" style="">
+                                                    <div class="panel-body" style="border-radius: 10px;">
+                                                        <fieldset>
+                                                            <div class="row col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="col-md-11">
+                                                                        <div class="input-group chatGPTTextBoxDiv">
+                                                                            @Html.TextAreaFor(c => c.ChatGPTQuery, new { placeholder = "Hey there! Looking for some help writing an alert? You got it! Just ask us here, and XComms Ai will provide you with some excellent suggestions. \r\n \r\nExample: Write an outage alert to employees notifying them about upcoming scheduled maintenance that will temporarily impact access to certain systems and services with these details.......", @class = " form-control required chatGPTTextBox" })
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-1">
+                                                                        <span class="input-group-btn" style="float:left;text-align:left; vertical-align:central;">
+                                                                            <button class="btn default chatGptQuery transparentbutton" type="button">
+                                                                                <i class="fa fa-fw fa-2x fa-paper-plane-o txt-color-white" style="vertical-align: central; text-align:center;"></i>
+                                                                            </button>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="col-md-11">
+                                                                        <div class="input-group chatGPTTextBoxDiv">
+                                                                            @Html.TextAreaFor(c => c.ChatGPTQuery, new { @class = " form-control required chatGPTTextBoxResponse" })
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="col-md-4">
+                                                                        <button class="btn default rcornersbuttongreen usefortitle" type="button">Use for Ticker Title</button>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <button class="btn default rcornersbuttongray useformessage" type="button">Use for Ticker Body</button>
+                                                                    </div>
+                                                                    <div class="col-md-1">
+                                                                        <button class="btn default copytoClipboardbutton clipboardbutton" type="button">
+                                                                            <i class="fa fa-fw fa-2x fa-clipboard txt-color-grayDark" style="vertical-align: center; text-align:center;"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <p>
+                                                                        <a href="https://www.xcomms.com/internal-communications-ai-prompts-for-employee-engagement" target="_blank">
+                                                                            <img align="right" img src="~/assets/img/Screen/Alerts/xai.png" class="img-responsive" id="alertImage" />
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </fieldset>
+                        <div class="clearfix"></div>
+                        <div class="col-md-12">
+                            <div class="pull-right">
+                                <ul class="demo-btns">
+                                    <li>
+                                        <a href="javascript:void(0);" class="showAlertPreview btn btn-labeled btn-primary" rel="tooltip" title="" data-placement="bottom" data-original-title="Preview Ticker">
+                                            <span class="btn-label"><i class="fa fa-eye"></i></span>Preview
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" id="btnSubmit" class="btnSubmitTic btn btn-labeled btn-warning" rel="tooltip" title="" data-placement="bottom" data-original-title="Save In Draft">
+                                            <span class="btn-label"><i class="fa fa-save"></i></span>Draft
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" id="btnSaveNext" class="btnSaveNextTic btn btn-labeled btn-success" rel="tooltip" title="" data-placement="bottom" data-original-title="Go To Next">
+                                            <span class="btn-label"><i class="fa fa-arrow-right"></i></span>Next
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    }
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+<div id="divPreview" style="display:none;" class="row">
+    <iframe id="iframe" class="ifAlertPreview" name="myFrame" frameborder="0" scrolling="no" height="44px;" width="100%">
+    </iframe>
+</div>
+<script type="text/javascript">
+    var FormComponents = function (DomainName) {
+
+        var FormValidate = function (DomainName) {
+            $("#contact-form").validate({
+                // Rules for form validation
+                rules: {
+                },
+                // Messages for form validation
+                messages: {
+                },
+                // Do not change code below
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        }
+
+        var CallSubmitClick = function (DomainName) {
+            $(".usefortitle").on("click", function (e) {
+                var data = $('.chatGPTTextBoxResponse').val();
+                data = data.replace(new RegExp('\r?\n', 'g'), '<br />');
+                $("#AlertTital").summernote('code', data);
+            });
+
+            $(".useformessage").on("click", function (e) {
+                var data = $('.chatGPTTextBoxResponse').val();
+                data = data.replace(new RegExp('\r?\n', 'g'), '<br />');
+                $("#AlertBody").summernote('code', data);
+            });
+
+            $(".copytoClipboardbutton").on("click", function (e) {
+                $('.chatGPTTextBoxResponse').select();
+                document.execCommand('copy');
+            });
+
+            $(".chatGptQuery").on("click", function (e) {
+                if ($('.chatGPTTextBox').val() != "") {
+                    App.blockUI({ boxed: true });
+                    var strUrl = DomainName + "/Master/GetChatGPTResponse?text=" + $('.chatGPTTextBox').val();
+                    $.ajax({
+                        type: 'GET',
+                        url: strUrl,
+                        success: function (data) {
+                            $('.chatGPTTextBoxResponse').val(data);
+                            App.unblockUI();
+                        },
+                        error: function (jqXHR, exception) {
+                            Swal.fire(errorResult(jqXHR, exception), '', 'error');
+                            App.unblockUI();
+                        }
+                    });
+                }
+            });
+            $(".btnSubmitTic").click(function (e) {
+
+                $("#AlertTital").val($("#AlertTital").summernote('code'));
+                $("#AlertBody").val($("#AlertBody").summernote('code'));
+                $("#TickerSpeed").val($("#slider").val());
+                 var form = $("#contact-form");
+                if (form.valid() == false) {
+                    $("#AlertT").hide();
+                    $("#AlertB").hide();
+                    return false;
+                }
+                else if ($("#AlertTital").summernote('isEmpty')) {
+                    $("#AlertT").show();
+                    $("#AlertB").hide();
+                    return false;
+                }
+                else if ($("#AlertBody").summernote('isEmpty')) {
+                    $("#AlertB").show();
+                    $("#AlertT").hide();
+                    return false;
+                }
+                else {
+                    App.blockUI({ boxed: true });
+                    $("#AlertT").hide();
+                    $("#AlertB").hide();
+                    $.ajax({
+                        url: $('#contact-form').attr('action'),
+                        cache: false,
+                        type: 'POST',
+                        data: $('#contact-form').serialize(),
+                        success: function (data) {
+                            if (data.Status == true) {
+                                /*TosterNotification("success", "Record has been updated successfully..!!", "Success");*/
+
+                                Swal.fire({
+                                    title: "Data has been updated successfully !",
+                                    text: "",
+                                    icon: "success",
+                                    confirmButtonText:
+                                        '<i class="fa fa-check"></i> Okay !',
+                                    showCancelButton: false,
+                                    cancelButtonColor: '#d33'
+                                });
+
+                                setTimeout(function () {
+                                    if (data.SaveAndNext == "Y") {
+                                        window.location = DomainName + "/Master/TickerStep2?TickerID=" + "@Model.AlertId";
+                                    }
+                                    else {
+                                        window.location = DomainName + "/Master/DraftTickerPopUpList";
+                                    }
+                                }, 1500);
+                            }
+                            else {
+                                TosterNotification("error", 'Opration fail..!!' + data.ErrMsg + ' ', "Oppps..!!");
+                                App.unblockUI();
+                            }
+                        },
+                        error: function (req, status, error) {
+                            TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                            App.unblockUI();
+                        }
+                    });
+                }
+            });
+
+            $(".btnSaveNextTic").on("click", function () {
+
+                $("#SaveAndNext").val("Y");
+                $("#AlertBody").val($("#AlertBody").summernote('code'));
+                $("#AlertTital").val($("#AlertTital").summernote('code'));
+                $("#TickerSpeed").val($("#slider").val());
+                if ($("#AlertTital").summernote('isEmpty')) {
+                    $("#AlertT").show();
+                    $("#AlertB").hide();
+                    return false;
+                    App.unblockUI();
+                }
+                else if ($("#AlertBody").summernote('isEmpty')) {
+                    $("#AlertB").show();
+                    $("#AlertT").hide();
+                    return false;
+                    App.unblockUI();
+                }
+                else {
+                    App.blockUI({ boxed: true });
+                    document.forms["contact-form"].submit();
+                }
+            });
+        }
+
+        return {
+            init: function (DomainName) {
+                FormValidate(DomainName);
+                if ('@Model.EditFlag' == "Y") {
+                    $('#AlertBody').summernote({
+                        height: 250,
+                        focus: true,
+                        codemirror: {
+                            theme: 'journal'
+                        },
+                        toolbar: [
+                            /* ["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                            /*['table', ['table']],*/
+                            ['insert', ['link', 'picture']],
+                            ['view', ['fullscreen', 'codeview']],
+                        ]
+                    });
+                    $("#AlertBody").summernote('code', '@Html.Raw(@Model.AlertBody)');
+                    $('#AlertTital').summernote({
+                        height: 50,
+                        focus: true,
+                        toolbar: [
+                            /*["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                        ],
+                        codemirror: {
+                            theme: 'journal'
+                        },
+                    });
+                    $("#AlertTital").summernote('code', '@Html.Raw(@Model.AlertTital)');
+                    if ($("#SchedulePatternType").val() != "")
+                    {
+                        $("input[name=optionsRadios2][value=" + $("#SchedulePatternType").val() + "]").prop('checked', true);
+                    }
+                    if ($("#TickerPosition").val() != "")
+                    {
+                        $("input[name=ScreenDeliveryPositionRadios][value=" + $("#TickerPosition").val() + "]").prop('checked', true);
+                    }
+                    $("#tickerImage").attr("src", DomainName + "/assets/img/Screen/Tickers/" + $("#TickerPosition").val() + ".png");
+                    $("#OnceStartDateTime").val("@Model.OnceStartDateTime.ToString("dd MMM yyyy hh:mm tt")");
+                    if ($("#CommanDateType").val() != "")
+                    {
+                        $("input[name=optionsRadiosComman][value=" + $("#CommanDateType").val() + "]").prop('checked', true);
+                    }
+                     $("#StartDateComman").val("@Model.StartDateComman.ToString("dd MMM yyyy hh:mm tt")");
+                    $("#" + $("#ThemeId").val().replace("row ", "").trim()).addClass("selected");
+                    if ($("#MonthlyType").val() != "") {
+                        $("input[name=optionsRadiosMonthly][value=" + $("#MonthlyType").val() + "]").prop('checked', true);
+                    }
+
+                    var messagetype = '@Model.MessagingType';
+                    var item = messagetype.split(',');
+                     for (var itm in item)
+                     {
+                         if (item[itm] == "Whatsapp")
+                         {
+                             $('.clsLableWhatsapp').addClass('active');
+                             $(".clsWhatsapp").attr('src', DomainName + "/assets/img/Whatsapp-white.png");
+                         }
+                         else if (item[itm] == "Mail")
+                         {
+
+                             $('.clsmail').addClass('active');
+                         }
+                         else if (item[itm] == "SMS")
+                         {
+                            $('.clssms').addClass('active');
+                         }
+                     }
+
+                }
+                else {
+                    $('#AlertTital').summernote({
+                        height: 50,
+                        toolbar: [
+                            /*["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                        ],
+                        codemirror: {
+                            theme: 'journal'
+                        },
+                        placeholder: 'Add Ticker Alert Title ...',
+                    });
+
+                    $('#AlertBody').summernote({
+                        height: 250,
+                        codemirror: {
+                            theme: 'journal'
+                        },
+                        toolbar: [
+                            /* ["style", ["style"]],*/
+                            ["font", ["fontsize", "bold", "underline", "clear"]],
+                            ["fontname", ["fontname"]],
+                            ["color", ["color"]],
+                            ["para", ["ul", "ol", "paragraph"]],
+                            /*['table', ['table']],*/
+                            ['insert', ['link', 'picture', 'video']],
+                            ['view', ['fullscreen', 'codeview']],
+                        ],
+                        placeholder: 'Add your text, images, hyperlinks, videos, html here...',
+                    });
+                }
+
+
+                $('.form_datetime , .to_datetime').datetimepicker({
+                    rtl: App.isRTL(),
+                    format: "dd M yyyy HH:ii P",
+                    showMeridian: true,
+                    minuteStep: 3,
+                    autoclose: true,
+                    pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                    startDate: new Date(),
+                    todayBtn: true
+                });
+
+                 $("#OnceStartDateTime").on("change", function () {
+                    $(".to_datetime").datetimepicker('remove');
+                    $('.to_datetime').datetimepicker({
+                        rtl: App.isRTL(),
+                        format: "dd M yyyy HH:ii P",
+                        showMeridian: true,
+                        minuteStep: 3,
+                        autoclose: true,
+                        pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                        startDate: new Date($("#OnceStartDateTime").val()),
+                        todayBtn: true
+                    });
+                    $("#OnceEndDateTime").val($("#OnceStartDateTime").val())
+                });
+
+                $('.date-picker').datepicker({
+                    isRTL: App.isRTL(),
+                    format: "dd M yyyy  HH:ii P",
+                    autoclose: true,
+                    pickerPosition: (App.isRTL() ? "bottom-right" : "bottom-left"),
+                    startDate: '@System.DateTime.Now',
+                    todayBtn: true
+                });
+
+                if ('@Model.EditFlag' == "Y") {
+                    if ($("#SchedulePatternType").val() == "Once") {
+                        $(".clsOnce").show();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").hide();
+                    }
+                    else if ($("#SchedulePatternType").val() == "Daily") {
+                        $(".clsOnce").hide();
+                        $(".clsDaily").show();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    else if ($("#SchedulePatternType").val() == "Weekly") {
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").show();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    else if ($("#SchedulePatternType").val() == "Monthly") {
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").show();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    else if ($("#SchedulePatternType").val() == "Yearly") {
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").show();
+                        $(".clsComman").show();
+                    }
+                    else {
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").hide();
+                    }
+                }
+                else {
+                    $(".clsOnce").hide();
+                    $(".clsDaily").hide();
+                    $(".clsWeekly").hide();
+                    $(".clsMonthly").hide();
+                    $(".clsYearly").hide();
+                    $(".clsComman").hide();
+                    $("#SchedulePatternType").val(0);
+                    $("#MessagingType").val(0);
+                }
+
+                $("input[name='optionsRadios2']").click(function () {
+
+                    if (this.value == "Now") {
+                        $("#SchedulePatternType").val("Now");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").hide();
+                    }
+                    if (this.value == "Once") {
+                        $("#SchedulePatternType").val("Once");
+                        $(".clsOnce").show();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").hide();
+                    }
+                    if (this.value == "Daily") {
+                        $("#SchedulePatternType").val("Daily");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").show();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    if (this.value == "Weekly") {
+                        $("#SchedulePatternType").val("Weekly");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").show();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    if (this.value == "Monthly") {
+                        $("#SchedulePatternType").val("Monthly");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").show();
+                        $(".clsYearly").hide();
+                        $(".clsComman").show();
+                    }
+                    if (this.value == "Yearly") {
+                        $("#SchedulePatternType").val("Yearly");
+                        $(".clsOnce").hide();
+                        $(".clsDaily").hide();
+                        $(".clsWeekly").hide();
+                        $(".clsMonthly").hide();
+                        $(".clsYearly").show();
+                        $(".clsComman").show();
+                    }
+                });
+
+                $("input[name='RadioMessaging']").change(function () {
+
+                    var valuesArray = $('input[name="RadioMessaging"]:checked').map(function () {
+                        return this.value;
+                    }).get().join(",");
+                    $("#MessagingType").val(valuesArray);
+                    if (this.value == "Whatsapp") {
+                        var imageName = "Whatsapp.png";
+                        if ($(this).is(":checked")) {
+                            imageName = "Whatsapp-white.png";
+                        }
+                        $(this).next(".clsWhatsapp").attr('src', DomainName + "/assets/img/" + imageName);
+                    }
+                    //if (this.value == "Whatsapp") {
+                    //    $("#MessagingType").val("Whatsapp");
+                    //    alert($("#MessagingType").val());
+                    //}
+                    //if (this.value == "Mail") {
+                    //    $("#MessagingType").val("Mail");
+                    //    alert($("#MessagingType").val());
+                    //}
+                    //if (this.value == "SMS") {
+                    //    $("#MessagingType").val("SMS");
+                    //    alert($("#MessagingType").val());
+                    //}
+                });
+
+                /*$("#TickerPosition").val($("input[name='ScreenDeliveryPositionRadios']").val())*/
+
+                $("input[name='ScreenDeliveryPositionRadios']").click(function () {
+                    $("#TickerPosition").val($(this).val());
+                    $("#tickerImage").attr("src", DomainName + "/assets/img/Screen/Tickers/" + $(this).val() + ".png");
+                });
+
+                $("input[name='optionsRadiosComman']").click(function () {
+                    $("#CommanDateType").val(this.value);
+                });
+                $("input[name='optionsRadiosMonthly']").click(function () {
+                    $("#MonthlyType").val(this.value);
+                });
+
+                CallSubmitClick(DomainName);
+
+                $.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+                    _title: function (title) {
+                        if (!this.options.title) {
+                            title.html("&#160;");
+                        } else {
+                            title.html(this.options.title);
+                        }
+                    }
+                }));
+                $('#dialog_link').click(function () {
+                    $('#dialog_simple').dialog('open');
+                    return false;
+
+                });
+
+                $('#dialog_simple').dialog({
+                    autoOpen: false,
+                    width: 600,
+                    resizable: false,
+                    modal: true,
+                    title: "<div class='widget-header' style='width:50%px' ><h4> Popup Template</h4></div>",
+                    buttons: [{
+                        html: "<i class='fa-file-image-o'></i>&nbsp; Select",
+                        "class": "btn btn-success",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }, {
+                        html: "<i class='fa fa-times'></i>&nbsp; Cancel",
+                        "class": "btn btn-default",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }]
+                });
+
+                if ($("#ThemeId").val() == "") {
+                    $("#ThemeId").val("row theme-one");
+                }
+
+                $('.img-list').click(function () {
+                    $("#ThemeId").val($(this).data("themename"));
+                    $('.img-list').removeClass('selected');
+                    $(this).addClass('selected');
+                });
+
+
+                //$("#btnSubmit").on("click", function () {
+                //    $("#SaveAndNext").val("N");
+                //    $("#TickerSpeed").val($("#slider").val());
+                //    document.forms["contact-form"].submit();
+                //});
+
+                //$("#nouislider").noUiSlider({
+                //    range: [2, 100],
+                //    start: 55,
+                //    handles: 1,
+                //    connect: true,
+                //    lables:["nitin","ashok"]
+                //});
+
+                if ("@Model.AlertId" == "0")
+                {
+                    //$("#bottom").attr("checked", "checked").click();
+                    //$("#ExpiresIn").attr("checked", "checked").change();
+                    $("input[name=ScreenDeliveryPositionRadios][value=" + $("#TickerPosition").val() + "]").prop('checked', true);
+                    $("#tickerImage").attr("src", DomainName + "/assets/img/Screen/Tickers/" + $("#TickerPosition").val() + ".png");
+                    $("#Now").attr("checked", "checked").click();
+                    $("#comrbtn1").attr("checked", "checked").click();
+                    $("#" + $("#ThemeIdTic").val().replace("row ", "").trim()).addClass("selected");
+                    $("#ThemeId").val($("#ThemeIdTic").val());
+                    //$("#theme-one").addClass("selected");
+                }
+
+                $('[data-toggle="popover-hover"]').popover({
+                    html: true,
+                    trigger: 'hover',
+                    placement: 'bottom',
+                    content: function () { return '<img src="' + $(this).data('img') + '" />'; }
+                });
+
+                // popovers initialization - on click
+                $('[data-toggle="popover-click"]').popover({
+                    html: true,
+                    trigger: 'click',
+                    placement: 'bottom',
+                    content: function () { return '<img src="' + $(this).data('img') + '" />'; }
+                });
+
+                $(".showAlertPreview").click(function () {
+                    App.blockUI({ boxed: true });
+                    $("#AlertTital").val($("#AlertTital").summernote('code'));
+                    $("#AlertBody").val($("#AlertBody").summernote('code'));
+                    $("#TickerSpeed").val($("#slider").val());
+                    $.ajax({
+                        url: DomainName + "/Master/TickerPreviewPopup?TickerID=" + @Model.AlertId,
+                        cache: false,
+                        type: 'POST',
+                        data: $('#contact-form').serialize(),
+                        success: function (data) {
+                            console.log(data)
+                            $(".ifAlertPreview").parent('div').attr("style", "display:none;");
+                            //$(".ifAlertPreview").html(data);
+                            $("iframe").contents().find("body").html("");
+                            $("iframe").contents().find("body").html(data)
+                            var TickerID = $(this).data("tickerid");
+                            $(this).attr("target", "myFrame");
+                            $("#divPreview").toggle('show').change();
+                            var TickerPosition = $("#TickerPosition").val();
+                            /*var TickerSpeed = $(this).data("tickerspeed");*/
+
+                            var wt = "";
+                            var ht = "";
+                            if (TickerPosition == 1) {
+                                ht = '0px !important;';
+                            }
+                            if (TickerPosition == 2) {
+                                ht = ((window.innerHeight - 141 - 44) / 2) + 'px !important;';
+                            }
+                            if (TickerPosition == 3) {
+                                if ($(document).height() > $(window).height()) {
+                                    ht = (document.documentElement.clientHeight - 44 - 89 + window.pageYOffset) + 'px;';
+                                }
+                                else {
+                                    ht = (document.documentElement.clientHeight - 44 - 141) + 'px;';
+                                }
+                                /*ht = (window.innerHeight - 141 - 44) + 'px !important;';*/
+                            }
+                            $(".ifAlertPreview").attr("style", "top:" + ht);
+                            $("iframe").contents().find(".close").on("click", function () {
+                                $("iframe").contents().html("");
+                            });
+                            App.unblockUI();
+                        },
+                        error: function (req, status, error) {
+                            TosterNotification("error", 'Opration fail..!! There is some issue please try again or Contact your administrator for more detail.', "Oppps..!!");
+                            App.unblockUI();
+                        }
+                    });
+                });
+
+                if ('@Model.IsExpired' == 1) {
+                    $('button').addClass('disabled');
+                    $('.btnSubmitTic ').hide();
+                    $('.btnSaveNextTic  ').hide();
+                }
+                $(".link-dialog").find(".checkbox").remove();
+
+                $("#AutoCloseIn").click(function () {
+                    if ($('input[name=AutoCloseIn]').is(':checked')) {
+                        $(this).prop('checked', true);
+                        $(this).val(true);
+                        $("#AutoCloseInMin").val($("#OldAutoCloseInMin").val());
+                        $("#AutoCloseInMin").attr({ "min": "1" });
+                        $("#AutoCloseInMin").focus();
+                    }
+                    else {
+                        $(this).prop('checked', false);
+                        $(this).val(false);
+                        $("#AutoCloseInMin").val("0");
+                        $("#AutoCloseInMin").attr({ "min": "0" });
+                    }
+                });
+            }
+        }
+    }();
+</script>

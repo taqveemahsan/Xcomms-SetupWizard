@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../assets/SmartAdmin/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../assets/SmartAdmin/css/smartadmin-production-plugins.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../assets/SmartAdmin/css/smartadmin-production.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../assets/SmartAdmin/css/smartadmin-skins.min.css">
+    <link href="../Templates/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="../assets/img/fevicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../assets/img/fevicon/favicon.ico" type="image/x-icon">
+    <style>
+        /*html {
+            height: calc(92vh);
+        }*/
+
+        body {
+            font-family: 'Roboto', sans-serif !important;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #0d1723;
+            border-radius: 10px;
+        }
+    </style>
+    <title>Xcomms - History</title>
+</head>
+<body>
+    <div class="container-fluid inheriteHeight" style="height:100%">
+        <div class="inheriteHeight">
+            <div class="card mrgtop10 inheriteHeight">
+                <div id="DivTheme" name="DivTheme" class="card-header theme-one">
+                    <!--- Just change class name like theme-one = theme-one --->
+                    <div class="row rowfix">
+                        <img src="img/logo.png" class="logo">
+                        <a href="#" id="bntClose" onclick="javascript:window.close()"><img src="img/close-icon.png" class="img-fluid close" /> </a>
+                    </div>
+                </div>
+                <div class="card-body card-body-bg inheriteHeight" id="MainDiv">
+                    
+                    <!--<div class="card-body-div inheriteHeight">
+                        <div id="divTitle"></div>
+                        <div id="divText"></div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="../assets/SmartAdmin/script/libs/jquery-2.1.1.min.js"><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="../assets/SmartAdmin/script/libs/jquery-ui-1.10.3.min.js"><\/script>');
+        }
+    </script>
+    <script src="../Templates/js/bootstrap.js"></script>
+    <script src="../assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/plugins/datatables/dataTables.colVis.min.js"></script>
+    <script src="../assets/plugins/datatables/dataTables.tableTools.min.js"></script>
+    <script src="../assets/plugins/datatables/dataTables.bootstrap.min.js"></script>
+    <script src="../assets/plugins/datatable-responsive/datatables.responsive.min.js"></script>
+    <script type="text/javascript">
+        var dataTableById = function (tableId) {
+            var responsiveHelper_dt_basic = undefined;
+            var responsiveHelper_datatable_fixed_column = undefined;
+            var responsiveHelper_datatable_col_reorder = undefined;
+            var responsiveHelper_datatable_tabletools = undefined;
+
+            var breakpointDefinition = {
+                tablet: 1024,
+                phone: 480
+            };
+            $('#' + tableId).dataTable({
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
+                "autoWidth": true,
+                "preDrawCallback": function () {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#' + tableId), breakpointDefinition);
+                    }
+                },
+                "rowCallback": function (nRow) {
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback": function (oSettings) {
+                    responsiveHelper_dt_basic.respond();
+                },
+                "iDisplayLength": 5,
+                /*"order": [orderBy],*/
+                "bSort": false,
+                //initComplete: function () {
+                //    $(".dt-toolbar > div").eq(0)
+                //        .append('<button type="button" id="any_button">Click Me!</button>');
+                //}
+            });
+        }
+        $(document).ready(function () {
+            dataTableById("dt_RecentActivity");
+        });
+    </script>
+</body>
+</html>
