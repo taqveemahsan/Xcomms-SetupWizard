@@ -5,6 +5,9 @@ using System.Text;
 using static SetupWizard.Core.ConfigurationManager;
 using Application = System.Windows.Forms.Application;
 using ConfigurationManager = SetupWizard.Core.ConfigurationManager;
+using System.Xml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SetupWizard.UI;
 
@@ -180,12 +183,29 @@ Please ensure all required files are present before running the setup wizard.
         });
 
         // Deploy Button
-        var deployButton = new Button { Text = "Deploy Applications", Location = new Point(200, 350), Width = 150, Height = 40 };
+        var deployButton = new Button { 
+            Text = "Deploy Applications", 
+            Location = new Point(150, 350), 
+            Width = 150, 
+            Height = 40,
+            Name = "DeployButton"
+        };
         deployButton.BackColor = Color.Green;
         deployButton.ForeColor = Color.White;
         deployButton.Click += async (s, e) => await DeployApplications();
 
-        tab.Controls.AddRange(new Control[] { apiGroupBox, webGroupBox, deployButton });
+        // Next button (initially hidden)
+        var nextButton = new Button { 
+            Text = "Next >>", 
+            Location = new Point(320, 350), 
+            Width = 100, 
+            Height = 40,
+            Name = "DeploymentNextButton",
+            Visible = false 
+        };
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 3; // Move to IIS tab
+
+        tab.Controls.AddRange(new Control[] { apiGroupBox, webGroupBox, deployButton, nextButton });
 
         return tab;
     }
@@ -318,6 +338,15 @@ Please ensure all required files are present before running the setup wizard.
             if (apiResult.Success && webResult.Success)
             {
                 MessageBox.Show($"Deployment successful!\n\nAPI: {apiResult.Url}\nWeb: {webResult.Url}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                // Show Next button and hide Deploy button
+                var deployButton = FindControl("DeployButton") as Button;
+                var nextButton = FindControl("DeploymentNextButton") as Button;
+                if (deployButton != null && nextButton != null)
+                {
+                    deployButton.Visible = false;
+                    nextButton.Visible = true;
+                }
             }
 
             progressForm.Close();
@@ -428,13 +457,23 @@ Please ensure all required files are present before running the setup wizard.
             ReadOnly = true 
         };
 
-        var setupButton = new Button { Text = "Setup Database", Location = new Point(200, 100), Width = 120 };
+        var setupButton = new Button { Text = "Setup Database", Location = new Point(200, 100), Width = 120, Name = "SetupDatabaseButton" };
         setupButton.Click += async (s, e) => await SetupDatabaseFromScript();
+
+        // Add Next button (initially hidden)
+        var nextButton = new Button { 
+            Text = "Next >>", 
+            Location = new Point(330, 100), 
+            Width = 100, 
+            Name = "DatabaseNextButton",
+            Visible = false 
+        };
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 2; // Move to next tab
 
         setupGroupBox.Controls.AddRange(new Control[] {
             dbNameLabel, dbNameTextBox,
             scriptPathLabel, scriptPathTextBox,
-            setupButton
+            setupButton, nextButton
         });
 
         tab.Controls.AddRange(new Control[] { dbGroupBox, setupGroupBox });
@@ -508,6 +547,18 @@ Please ensure all required files are present before running the setup wizard.
                     Password = password,
                     ScriptPath = scriptPath
                 };
+
+                // Update connection strings in Web.config files
+                UpdateConnectionStrings();
+
+                // Show Next button and hide Setup button
+                var setupButton = FindControl("SetupDatabaseButton") as Button;
+                var nextButton = FindControl("DatabaseNextButton") as Button;
+                if (setupButton != null && nextButton != null)
+                {
+                    setupButton.Visible = false;
+                    nextButton.Visible = true;
+                }
             }
         }
         catch (Exception ex)
@@ -572,14 +623,29 @@ Please ensure all required files are present before running the setup wizard.
         var webSiteLabel = new Label { Text = "Web Site Name:", Location = new Point(20, 160) };
         var webSiteTextBox = new TextBox { Location = new Point(180, 160), Width = 200, Name = "WebSiteName", Text = "MyWeb" };
 
-        var checkIISButton = new Button { Text = "Check IIS Status", Location = new Point(200, 220), Width = 120 };
+        var checkIISButton = new Button { 
+            Text = "Check IIS Status", 
+            Location = new Point(150, 220), 
+            Width = 120,
+            Name = "CheckIISButton"
+        };
         checkIISButton.Click += (s, e) => CheckIISStatus();
 
+        // Next button (initially hidden)
+        var nextButton = new Button { 
+            Text = "Next >>", 
+            Location = new Point(280, 220), 
+            Width = 100,
+            Name = "IISNextButton",
+            Visible = false 
+        };
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 4; // Move to Backup tab
+
         tab.Controls.AddRange(new Control[] {
-        iisInfoLabel, appPoolLabel, appPoolTextBox,
-        apiSiteLabel, apiSiteTextBox, webSiteLabel, webSiteTextBox,
-        checkIISButton
-    });
+            iisInfoLabel, appPoolLabel, appPoolTextBox,
+            apiSiteLabel, apiSiteTextBox, webSiteLabel, webSiteTextBox,
+            checkIISButton, nextButton
+        });
 
         return tab;
     }
@@ -603,13 +669,29 @@ Please ensure all required files are present before running the setup wizard.
         scheduleComboBox.Items.AddRange(new string[] { "Daily", "Weekly", "Monthly" });
         scheduleComboBox.SelectedIndex = 0;
 
-        var testBackupButton = new Button { Text = "Test Backup", Location = new Point(200, 120), Width = 120 };
+        var testBackupButton = new Button { 
+            Text = "Test Backup", 
+            Location = new Point(150, 120), 
+            Width = 120,
+            Name = "TestBackupButton"
+        };
         testBackupButton.Click += async (s, e) => await TestBackup();
 
+        // Next button (initially hidden)
+        var nextButton = new Button { 
+            Text = "Next >>", 
+            Location = new Point(280, 120), 
+            Width = 100,
+            Name = "BackupNextButton",
+            Visible = false 
+        };
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 5; // Move to Review tab
+
         tab.Controls.AddRange(new Control[] {
-        backupLabel, backupTextBox, backupBrowseButton,
-        scheduleLabel, scheduleComboBox, testBackupButton
-    });
+            backupLabel, backupTextBox, backupBrowseButton,
+            scheduleLabel, scheduleComboBox, 
+            testBackupButton, nextButton
+        });
 
         return tab;
     }
@@ -662,6 +744,14 @@ Please ensure all required files are present before running the setup wizard.
 
             MessageBox.Show($"IIS Status:\nSites: {sites}\nApplication Pools: {appPools}\n\nIIS is ready for deployment!",
                            "IIS Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
+            // Show Next button after successful check
+            var checkButton = FindControl("CheckIISButton") as Button;
+            var nextButton = FindControl("IISNextButton") as Button;
+            if (checkButton != null && nextButton != null)
+            {
+                nextButton.Visible = true;
+            }
         }
         catch (Exception ex)
         {
@@ -772,6 +862,10 @@ Please ensure all required files are present before running the setup wizard.
                 Schedule = GetControlValue("BackupSchedule")
             };
 
+            // Update connection strings in Web.config files
+            progressForm.UpdateProgress(20, "Updating configuration files...");
+            UpdateConnectionStrings();
+
             // Execute complete setup
             var progressManager = new ProgressManager();
             await progressManager.ExecuteSetupProcess(currentConfig, progress);
@@ -787,5 +881,107 @@ Please ensure all required files are present before running the setup wizard.
         }
     }
 
+    private void UpdateConnectionStrings()
+    {
+        try
+        {
+            // Get database details from current config
+            var serverName = currentConfig.Database.ServerName;
+            var databaseName = currentConfig.Database.DatabaseName;
+            var username = currentConfig.Database.Username;
+            var password = currentConfig.Database.Password;
 
+            // Create the connection string in the format you specified
+            string connectionString = $"data source={serverName};initial catalog={databaseName};user id={username};password={password};MultipleActiveResultSets=True;TrustServerCertificate=True";
+
+            // Update API Web.config
+            string apiWebConfigPath = Path.Combine(Application.StartupPath, "PublishFiles", "API", "Web.config");
+            UpdateWebConfigConnectionString(apiWebConfigPath, connectionString);
+
+            // Update Web Web.config
+            string webWebConfigPath = Path.Combine(Application.StartupPath, "PublishFiles", "Web", "Web.config");
+            UpdateWebConfigConnectionString(webWebConfigPath, connectionString);
+
+            // Also update appsettings.json files if they exist
+            string apiAppSettingsPath = Path.Combine(Application.StartupPath, "PublishFiles", "API", "appsettings.json");
+            string webAppSettingsPath = Path.Combine(Application.StartupPath, "PublishFiles", "Web", "appsettings.json");
+            
+            UpdateAppSettingsConnectionString(apiAppSettingsPath, connectionString);
+            UpdateAppSettingsConnectionString(webAppSettingsPath, connectionString);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to update connection strings: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void UpdateWebConfigConnectionString(string configPath, string connectionString)
+    {
+        if (!File.Exists(configPath))
+        {
+            MessageBox.Show($"Config file not found: {configPath}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        try
+        {
+            // Load the Web.config file
+            XmlDocument doc = new XmlDocument();
+            doc.Load(configPath);
+
+            // Find the connectionStrings section
+            XmlNode connectionStringsNode = doc.SelectSingleNode("//connectionStrings");
+            if (connectionStringsNode != null)
+            {
+                // Find the DefaultConnection element
+                XmlNode defaultConnectionNode = connectionStringsNode.SelectSingleNode("add[@name='DefaultConnection']");
+                if (defaultConnectionNode != null)
+                {
+                    // Update the connectionString attribute
+                    XmlAttribute connectionStringAttr = defaultConnectionNode.Attributes["connectionString"];
+                    if (connectionStringAttr != null)
+                    {
+                        connectionStringAttr.Value = connectionString;
+                        doc.Save(configPath);
+                        Console.WriteLine($"Updated connection string in {configPath}");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error updating {configPath}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void UpdateAppSettingsConnectionString(string configPath, string connectionString)
+    {
+        if (!File.Exists(configPath))
+        {
+            // This is not an error, as some configurations might not have appsettings.json
+            Console.WriteLine($"appsettings.json not found: {configPath}");
+            return;
+        }
+
+        try
+        {
+            // Read the JSON file
+            string json = File.ReadAllText(configPath);
+            JObject appSettings = JObject.Parse(json);
+
+            // Update the ConnectionStrings section
+            if (appSettings["ConnectionStrings"] != null && appSettings["ConnectionStrings"]["DefaultConnection"] != null)
+            {
+                appSettings["ConnectionStrings"]["DefaultConnection"] = connectionString;
+                
+                // Save the updated JSON
+                File.WriteAllText(configPath, appSettings.ToString(Newtonsoft.Json.Formatting.Indented));
+                Console.WriteLine($"Updated connection string in {configPath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error updating {configPath}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 }

@@ -18,4 +18,12 @@
     <Folder Include="Scripts\" />
   </ItemGroup>
 
+  <Target Name="CopyPublishFiles" AfterTargets="Publish">
+    <ItemGroup>
+      <PublishFilesFolder Include="$(ProjectDir)PublishFiles\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PublishFilesFolder)" 
+          DestinationFiles="@(PublishFilesFolder->'$(PublishDir)PublishFiles\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
 </Project>

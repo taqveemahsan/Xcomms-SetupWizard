@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupWizard.Web", "SetupWiz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupWizard.API", "SetupWizard.API\SetupWizard.API.csproj", "{D345E197-54F7-4FD6-8E8C-9D42F30D5114}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupWizard.InstallerExe", "SetupWizard.InstallerExe\SetupWizard.InstallerExe.vdproj", "{632CF8A9-C09F-39AF-0335-39896021C0EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,8 +71,17 @@ Global
 		{D345E197-54F7-4FD6-8E8C-9D42F30D5114}.Release|x64.Build.0 = Release|Any CPU
 		{D345E197-54F7-4FD6-8E8C-9D42F30D5114}.Release|x86.ActiveCfg = Release|Any CPU
 		{D345E197-54F7-4FD6-8E8C-9D42F30D5114}.Release|x86.Build.0 = Release|Any CPU
+		{632CF8A9-C09F-39AF-0335-39896021C0EB}.Debug|Any CPU.ActiveCfg = Debug
+		{632CF8A9-C09F-39AF-0335-39896021C0EB}.Debug|x64.ActiveCfg = Debug
+		{632CF8A9-C09F-39AF-0335-39896021C0EB}.Debug|x86.ActiveCfg = Debug
+		{632CF8A9-C09F-39AF-0335-39896021C0EB}.Release|Any CPU.ActiveCfg = Release
+		{632CF8A9-C09F-39AF-0335-39896021C0EB}.Release|x64.ActiveCfg = Release
+		{632CF8A9-C09F-39AF-0335-39896021C0EB}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2496DC3C-FC39-4A66-92B0-F17348DA3F65}
 	EndGlobalSection
 EndGlobal
