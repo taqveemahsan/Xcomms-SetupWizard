@@ -101,15 +101,6 @@ partial class MainWizardForm
         this.headerLabel.Location = new System.Drawing.Point(10, 15);
         this.headerPanel.Controls.Add(this.headerLabel);
 
-        this.contentPanel.Controls.Add(this.headerPanel);
-
-        // separator
-        System.Windows.Forms.Panel separatorPanel = new System.Windows.Forms.Panel();
-        separatorPanel.Height = 1;
-        separatorPanel.Dock = System.Windows.Forms.DockStyle.Top;
-        separatorPanel.BackColor = System.Drawing.Color.LightGray;
-        this.contentPanel.Controls.Add(separatorPanel);
-
         // wizardTabs
         this.wizardTabs.Dock = System.Windows.Forms.DockStyle.Fill;
         this.wizardTabs.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
@@ -119,6 +110,15 @@ partial class MainWizardForm
         this.wizardTabs.Padding = new System.Drawing.Point(0, 0);
 
         this.contentPanel.Controls.Add(this.wizardTabs);
+
+        // separator
+        System.Windows.Forms.Panel separatorPanel = new System.Windows.Forms.Panel();
+        separatorPanel.Height = 1;
+        separatorPanel.Dock = System.Windows.Forms.DockStyle.Top;
+        separatorPanel.BackColor = System.Drawing.Color.LightGray;
+        this.contentPanel.Controls.Add(separatorPanel);
+
+        this.contentPanel.Controls.Add(this.headerPanel);
 
         // Form settings
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
