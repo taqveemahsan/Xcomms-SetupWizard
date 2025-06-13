@@ -80,14 +80,14 @@ partial class MainWizardForm
         this.sidebarPanel.Controls.Add(this.navPanel);
         this.sidebarPanel.Controls.Add(this.logoPanel);
 
-        this.mainPanel.Controls.Add(this.sidebarPanel);
-
         // contentPanel
         this.contentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
         this.contentPanel.BackColor = System.Drawing.Color.White;
         this.contentPanel.Padding = new System.Windows.Forms.Padding(20);
 
+        // Order of adding controls matters for Dock layout
         this.mainPanel.Controls.Add(this.contentPanel);
+        this.mainPanel.Controls.Add(this.sidebarPanel);
 
         // headerPanel
         this.headerPanel.Height = 60;
