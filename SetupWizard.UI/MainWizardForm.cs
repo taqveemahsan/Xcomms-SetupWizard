@@ -14,7 +14,6 @@ namespace SetupWizard.UI;
 // SetupWizard.UI/MainWizardForm.cs
 public partial class MainWizardForm : Form
 {
-    private TabControl wizardTabs;
     private DatabaseManager dbManager;
     private IISManager iisManager;
     private ConfigurationManager configManager;
@@ -41,7 +40,7 @@ public partial class MainWizardForm : Form
         // Handle resize events to ensure UI remains responsive
         this.Resize += (s, e) =>
         {
-            //sidebarPanel.Width = Math.Max(200, this.ClientSize.Width / 4); // Minimum 200px or 1/4 of form width
+            sidebarPanel.Width = Math.Max(200, this.ClientSize.Width / 4);
             foreach (TabPage tab in wizardTabs?.TabPages ?? new TabControl.TabPageCollection(new TabControl()))
             {
                 foreach (Control control in tab.Controls)
@@ -131,45 +130,6 @@ Please ensure all required files are present before running the setup wizard.
 
     private void SetupWizardTabs()
     {
-        // Create main panel with two sections
-        var mainPanel = new Panel
-        {
-            Dock = DockStyle.Fill
-        };
-        this.Controls.Add(mainPanel);
-
-        // Create sidebar panel (left side) - make it narrower
-        var sidebarPanel = new Panel
-        {
-            Width = 200, // Reduced from 250
-            Dock = DockStyle.Left,
-            BackColor = ColorTranslator.FromHtml("#1E88E5") // Blue color
-        };
-        mainPanel.Controls.Add(sidebarPanel);
-
-        // Add logo to sidebar
-        var logoPanel = new Panel
-        {
-            Height = 80, // Reduced from 100
-            Dock = DockStyle.Top,
-            BackColor = ColorTranslator.FromHtml("#1E88E5")
-        };
-        
-        // Add a text label for the logo
-        var logoText = new Label
-        {
-            Text = "XComms",
-            Font = new Font("Segoe UI", 16, FontStyle.Bold),
-            ForeColor = Color.White,
-            AutoSize = true,
-            Location = new Point(20, 25),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
-        };
-        logoPanel.Controls.Add(logoText);
-        
-        sidebarPanel.Controls.Add(logoPanel);
-
-        // Create navigation menu in sidebar
         var navItems = new List<string>
         {
             "Database Setup",
@@ -178,14 +138,6 @@ Please ensure all required files are present before running the setup wizard.
             "Backup Setup",
             "Review & Install"
         };
-
-        var navPanel = new Panel
-        {
-            Dock = DockStyle.Fill,
-            BackColor = ColorTranslator.FromHtml("#1E88E5"),
-            AutoScroll = true
-        };
-        sidebarPanel.Controls.Add(navPanel);
 
         int yPos = 20;
         foreach (var text in navItems)
@@ -210,62 +162,6 @@ Please ensure all required files are present before running the setup wizard.
             yPos += 50;
         }
 
-        // Create content panel (right side)
-        var contentPanel = new Panel
-        {
-            Dock = DockStyle.Fill,
-            BackColor = Color.White,
-            Padding = new Padding(20)
-        };
-        mainPanel.Controls.Add(contentPanel);
-
-        // Create header in content panel
-        var headerPanel = new Panel
-        {
-            Height = 60,
-            Dock = DockStyle.Top,
-            BackColor = Color.White
-        };
-        
-        var headerLabel = new Label
-        {
-            Text = "Welcome to the XComms Installation Wizard",
-            Font = new Font("Segoe UI Semibold", 16),
-            ForeColor = Color.DarkSlateGray,
-            AutoSize = true,
-            Location = new Point(10, 15),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
-        };
-        headerPanel.Controls.Add(headerLabel);
-        contentPanel.Controls.Add(headerPanel);
-
-        // Add separator line
-        var separatorPanel = new Panel
-        {
-            Height = 1,
-            Dock = DockStyle.Top,
-            BackColor = Color.LightGray
-        };
-        contentPanel.Controls.Add(separatorPanel);
-
-        // Create tab control (invisible) to manage content
-        wizardTabs = new TabControl
-        {
-            Dock = DockStyle.Fill,
-            Appearance = TabAppearance.FlatButtons,
-            ItemSize = new Size(0, 1),
-            SizeMode = TabSizeMode.Fixed,
-            Margin = new Padding(0),
-            Padding = new Point(0, 0)
-        };
-        
-        // Hide tab headers
-        wizardTabs.SizeMode = TabSizeMode.Fixed;
-        wizardTabs.ItemSize = new Size(0, 1);
-        
-        contentPanel.Controls.Add(wizardTabs);
-
-        // Add tabs
         wizardTabs.TabPages.Add(CreateWelcomeTab());
         wizardTabs.TabPages.Add(CreateDatabaseTab());
         wizardTabs.TabPages.Add(CreateDeploymentTab());
@@ -273,7 +169,6 @@ Please ensure all required files are present before running the setup wizard.
         wizardTabs.TabPages.Add(CreateBackupTab());
         wizardTabs.TabPages.Add(CreateReviewTab());
 
-        // Update header when tab changes
         wizardTabs.SelectedIndexChanged += (s, e) =>
         {
             headerLabel.Text = wizardTabs.SelectedTab.Text;
