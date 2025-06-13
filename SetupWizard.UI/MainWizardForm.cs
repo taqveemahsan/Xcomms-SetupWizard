@@ -23,6 +23,37 @@ public partial class MainWizardForm : Form
     public MainWizardForm()
     {
         InitializeComponent();
+        this.Text = "XComms Installation Wizard";
+        
+        // Check if icon file exists before trying to load it
+        string iconPath = Path.Combine(Application.StartupPath, "xcomms.ico");
+        if (File.Exists(iconPath))
+        {
+            this.Icon = new Icon(iconPath, 32, 32);
+        }
+        
+        this.Size = new Size(900, 600);
+        this.MinimumSize = new Size(700, 500); // Set minimum size to prevent UI collapse
+        this.FormBorderStyle = FormBorderStyle.Sizable; // Allow resizing
+        this.MaximizeBox = true; // Allow maximizing
+        this.StartPosition = FormStartPosition.CenterScreen;
+
+        // Handle resize events to ensure UI remains responsive
+        this.Resize += (s, e) =>
+        {
+            //sidebarPanel.Width = Math.Max(200, this.ClientSize.Width / 4); // Minimum 200px or 1/4 of form width
+            foreach (TabPage tab in wizardTabs?.TabPages ?? new TabControl.TabPageCollection(new TabControl()))
+            {
+                foreach (Control control in tab.Controls)
+                {
+                    if (control is Panel panel && panel.AutoScroll)
+                    {
+                        panel.Refresh();
+                    }
+                }
+            }
+        };
+
         InitializeWizard();
         EnsurePublishDirectoriesExist();
     }
@@ -100,113 +131,360 @@ Please ensure all required files are present before running the setup wizard.
 
     private void SetupWizardTabs()
     {
-        wizardTabs = new TabControl();
-        wizardTabs.Dock = DockStyle.Fill;
+        // Create main panel with two sections
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill
+        };
+        this.Controls.Add(mainPanel);
 
-        // Tab 1: Welcome
+        // Create sidebar panel (left side) - make it narrower
+        var sidebarPanel = new Panel
+        {
+            Width = 200, // Reduced from 250
+            Dock = DockStyle.Left,
+            BackColor = ColorTranslator.FromHtml("#1E88E5") // Blue color
+        };
+        mainPanel.Controls.Add(sidebarPanel);
+
+        // Add logo to sidebar
+        var logoPanel = new Panel
+        {
+            Height = 80, // Reduced from 100
+            Dock = DockStyle.Top,
+            BackColor = ColorTranslator.FromHtml("#1E88E5")
+        };
+        
+        // Add a text label for the logo
+        var logoText = new Label
+        {
+            Text = "XComms",
+            Font = new Font("Segoe UI", 16, FontStyle.Bold),
+            ForeColor = Color.White,
+            AutoSize = true,
+            Location = new Point(20, 25),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        logoPanel.Controls.Add(logoText);
+        
+        sidebarPanel.Controls.Add(logoPanel);
+
+        // Create navigation menu in sidebar
+        var navItems = new List<string>
+        {
+            "Database Setup",
+            "Install Location",
+            "Configuration",
+            "Backup Setup",
+            "Review & Install"
+        };
+
+        var navPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = ColorTranslator.FromHtml("#1E88E5"),
+            AutoScroll = true
+        };
+        sidebarPanel.Controls.Add(navPanel);
+
+        int yPos = 20;
+        foreach (var text in navItems)
+        {
+            var navButton = new Button
+            {
+                Text = text,
+                TextAlign = ContentAlignment.MiddleLeft,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10),
+                Width = 180,
+                Height = 40,
+                Location = new Point(10, yPos),
+                Tag = text,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+            navButton.FlatAppearance.BorderSize = 0;
+            navButton.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#1976D2");
+            navButton.Click += NavButton_Click;
+            navPanel.Controls.Add(navButton);
+            yPos += 50;
+        }
+
+        // Create content panel (right side)
+        var contentPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = Color.White,
+            Padding = new Padding(20)
+        };
+        mainPanel.Controls.Add(contentPanel);
+
+        // Create header in content panel
+        var headerPanel = new Panel
+        {
+            Height = 60,
+            Dock = DockStyle.Top,
+            BackColor = Color.White
+        };
+        
+        var headerLabel = new Label
+        {
+            Text = "Welcome to the XComms Installation Wizard",
+            Font = new Font("Segoe UI Semibold", 16),
+            ForeColor = Color.DarkSlateGray,
+            AutoSize = true,
+            Location = new Point(10, 15),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        headerPanel.Controls.Add(headerLabel);
+        contentPanel.Controls.Add(headerPanel);
+
+        // Add separator line
+        var separatorPanel = new Panel
+        {
+            Height = 1,
+            Dock = DockStyle.Top,
+            BackColor = Color.LightGray
+        };
+        contentPanel.Controls.Add(separatorPanel);
+
+        // Create tab control (invisible) to manage content
+        wizardTabs = new TabControl
+        {
+            Dock = DockStyle.Fill,
+            Appearance = TabAppearance.FlatButtons,
+            ItemSize = new Size(0, 1),
+            SizeMode = TabSizeMode.Fixed,
+            Margin = new Padding(0),
+            Padding = new Point(0, 0)
+        };
+        
+        // Hide tab headers
+        wizardTabs.SizeMode = TabSizeMode.Fixed;
+        wizardTabs.ItemSize = new Size(0, 1);
+        
+        contentPanel.Controls.Add(wizardTabs);
+
+        // Add tabs
         wizardTabs.TabPages.Add(CreateWelcomeTab());
-
-        // Tab 2: Database Setup
         wizardTabs.TabPages.Add(CreateDatabaseTab());
-
-        // Tab 3: Pre-Built Files Setup
         wizardTabs.TabPages.Add(CreateDeploymentTab());
-
-        // Tab 4: IIS Setup
         wizardTabs.TabPages.Add(CreateIISTab());
-
-        // Tab 5: Backup Setup
         wizardTabs.TabPages.Add(CreateBackupTab());
-
-        // Tab 6: Final Review
         wizardTabs.TabPages.Add(CreateReviewTab());
 
-        this.Controls.Add(wizardTabs);
+        // Update header when tab changes
+        wizardTabs.SelectedIndexChanged += (s, e) =>
+        {
+            headerLabel.Text = wizardTabs.SelectedTab.Text;
+        };
+    }
+
+    private void NavButton_Click(object sender, EventArgs e)
+    {
+        var button = sender as Button;
+        if (button != null)
+        {
+            string tag = button.Tag.ToString();
+            switch (tag)
+            {
+                case "Database Setup":
+                    wizardTabs.SelectedIndex = 1;
+                    break;
+                case "Install Location":
+                    wizardTabs.SelectedIndex = 2;
+                    break;
+                case "Configuration":
+                    wizardTabs.SelectedIndex = 3;
+                    break;
+                case "Backup Setup":
+                    wizardTabs.SelectedIndex = 4;
+                    break;
+                case "Review & Install":
+                    wizardTabs.SelectedIndex = 5;
+                    break;
+            }
+        }
+    }
+
+    // Helper methods to get icons with fallback
+    private Image GetDatabaseIcon()
+    {
+        string iconPath = Path.Combine(Application.StartupPath, "Icons", "database.png");
+        if (File.Exists(iconPath))
+        {
+            return Image.FromFile(iconPath);
+        }
+        return null; // Return null if icon doesn't exist
+    }
+
+    private Image GetInstallIcon()
+    {
+        string iconPath = Path.Combine(Application.StartupPath, "Icons", "install.png");
+        if (File.Exists(iconPath))
+        {
+            return Image.FromFile(iconPath);
+        }
+        return null;
+    }
+
+    private Image GetConfigIcon()
+    {
+        string iconPath = Path.Combine(Application.StartupPath, "Icons", "config.png");
+        if (File.Exists(iconPath))
+        {
+            return Image.FromFile(iconPath);
+        }
+        return null;
+    }
+
+    private Image GetBackupIcon()
+    {
+        string iconPath = Path.Combine(Application.StartupPath, "Icons", "backup.png");
+        if (File.Exists(iconPath))
+        {
+            return Image.FromFile(iconPath);
+        }
+        return null;
+    }
+
+    private Image GetReviewIcon()
+    {
+        string iconPath = Path.Combine(Application.StartupPath, "Icons", "review.png");
+        if (File.Exists(iconPath))
+        {
+            return Image.FromFile(iconPath);
+        }
+        return null;
     }
 
     private TabPage CreateDeploymentTab()
     {
-        var tab = new TabPage("Pre-Built Files Setup");
-
-        // API Section
-        var apiGroupBox = new GroupBox { Text = "API Deployment", Location = new Point(20, 20), Size = new Size(450, 150) };
-
-        var apiPathLabel = new Label { Text = "API Source Path:", Location = new Point(10, 30) };
-        var apiPathTextBox = new TextBox { 
-            Location = new Point(120, 30), 
-            Width = 300, 
-            Name = "APISourcePath", 
-            Text = Path.Combine(Application.StartupPath, "PublishFiles", "API"),
-            ReadOnly = true 
+        var tab = new TabPage("Deployment Setup");
+        tab.Padding = new Padding(20);
+        
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true
         };
-
-        var apiPortLabel = new Label { Text = "API Port:", Location = new Point(10, 70) };
-        var apiPortTextBox = new TextBox { Location = new Point(120, 70), Width = 100, Name = "APIPort", Text = "5001" };
-
-        var apiValidateButton = new Button { Text = "Validate Files", Location = new Point(230, 70), Width = 100 };
+        
+        var contentPanel = new Panel
+        {
+            Width = 600,
+            Height = 400,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        
+        // API Deployment group
+        var apiGroupBox = CreateGroupBox("API Deployment", 550, 150);
+        apiGroupBox.Location = new Point(0, 10);
+        apiGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        
+        var apiPathLabel = CreateLabel("API Source:", 100, 30);
+        apiPathLabel.Location = new Point(20, 30);
+        
+        var apiPathTextBox = CreateTextBox(Path.Combine(Application.StartupPath, "PublishFiles", "API"), 300, 30);
+        apiPathTextBox.Location = new Point(130, 30);
+        apiPathTextBox.Name = "APISourcePath";
+        apiPathTextBox.ReadOnly = true;
+        apiPathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        
+        var apiBrowseButton = CreateStyledButton("Browse", 80, 30);
+        apiBrowseButton.Location = new Point(450, 30);
+        apiBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        apiBrowseButton.Click += (s, e) => BrowseForFolder("APISourcePath");
+        
+        var apiPortLabel = CreateLabel("API Port:", 100, 30);
+        apiPortLabel.Location = new Point(20, 70);
+        
+        var apiPortTextBox = CreateTextBox("5001", 100, 30);
+        apiPortTextBox.Location = new Point(130, 70);
+        apiPortTextBox.Name = "APIPort";
+        
+        var apiValidateButton = CreateStyledButton("Validate", 80, 30);
+        apiValidateButton.Location = new Point(250, 70);
         apiValidateButton.Click += (s, e) => ValidateAPIFiles();
-
-        var apiTargetLabel = new Label { Text = "Deploy To:", Location = new Point(10, 110) };
-        var apiTargetTextBox = new TextBox { Location = new Point(120, 110), Width = 300, Name = "APITargetPath", Text = @"C:\inetpub\wwwroot\MyAPI" };
-
+        
+        var apiTargetLabel = CreateLabel("Deploy To:", 100, 30);
+        apiTargetLabel.Location = new Point(20, 110);
+        
+        var apiTargetTextBox = CreateTextBox(@"C:\inetpub\wwwroot\MyAPI", 300, 30);
+        apiTargetTextBox.Location = new Point(130, 110);
+        apiTargetTextBox.Name = "APITargetPath";
+        apiTargetTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        
         apiGroupBox.Controls.AddRange(new Control[] {
-            apiPathLabel, apiPathTextBox,
+            apiPathLabel, apiPathTextBox, apiBrowseButton,
             apiPortLabel, apiPortTextBox, apiValidateButton,
             apiTargetLabel, apiTargetTextBox
         });
-
-        // Web Section
-        var webGroupBox = new GroupBox { Text = "Web Application Deployment", Location = new Point(20, 180), Size = new Size(450, 150) };
-
-        var webPathLabel = new Label { Text = "Web Source Path:", Location = new Point(10, 30) };
-        var webPathTextBox = new TextBox { 
-            Location = new Point(120, 30), 
-            Width = 300, 
-            Name = "WebSourcePath", 
-            Text = Path.Combine(Application.StartupPath, "PublishFiles", "Web"),
-            ReadOnly = true 
-        };
-
-        var webPortLabel = new Label { Text = "Web Port:", Location = new Point(10, 70) };
-        var webPortTextBox = new TextBox { Location = new Point(120, 70), Width = 100, Name = "WebPort", Text = "5002" };
-
-        var webValidateButton = new Button { Text = "Validate Files", Location = new Point(230, 70), Width = 100 };
+        
+        // Web Deployment group
+        var webGroupBox = CreateGroupBox("Web Deployment", 550, 150);
+        webGroupBox.Location = new Point(0, 180);
+        webGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        
+        var webPathLabel = CreateLabel("Web Source:", 100, 30);
+        webPathLabel.Location = new Point(20, 30);
+        
+        var webPathTextBox = CreateTextBox(Path.Combine(Application.StartupPath, "PublishFiles", "Web"), 300, 30);
+        webPathTextBox.Location = new Point(130, 30);
+        webPathTextBox.Name = "WebSourcePath";
+        webPathTextBox.ReadOnly = true;
+        webPathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        
+        var webBrowseButton = CreateStyledButton("Browse", 80, 30);
+        webBrowseButton.Location = new Point(450, 30);
+        webBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        webBrowseButton.Click += (s, e) => BrowseForFolder("WebSourcePath");
+        
+        var webPortLabel = CreateLabel("Web Port:", 100, 30);
+        webPortLabel.Location = new Point(20, 70);
+        
+        var webPortTextBox = CreateTextBox("5002", 100, 30);
+        webPortTextBox.Location = new Point(130, 70);
+        webPortTextBox.Name = "WebPort";
+        
+        var webValidateButton = CreateStyledButton("Validate", 80, 30);
+        webValidateButton.Location = new Point(250, 70);
         webValidateButton.Click += (s, e) => ValidateWebFiles();
-
-        var webTargetLabel = new Label { Text = "Deploy To:", Location = new Point(10, 110) };
-        var webTargetTextBox = new TextBox { Location = new Point(120, 110), Width = 300, Name = "WebTargetPath", Text = @"C:\inetpub\wwwroot\MyWeb" };
-
+        
+        var webTargetLabel = CreateLabel("Deploy To:", 100, 30);
+        webTargetLabel.Location = new Point(20, 110);
+        
+        var webTargetTextBox = CreateTextBox(@"C:\inetpub\wwwroot\MyWeb", 300, 30);
+        webTargetTextBox.Location = new Point(130, 110);
+        webTargetTextBox.Name = "WebTargetPath";
+        webTargetTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        
         webGroupBox.Controls.AddRange(new Control[] {
-            webPathLabel, webPathTextBox,
+            webPathLabel, webPathTextBox, webBrowseButton,
             webPortLabel, webPortTextBox, webValidateButton,
             webTargetLabel, webTargetTextBox
         });
-
-        // Deploy Button
-        var deployButton = new Button { 
-            Text = "Deploy Applications", 
-            Location = new Point(150, 350), 
-            Width = 150, 
-            Height = 40,
-            Name = "DeployButton"
-        };
-        deployButton.BackColor = Color.Green;
-        deployButton.ForeColor = Color.White;
+        
+        // Deploy button
+        var deployButton = CreateStyledButton("Deploy Applications", 150, 40);
+        deployButton.Location = new Point(150, 350);
         deployButton.Click += async (s, e) => await DeployApplications();
-
+        
         // Next button (initially hidden)
-        var nextButton = new Button { 
-            Text = "Next >>", 
-            Location = new Point(320, 350), 
-            Width = 100, 
-            Height = 40,
-            Name = "DeploymentNextButton",
-            Visible = false 
-        };
+        var nextButton = CreateStyledButton("Next", 100, 40);
+        nextButton.Location = new Point(320, 350);
+        nextButton.Visible = false;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 3; // Move to IIS tab
-
-        tab.Controls.AddRange(new Control[] { apiGroupBox, webGroupBox, deployButton, nextButton });
-
+        
+        contentPanel.Controls.Add(apiGroupBox);
+        contentPanel.Controls.Add(webGroupBox);
+        contentPanel.Controls.Add(deployButton);
+        contentPanel.Controls.Add(nextButton);
+        
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
+        
         return tab;
     }
 
@@ -418,66 +696,101 @@ Please ensure all required files are present before running the setup wizard.
 
     private TabPage CreateDatabaseTab()
     {
-        var tab = new TabPage("Database Setup");
-
+        var tab = new TabPage("Let's Setup Your Database");
+        tab.Padding = new Padding(20);
+        
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true
+        };
+        
+        var contentPanel = new Panel
+        {
+            Width = 600,
+            Height = 400,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink
+        };
+        
         // Database connection group
-        var dbGroupBox = new GroupBox { Text = "Database Connection", Location = new Point(20, 20), Size = new Size(450, 150) };
-
-        var serverLabel = new Label { Text = "Server Name:", Location = new Point(10, 30) };
-        var serverTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "ServerName", Text = "localhost" };
-
-        var usernameLabel = new Label { Text = "Username:", Location = new Point(10, 70) };
-        var usernameTextBox = new TextBox { Location = new Point(120, 70), Width = 200, Name = "Username", Text = "sa" };
-
-        var passwordLabel = new Label { Text = "Password:", Location = new Point(10, 110) };
-        var passwordTextBox = new TextBox { Location = new Point(120, 110), Width = 200, Name = "Password", UseSystemPasswordChar = true };
-
-        var testConnectionButton = new Button { Text = "Test Connection", Location = new Point(330, 70), Width = 100 };
-        testConnectionButton.Click += async (s, e) => await TestDatabaseConnection();
-
-        dbGroupBox.Controls.AddRange(new Control[] {
+        var connectionGroupBox = CreateGroupBox("Database Connection", 550, 150);
+        connectionGroupBox.Location = new Point(0, 10);
+        
+        var serverLabel = CreateLabel("Server Name:", 100, 30);
+        serverLabel.Location = new Point(20, 30);
+        
+        var serverTextBox = CreateTextBox("localhost", 300, 30);
+        serverTextBox.Location = new Point(130, 30);
+        serverTextBox.Name = "ServerName";
+        
+        var usernameLabel = CreateLabel("Username:", 100, 30);
+        usernameLabel.Location = new Point(20, 70);
+        
+        var usernameTextBox = CreateTextBox("sa", 300, 30);
+        usernameTextBox.Location = new Point(130, 70);
+        usernameTextBox.Name = "Username";
+        
+        var passwordLabel = CreateLabel("Password:", 100, 30);
+        passwordLabel.Location = new Point(20, 110);
+        
+        var passwordTextBox = CreateTextBox("", 300, 30);
+        passwordTextBox.Location = new Point(130, 110);
+        passwordTextBox.Name = "Password";
+        passwordTextBox.PasswordChar = '•';
+        
+        var testButton = CreateStyledButton("Test", 80, 30);
+        testButton.Location = new Point(450, 70);
+        testButton.Click += async (s, e) => await TestDatabaseConnection();
+        
+        connectionGroupBox.Controls.AddRange(new Control[] {
             serverLabel, serverTextBox,
             usernameLabel, usernameTextBox,
             passwordLabel, passwordTextBox,
-            testConnectionButton
+            testButton
         });
-
+        
         // Database setup group
-        var setupGroupBox = new GroupBox { Text = "Database Setup", Location = new Point(20, 180), Size = new Size(450, 150) };
-
-        var dbNameLabel = new Label { Text = "Database Name:", Location = new Point(10, 30) };
-        var dbNameTextBox = new TextBox { Location = new Point(120, 30), Width = 200, Name = "DatabaseName", Text = "XCommsDB" };
-
-        var scriptPathLabel = new Label { Text = "SQL Script:", Location = new Point(10, 60) };
-        var scriptPathTextBox = new TextBox { 
-            Location = new Point(120, 60), 
-            Width = 300, 
-            Name = "ScriptPath", 
-            Text = Path.Combine(Application.StartupPath, "PublishFiles", "XComms.sql"),
-            ReadOnly = true 
-        };
-
-        var setupButton = new Button { Text = "Setup Database", Location = new Point(200, 100), Width = 120, Name = "SetupDatabaseButton" };
-        setupButton.Click += async (s, e) => await SetupDatabaseFromScript();
-
-        // Add Next button (initially hidden)
-        var nextButton = new Button { 
-            Text = "Next >>", 
-            Location = new Point(330, 100), 
-            Width = 100, 
-            Name = "DatabaseNextButton",
-            Visible = false 
-        };
-        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 2; // Move to next tab
-
+        var setupGroupBox = CreateGroupBox("Database Setup", 550, 150);
+        setupGroupBox.Location = new Point(0, 180);
+        
+        var dbNameLabel = CreateLabel("Database:", 100, 30);
+        dbNameLabel.Location = new Point(20, 30);
+        
+        var dbNameTextBox = CreateTextBox("XCommsDB", 300, 30);
+        dbNameTextBox.Location = new Point(130, 30);
+        dbNameTextBox.Name = "DatabaseName";
+        
+        var scriptPathLabel = CreateLabel("Backup File:", 100, 30);
+        scriptPathLabel.Location = new Point(20, 70);
+        
+        var scriptPathTextBox = CreateTextBox(Path.Combine(Application.StartupPath, "PublishFiles", "XComms.sql"), 300, 30);
+        scriptPathTextBox.Location = new Point(130, 70);
+        scriptPathTextBox.Name = "ScriptPath";
+        scriptPathTextBox.ReadOnly = true;
+        
+        var browseButton = CreateStyledButton("Browse", 80, 30);
+        browseButton.Location = new Point(450, 70);
+        browseButton.Click += (s, e) => BrowseForFile("ScriptPath", "SQL Files (*.sql)|*.sql|All Files (*.*)|*.*");
+        
         setupGroupBox.Controls.AddRange(new Control[] {
             dbNameLabel, dbNameTextBox,
             scriptPathLabel, scriptPathTextBox,
-            setupButton, nextButton
+            browseButton
         });
-
-        tab.Controls.AddRange(new Control[] { dbGroupBox, setupGroupBox });
-
+        
+        // Navigation buttons
+        var nextButton = CreateStyledButton("Next", 100, 40);
+        nextButton.Location = new Point(450, 350);
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 2;
+        
+        contentPanel.Controls.Add(connectionGroupBox);
+        contentPanel.Controls.Add(setupGroupBox);
+        contentPanel.Controls.Add(nextButton);
+        
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
+        
         return tab;
     }
 
@@ -580,48 +893,148 @@ Please ensure all required files are present before running the setup wizard.
 
     private TabPage CreateWelcomeTab()
     {
-        var tab = new TabPage("Welcome");
+        var tab = new TabPage("Welcome to the XComms Installation Wizard");
+        tab.Padding = new Padding(20);
 
-        var welcomeLabel = new Label
+        var mainPanel = new Panel
         {
-            Text = "Welcome to Setup Wizard\n\nThis wizard will help you:\n� Setup Database\n� Deploy API & Web Applications\n� Configure IIS\n� Setup Backup",
-            Location = new Point(50, 50),
-            Size = new Size(400, 200),
-            Font = new Font("Segoe UI", 12)
+            Dock = DockStyle.Fill,
+            AutoScroll = true
         };
-
-        var nextButton = new Button
+        
+        var contentPanel = new Panel
         {
-            Text = "Next >>",
-            Location = new Point(350, 300),
-            Width = 100
+            Width = 600,
+            Height = 400,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
+        
+        // Welcome text
+        var welcomeText = new Label
+        {
+            Text = "This setup wizard will guide you through the installation of the XComms Communication Platform on your local server.",
+            Font = new Font("Segoe UI", 11),
+            ForeColor = Color.DarkSlateGray,
+            Width = 500,
+            Height = 60,
+            Location = new Point(0, 20),
+            AutoSize = false,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
+        
+        var prerequisitesText = new Label
+        {
+            Text = "Please ensure you have administrative privileges and have reviewed the installation prerequisites before continuing.",
+            Font = new Font("Segoe UI", 11),
+            ForeColor = Color.DarkSlateGray,
+            Width = 500,
+            Height = 60,
+            Location = new Point(0, 90),
+            AutoSize = false,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
+        
+        var supportText = new Label
+        {
+            Text = "If you require assistance, please refer to the installation guide or contact support at support@xcomms.com.",
+            Font = new Font("Segoe UI", 11),
+            ForeColor = Color.DarkSlateGray,
+            Width = 500,
+            Height = 60,
+            Location = new Point(0, 160),
+            AutoSize = false,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
+        
+        // Next button
+        var nextButton = CreateStyledButton("Next", 100, 40);
+        nextButton.Location = new Point(400, 300);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 1;
-
-        tab.Controls.AddRange(new Control[] { welcomeLabel, nextButton });
+        
+        contentPanel.Controls.Add(welcomeText);
+        contentPanel.Controls.Add(prerequisitesText);
+        contentPanel.Controls.Add(supportText);
+        contentPanel.Controls.Add(nextButton);
+        
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
+        
         return tab;
     }
 
     private TabPage CreateIISTab()
     {
         var tab = new TabPage("IIS Configuration");
+        tab.Padding = new Padding(20);
+        
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true
+        };
+        
+        var contentPanel = new Panel
+        {
+            Width = 600,
+            Height = 400,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
 
         var iisInfoLabel = new Label
         {
             Text = "IIS Settings (Will be configured automatically during deployment)",
             Location = new Point(20, 20),
             Size = new Size(400, 40),
-            Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            Font = new Font("Segoe UI", 10, FontStyle.Bold),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
 
-        var appPoolLabel = new Label { Text = "Application Pool Name:", Location = new Point(20, 80) };
-        var appPoolTextBox = new TextBox { Location = new Point(180, 80), Width = 200, Name = "AppPoolName", Text = "MyAppPool" };
+        var appPoolLabel = new Label { 
+            Text = "Application Pool Name:", 
+            Location = new Point(20, 80),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        
+        var appPoolTextBox = new TextBox { 
+            Location = new Point(180, 80), 
+            Width = 300, 
+            Name = "AppPoolName", 
+            Text = "MyAppPool",
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
 
-        var apiSiteLabel = new Label { Text = "API Site Name:", Location = new Point(20, 120) };
-        var apiSiteTextBox = new TextBox { Location = new Point(180, 120), Width = 200, Name = "APISiteName", Text = "MyAPI" };
+        var apiSiteLabel = new Label { 
+            Text = "API Site Name:", 
+            Location = new Point(20, 120),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        
+        var apiSiteTextBox = new TextBox { 
+            Location = new Point(180, 120), 
+            Width = 300, 
+            Name = "APISiteName", 
+            Text = "MyAPI",
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
 
-        var webSiteLabel = new Label { Text = "Web Site Name:", Location = new Point(20, 160) };
-        var webSiteTextBox = new TextBox { Location = new Point(180, 160), Width = 200, Name = "WebSiteName", Text = "MyWeb" };
+        var webSiteLabel = new Label { 
+            Text = "Web Site Name:", 
+            Location = new Point(20, 160),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        
+        var webSiteTextBox = new TextBox { 
+            Location = new Point(180, 160), 
+            Width = 300, 
+            Name = "WebSiteName", 
+            Text = "MyWeb",
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
 
         var checkIISButton = new Button { 
             Text = "Check IIS Status", 
@@ -641,24 +1054,65 @@ Please ensure all required files are present before running the setup wizard.
         };
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 4; // Move to Backup tab
 
-        tab.Controls.AddRange(new Control[] {
+        contentPanel.Controls.AddRange(new Control[] {
             iisInfoLabel, appPoolLabel, appPoolTextBox,
             apiSiteLabel, apiSiteTextBox, webSiteLabel, webSiteTextBox,
             checkIISButton, nextButton
         });
+        
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
 
         return tab;
     }
     private TabPage CreateBackupTab()
     {
         var tab = new TabPage("Backup Setup");
+        tab.Padding = new Padding(20);
+        
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true
+        };
+        
+        var contentPanel = new Panel
+        {
+            Width = 600,
+            Height = 400,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
 
-        var backupLabel = new Label { Text = "Backup Path:", Location = new Point(20, 20) };
-        var backupTextBox = new TextBox { Location = new Point(120, 20), Width = 200, Name = "BackupPath", Text = @"C:\DatabaseBackups" };
-        var backupBrowseButton = new Button { Text = "Browse", Location = new Point(330, 20), Width = 80 };
+        var backupLabel = new Label { 
+            Text = "Backup Path:", 
+            Location = new Point(20, 20),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        
+        var backupTextBox = new TextBox { 
+            Location = new Point(120, 20), 
+            Width = 300, 
+            Name = "BackupPath", 
+            Text = @"C:\DatabaseBackups",
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
+        
+        var backupBrowseButton = new Button { 
+            Text = "Browse", 
+            Location = new Point(430, 20), 
+            Width = 80,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
         backupBrowseButton.Click += (s, e) => BrowseForFolder("BackupPath");
 
-        var scheduleLabel = new Label { Text = "Backup Schedule:", Location = new Point(20, 60) };
+        var scheduleLabel = new Label { 
+            Text = "Backup Schedule:", 
+            Location = new Point(20, 60),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left
+        };
+        
         var scheduleComboBox = new ComboBox
         {
             Location = new Point(120, 60),
@@ -687,11 +1141,14 @@ Please ensure all required files are present before running the setup wizard.
         };
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 5; // Move to Review tab
 
-        tab.Controls.AddRange(new Control[] {
+        contentPanel.Controls.AddRange(new Control[] {
             backupLabel, backupTextBox, backupBrowseButton,
             scheduleLabel, scheduleComboBox, 
             testBackupButton, nextButton
         });
+        
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
 
         return tab;
     }
@@ -982,6 +1439,80 @@ Please ensure all required files are present before running the setup wizard.
         catch (Exception ex)
         {
             MessageBox.Show($"Error updating {configPath}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    // Helper methods for UI components
+    private GroupBox CreateGroupBox(string title, int width, int height)
+    {
+        return new GroupBox
+        {
+            Text = title,
+            Width = width,
+            Height = height,
+            Font = new Font("Segoe UI", 10, FontStyle.Regular),
+            ForeColor = Color.DarkSlateGray
+        };
+    }
+
+    private Label CreateLabel(string text, int width, int height)
+    {
+        return new Label
+        {
+            Text = text,
+            Width = width,
+            Height = height,
+            Font = new Font("Segoe UI", 9.5f),
+            ForeColor = Color.DarkSlateGray,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+    }
+
+    private TextBox CreateTextBox(string text, int width, int height)
+    {
+        return new TextBox
+        {
+            Text = text,
+            Width = width,
+            Height = height,
+            Font = new Font("Segoe UI", 9.5f),
+            BorderStyle = BorderStyle.FixedSingle,
+            Padding = new Padding(5)
+        };
+    }
+
+    private Button CreateStyledButton(string text, int width, int height)
+    {
+        var button = new Button
+        {
+            Text = text,
+            Width = width,
+            Height = height,
+            FlatStyle = FlatStyle.Flat,
+            BackColor = ColorTranslator.FromHtml("#1E88E5"),
+            ForeColor = Color.White,
+            Font = new Font("Segoe UI", 9.5f, FontStyle.Regular),
+            Cursor = Cursors.Hand
+        };
+        button.FlatAppearance.BorderSize = 0;
+        return button;
+    }
+
+    private void BrowseForFile(string controlName, string filter)
+    {
+        using (var dialog = new OpenFileDialog())
+        {
+            dialog.Filter = filter;
+            dialog.Title = "Select File";
+            
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                var control = FindControl(controlName) as TextBox;
+                if (control != null)
+                {
+                    control.Text = dialog.FileName;
+                }
+            }
         }
     }
 }
