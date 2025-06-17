@@ -10,7 +10,7 @@ partial class MainWizardForm
     private System.Windows.Forms.Panel mainPanel;
     private System.Windows.Forms.Panel sidebarPanel;
     private System.Windows.Forms.Panel logoPanel;
-    private System.Windows.Forms.Label logoText;
+    private System.Windows.Forms.PictureBox logoPictureBox;
     private System.Windows.Forms.Panel navPanel;
     private System.Windows.Forms.Panel contentPanel;
     private System.Windows.Forms.Panel headerPanel;
@@ -43,7 +43,7 @@ partial class MainWizardForm
         this.mainPanel = new System.Windows.Forms.Panel();
         this.sidebarPanel = new System.Windows.Forms.Panel();
         this.logoPanel = new System.Windows.Forms.Panel();
-        this.logoText = new System.Windows.Forms.Label();
+        this.logoPictureBox = new System.Windows.Forms.PictureBox();
         this.navPanel = new System.Windows.Forms.Panel();
         this.contentPanel = new System.Windows.Forms.Panel();
         this.headerPanel = new System.Windows.Forms.Panel();
@@ -55,7 +55,7 @@ partial class MainWizardForm
         this.Controls.Add(this.mainPanel);
 
         // sidebarPanel
-        this.sidebarPanel.Width = 200;
+        this.sidebarPanel.Width = 250;
         this.sidebarPanel.Dock = System.Windows.Forms.DockStyle.Left;
         this.sidebarPanel.BackColor = System.Drawing.ColorTranslator.FromHtml("#1E88E5");
 
@@ -64,13 +64,11 @@ partial class MainWizardForm
         this.logoPanel.Dock = System.Windows.Forms.DockStyle.Top;
         this.logoPanel.BackColor = System.Drawing.ColorTranslator.FromHtml("#1E88E5");
 
-        // logoText
-        this.logoText.Text = "XComms";
-        this.logoText.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-        this.logoText.ForeColor = System.Drawing.Color.White;
-        this.logoText.AutoSize = true;
-        this.logoText.Location = new System.Drawing.Point(20, 25);
-        this.logoPanel.Controls.Add(this.logoText);
+        // logoPictureBox
+        this.logoPictureBox.Size = new System.Drawing.Size(60, 60);
+        this.logoPictureBox.Location = new System.Drawing.Point(10, 10);
+        this.logoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+        this.logoPanel.Controls.Add(this.logoPictureBox);
 
         // navPanel
         this.navPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -122,7 +120,7 @@ partial class MainWizardForm
 
         // Form settings
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 450);
+        this.ClientSize = new System.Drawing.Size(1100, 700);
         this.Text = "XComms Installation Wizard";
     }
 

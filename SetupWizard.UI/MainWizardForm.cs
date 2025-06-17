@@ -6,6 +6,8 @@ using static SetupWizard.Core.ConfigurationManager;
 using Application = System.Windows.Forms.Application;
 using ConfigurationManager = SetupWizard.Core.ConfigurationManager;
 using System.Xml;
+using System.IO;
+using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -31,8 +33,8 @@ public partial class MainWizardForm : Form
             this.Icon = new Icon(iconPath, 32, 32);
         }
         
-        this.Size = new Size(900, 600);
-        this.MinimumSize = new Size(700, 500); // Set minimum size to prevent UI collapse
+        this.Size = new Size(1100, 700);
+        this.MinimumSize = new Size(800, 600); // Set minimum size to prevent UI collapse
         this.FormBorderStyle = FormBorderStyle.Sizable; // Allow resizing
         this.MaximizeBox = true; // Allow maximizing
         this.StartPosition = FormStartPosition.CenterScreen;
@@ -40,7 +42,7 @@ public partial class MainWizardForm : Form
         // Handle resize events to ensure UI remains responsive
         this.Resize += (s, e) =>
         {
-            sidebarPanel.Width = Math.Max(200, this.ClientSize.Width / 4);
+            sidebarPanel.Width = Math.Max(250, this.ClientSize.Width / 4);
             foreach (TabPage tab in wizardTabs?.TabPages ?? new TabControl.TabPageCollection(new TabControl()))
             {
                 foreach (Control control in tab.Controls)
@@ -55,6 +57,12 @@ public partial class MainWizardForm : Form
 
         InitializeWizard();
         EnsurePublishDirectoriesExist();
+
+        string logoImg = Path.Combine(Application.StartupPath, "PublishFiles", "xcomms.png");
+        if (File.Exists(logoImg))
+        {
+            logoPictureBox.Image = Image.FromFile(logoImg);
+        }
     }
 
     private void EnsurePublishDirectoriesExist()
@@ -130,33 +138,40 @@ Please ensure all required files are present before running the setup wizard.
 
     private void SetupWizardTabs()
     {
-        var navItems = new List<string>
+        var navItems = new List<(string Text, string Icon)>
         {
-            "Database Setup",
-            "Install Location",
-            "Configuration",
-            "Backup Setup",
-            "Review & Install"
+            ("Database Setup", "database.png"),
+            ("Install Location", "google-docs.png"),
+            ("Configuration", "maintenance.png"),
+            ("Backup Setup", "reload.png"),
+            ("Review & Install", "checklist.png")
         };
 
         int yPos = 20;
-        foreach (var text in navItems)
+        foreach (var item in navItems)
         {
             var navButton = new Button
             {
-                Text = text,
+                Text = "  " + item.Text,
                 TextAlign = ContentAlignment.MiddleLeft,
                 FlatStyle = FlatStyle.Flat,
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI", 10),
-                Width = 180,
+                Width = 220,
                 Height = 40,
                 Location = new Point(10, yPos),
-                Tag = text,
+                Tag = item.Text,
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
             navButton.FlatAppearance.BorderSize = 0;
             navButton.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#1976D2");
+            string iconPath = Path.Combine(Application.StartupPath, "PublishFiles", item.Icon);
+            if (File.Exists(iconPath))
+            {
+                navButton.Image = Image.FromFile(iconPath);
+                navButton.ImageAlign = ContentAlignment.MiddleLeft;
+                navButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            }
             navButton.Click += NavButton_Click;
             navPanel.Controls.Add(navButton);
             yPos += 50;
