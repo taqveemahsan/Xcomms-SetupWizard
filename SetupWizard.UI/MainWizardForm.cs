@@ -1001,12 +1001,9 @@ Please ensure all required files are present before running the setup wizard.
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
         
-        var backupBrowseButton = new Button { 
-            Text = "Browse", 
-            Location = new Point(430, 20), 
-            Width = 80,
-            Anchor = AnchorStyles.Top | AnchorStyles.Right
-        };
+        var backupBrowseButton = CreateStyledButton("Browse", 80, 30);
+        backupBrowseButton.Location = new Point(430, 20);
+        backupBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         backupBrowseButton.Click += (s, e) => BrowseForFolder("BackupPath");
 
         var scheduleLabel = new Label { 
