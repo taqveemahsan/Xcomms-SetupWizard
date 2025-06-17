@@ -283,11 +283,7 @@ Please ensure all required files are present before running the setup wizard.
         
         var contentPanel = new Panel
         {
-            Width = 600,
-            Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
+            Dock = DockStyle.Fill
         };
         
         // API Deployment group
@@ -623,13 +619,12 @@ Please ensure all required files are present before running the setup wizard.
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink
+            Dock = DockStyle.Fill
         };
-        
         // Database connection group
         var connectionGroupBox = CreateGroupBox("Database Connection", 550, 150);
         connectionGroupBox.Location = new Point(0, 10);
+        connectionGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         
         var serverLabel = CreateLabel("Server Name:", 100, 30);
         serverLabel.Location = new Point(20, 30);
@@ -667,6 +662,7 @@ Please ensure all required files are present before running the setup wizard.
         // Database setup group
         var setupGroupBox = CreateGroupBox("Database Setup", 550, 150);
         setupGroupBox.Location = new Point(0, 180);
+        setupGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         
         var dbNameLabel = CreateLabel("Database:", 100, 30);
         dbNameLabel.Location = new Point(20, 30);
@@ -822,9 +818,7 @@ Please ensure all required files are present before running the setup wizard.
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            Dock = DockStyle.Fill
         };
         
         // Welcome text
@@ -866,7 +860,7 @@ Please ensure all required files are present before running the setup wizard.
         
         // Next button
         var nextButton = CreateStyledButton("Next", 100, 40);
-        nextButton.Location = new Point(400, 300);
+        nextButton.Location = new Point(480, 350);
         nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 1;
         
@@ -891,14 +885,11 @@ Please ensure all required files are present before running the setup wizard.
             Dock = DockStyle.Fill,
             AutoScroll = true
         };
-        
         var contentPanel = new Panel
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
+            Dock = DockStyle.Fill
         };
 
         var iisInfoLabel = new Label
@@ -991,9 +982,7 @@ Please ensure all required files are present before running the setup wizard.
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
+            Dock = DockStyle.Fill
         };
 
         var backupLabel = new Label { 
@@ -1073,8 +1062,7 @@ Please ensure all required files are present before running the setup wizard.
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink
+            Dock = DockStyle.Fill
         };
 
         var reviewTextBox = new TextBox
@@ -1085,6 +1073,7 @@ Please ensure all required files are present before running the setup wizard.
             ScrollBars = ScrollBars.Vertical,
             ReadOnly = true,
             Name = "ReviewText"
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
         };
 
         var startSetupButton = CreateStyledButton("Start Setup", 120, 40);
