@@ -289,7 +289,8 @@ Please ensure all required files are present before running the setup wizard.
         // API Deployment group
         var apiGroupBox = CreateGroupBox("API Deployment", 550, 150);
         apiGroupBox.Location = new Point(0, 10);
-        apiGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        // Keep a fixed width so it doesn't overflow the form
+        apiGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
         
         var apiPathLabel = CreateLabel("API Source:", 100, 30);
         apiPathLabel.Location = new Point(20, 30);
@@ -333,7 +334,8 @@ Please ensure all required files are present before running the setup wizard.
         // Web Deployment group
         var webGroupBox = CreateGroupBox("Web Deployment", 550, 150);
         webGroupBox.Location = new Point(0, 180);
-        webGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        // Prevent stretching beyond the window width
+        webGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
         
         var webPathLabel = CreateLabel("Web Source:", 100, 30);
         webPathLabel.Location = new Point(20, 30);
