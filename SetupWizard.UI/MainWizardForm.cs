@@ -1074,7 +1074,7 @@ Please ensure all required files are present before running the setup wizard.
             Multiline = true,
             ScrollBars = ScrollBars.Vertical,
             ReadOnly = true,
-            Name = "ReviewText"
+            Name = "ReviewText",
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
         };
 
