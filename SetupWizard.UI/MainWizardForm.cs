@@ -380,7 +380,7 @@ Please ensure all required files are present before running the setup wizard.
         
         // Deploy button
         var deployButton = CreateStyledButton("Deploy Applications", 150, 40);
-        deployButton.Location = new Point(150, 350);
+        deployButton.Location = new Point(contentPanel.Width - 280, contentPanel.Height - 50);
         deployButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         deployButton.Click += async (s, e) => await DeployApplications();
 
@@ -952,22 +952,17 @@ Please ensure all required files are present before running the setup wizard.
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
 
-        var checkIISButton = new Button { 
-            Text = "Check IIS Status", 
-            Location = new Point(150, 220), 
-            Width = 120,
-            Name = "CheckIISButton"
-        };
+        var checkIISButton = CreateStyledButton("Check IIS Status", 150, 40);
+        checkIISButton.Name = "CheckIISButton";
+        checkIISButton.Location = new Point(contentPanel.Width - 280, contentPanel.Height - 50);
+        checkIISButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         checkIISButton.Click += (s, e) => CheckIISStatus();
 
         // Next button
-        var nextButton = new Button {
-            Text = "Next >>",
-            Width = 100,
-            Name = "IISNextButton",
-            Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50),
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
-        };
+        var nextButton = CreateStyledButton("Next >>", 100, 40);
+        nextButton.Name = "IISNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 4; // Move to Backup tab
 
         contentPanel.Controls.AddRange(new Control[] {
@@ -1039,22 +1034,17 @@ Please ensure all required files are present before running the setup wizard.
         scheduleComboBox.Items.AddRange(new string[] { "Daily", "Weekly", "Monthly" });
         scheduleComboBox.SelectedIndex = 0;
 
-        var testBackupButton = new Button { 
-            Text = "Test Backup", 
-            Location = new Point(150, 120), 
-            Width = 120,
-            Name = "TestBackupButton"
-        };
+        var testBackupButton = CreateStyledButton("Test Backup", 120, 40);
+        testBackupButton.Name = "TestBackupButton";
+        testBackupButton.Location = new Point(contentPanel.Width - 280, contentPanel.Height - 50);
+        testBackupButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         testBackupButton.Click += async (s, e) => await TestBackup();
 
         // Next button
-        var nextButton = new Button {
-            Text = "Next >>",
-            Width = 100,
-            Name = "BackupNextButton",
-            Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50),
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
-        };
+        var nextButton = CreateStyledButton("Next >>", 100, 40);
+        nextButton.Name = "BackupNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 5; // Move to Review tab
 
         contentPanel.Controls.AddRange(new Control[] {
@@ -1073,6 +1063,20 @@ Please ensure all required files are present before running the setup wizard.
     {
         var tab = new TabPage("Review & Install");
 
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true
+        };
+
+        var contentPanel = new Panel
+        {
+            Width = 600,
+            Height = 400,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink
+        };
+
         var reviewTextBox = new TextBox
         {
             Location = new Point(20, 20),
@@ -1083,19 +1087,14 @@ Please ensure all required files are present before running the setup wizard.
             Name = "ReviewText"
         };
 
-        var startSetupButton = new Button
-        {
-            Text = "Start Setup",
-            Location = new Point(200, 290),
-            Width = 120,
-            Height = 40,
-            BackColor = Color.Green,
-            ForeColor = Color.White,
-            Font = new Font("Segoe UI", 10, FontStyle.Bold)
-        };
+        var startSetupButton = CreateStyledButton("Start Setup", 120, 40);
+        startSetupButton.Location = new Point(contentPanel.Width - 140, contentPanel.Height - 50);
+        startSetupButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         startSetupButton.Click += async (s, e) => await StartCompleteSetup();
 
-        tab.Controls.AddRange(new Control[] { reviewTextBox, startSetupButton });
+        contentPanel.Controls.AddRange(new Control[] { reviewTextBox, startSetupButton });
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
 
         // Update review when tab is selected
         wizardTabs.SelectedIndexChanged += (s, e) =>
