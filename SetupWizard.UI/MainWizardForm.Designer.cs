@@ -38,91 +38,149 @@ partial class MainWizardForm
     /// </summary>
     private void InitializeComponent()
     {
-        this.components = new System.ComponentModel.Container();
-
-        this.mainPanel = new System.Windows.Forms.Panel();
-        this.sidebarPanel = new System.Windows.Forms.Panel();
-        this.logoPanel = new System.Windows.Forms.Panel();
-        this.logoPictureBox = new System.Windows.Forms.PictureBox();
-        this.navPanel = new System.Windows.Forms.Panel();
-        this.contentPanel = new System.Windows.Forms.Panel();
-        this.headerPanel = new System.Windows.Forms.Panel();
-        this.headerLabel = new System.Windows.Forms.Label();
-        this.wizardTabs = new System.Windows.Forms.TabControl();
-
+        mainPanel = new Panel();
+        contentPanel = new Panel();
+        wizardTabs = new TabControl();
+        separatorPanel = new Panel();
+        headerPanel = new Panel();
+        headerLabel = new Label();
+        sidebarPanel = new Panel();
+        navPanel = new Panel();
+        logoPanel = new Panel();
+        logoPictureBox = new PictureBox();
+        mainPanel.SuspendLayout();
+        contentPanel.SuspendLayout();
+        headerPanel.SuspendLayout();
+        sidebarPanel.SuspendLayout();
+        logoPanel.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)logoPictureBox).BeginInit();
+        SuspendLayout();
+        // 
         // mainPanel
-        this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.Controls.Add(this.mainPanel);
-
-        // sidebarPanel
-        this.sidebarPanel.Width = 250;
-        this.sidebarPanel.Dock = System.Windows.Forms.DockStyle.Left;
-        this.sidebarPanel.BackColor = System.Drawing.ColorTranslator.FromHtml("#1E88E5");
-
-        // logoPanel
-        this.logoPanel.Height = 100;
-        this.logoPanel.Dock = System.Windows.Forms.DockStyle.Top;
-        this.logoPanel.BackColor = System.Drawing.ColorTranslator.FromHtml("#1E88E5");
-
-        // logoPictureBox
-        this.logoPictureBox.Size = new System.Drawing.Size(80, 80);
-        this.logoPictureBox.Location = new System.Drawing.Point(10, 10);
-        this.logoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-        this.logoPanel.Controls.Add(this.logoPictureBox);
-
-        // navPanel
-        this.navPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.navPanel.BackColor = System.Drawing.ColorTranslator.FromHtml("#1E88E5");
-        this.navPanel.AutoScroll = true;
-
-        this.sidebarPanel.Controls.Add(this.navPanel);
-        this.sidebarPanel.Controls.Add(this.logoPanel);
-
+        // 
+        mainPanel.Controls.Add(contentPanel);
+        mainPanel.Controls.Add(sidebarPanel);
+        mainPanel.Dock = DockStyle.Fill;
+        mainPanel.Location = new Point(0, 0);
+        mainPanel.Name = "mainPanel";
+        mainPanel.Size = new Size(1100, 700);
+        mainPanel.TabIndex = 0;
+        // 
         // contentPanel
-        this.contentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.contentPanel.BackColor = System.Drawing.Color.White;
-        this.contentPanel.Padding = new System.Windows.Forms.Padding(20);
-
-        // Order of adding controls matters for Dock layout
-        this.mainPanel.Controls.Add(this.contentPanel);
-        this.mainPanel.Controls.Add(this.sidebarPanel);
-
-        // headerPanel
-        this.headerPanel.Height = 60;
-        this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-
-        // headerLabel
-        this.headerLabel.Text = "Welcome to the XComms Installation Wizard";
-        this.headerLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 16F);
-        this.headerLabel.ForeColor = System.Drawing.Color.DarkSlateGray;
-        this.headerLabel.AutoSize = true;
-        this.headerLabel.Location = new System.Drawing.Point(10, 15);
-        this.headerPanel.Controls.Add(this.headerLabel);
-
+        // 
+        contentPanel.BackColor = Color.White;
+        contentPanel.Controls.Add(wizardTabs);
+        contentPanel.Controls.Add(separatorPanel);
+        contentPanel.Controls.Add(headerPanel);
+        contentPanel.Dock = DockStyle.Fill;
+        contentPanel.Location = new Point(250, 0);
+        contentPanel.Name = "contentPanel";
+        contentPanel.Padding = new Padding(20);
+        contentPanel.Size = new Size(850, 700);
+        contentPanel.TabIndex = 0;
+        // 
         // wizardTabs
-        this.wizardTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.wizardTabs.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-        this.wizardTabs.ItemSize = new System.Drawing.Size(0, 1);
-        this.wizardTabs.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
-        this.wizardTabs.Margin = new System.Windows.Forms.Padding(0);
-        this.wizardTabs.Padding = new System.Drawing.Point(0, 0);
-
-        this.contentPanel.Controls.Add(this.wizardTabs);
-
-        // separator
-        System.Windows.Forms.Panel separatorPanel = new System.Windows.Forms.Panel();
-        separatorPanel.Height = 1;
-        separatorPanel.Dock = System.Windows.Forms.DockStyle.Top;
-        separatorPanel.BackColor = System.Drawing.Color.LightGray;
-        this.contentPanel.Controls.Add(separatorPanel);
-
-        this.contentPanel.Controls.Add(this.headerPanel);
-
-        // Form settings
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(1100, 700);
-        this.Text = "XComms Installation Wizard";
+        // 
+        wizardTabs.Appearance = TabAppearance.FlatButtons;
+        wizardTabs.Dock = DockStyle.Fill;
+        wizardTabs.ItemSize = new Size(0, 1);
+        wizardTabs.Location = new Point(20, 81);
+        wizardTabs.Margin = new Padding(0);
+        wizardTabs.Name = "wizardTabs";
+        wizardTabs.Padding = new Point(0, 0);
+        wizardTabs.SelectedIndex = 0;
+        wizardTabs.Size = new Size(810, 599);
+        wizardTabs.SizeMode = TabSizeMode.Fixed;
+        wizardTabs.TabIndex = 0;
+        // 
+        // separatorPanel
+        // 
+        separatorPanel.BackColor = Color.LightGray;
+        separatorPanel.Dock = DockStyle.Top;
+        separatorPanel.Location = new Point(20, 80);
+        separatorPanel.Name = "separatorPanel";
+        separatorPanel.Size = new Size(810, 1);
+        separatorPanel.TabIndex = 1;
+        // 
+        // headerPanel
+        // 
+        headerPanel.Controls.Add(headerLabel);
+        headerPanel.Dock = DockStyle.Top;
+        headerPanel.Location = new Point(20, 20);
+        headerPanel.Name = "headerPanel";
+        headerPanel.Size = new Size(810, 60);
+        headerPanel.TabIndex = 2;
+        // 
+        // headerLabel
+        // 
+        headerLabel.AutoSize = true;
+        headerLabel.Font = new Font("Segoe UI Semibold", 16F);
+        headerLabel.ForeColor = Color.DarkSlateGray;
+        headerLabel.Location = new Point(10, 15);
+        headerLabel.Name = "headerLabel";
+        headerLabel.Size = new Size(564, 37);
+        headerLabel.TabIndex = 0;
+        headerLabel.Text = "Welcome to the XComms Installation Wizard";
+        // 
+        // sidebarPanel
+        // 
+        sidebarPanel.BackColor = Color.FromArgb(30, 136, 229);
+        sidebarPanel.Controls.Add(navPanel);
+        sidebarPanel.Controls.Add(logoPanel);
+        sidebarPanel.Dock = DockStyle.Left;
+        sidebarPanel.Location = new Point(0, 0);
+        sidebarPanel.Name = "sidebarPanel";
+        sidebarPanel.Size = new Size(250, 700);
+        sidebarPanel.TabIndex = 1;
+        // 
+        // navPanel
+        // 
+        navPanel.AutoScroll = true;
+        navPanel.BackColor = Color.FromArgb(30, 136, 229);
+        navPanel.Dock = DockStyle.Fill;
+        navPanel.Location = new Point(0, 100);
+        navPanel.Name = "navPanel";
+        navPanel.Size = new Size(250, 600);
+        navPanel.TabIndex = 0;
+        // 
+        // logoPanel
+        // 
+        logoPanel.BackColor = Color.FromArgb(30, 136, 229);
+        logoPanel.Controls.Add(logoPictureBox);
+        logoPanel.Dock = DockStyle.Top;
+        logoPanel.Location = new Point(0, 0);
+        logoPanel.Name = "logoPanel";
+        logoPanel.Size = new Size(250, 100);
+        logoPanel.TabIndex = 1;
+        // 
+        // logoPictureBox
+        // 
+        logoPictureBox.Location = new Point(3, 12);
+        logoPictureBox.Name = "logoPictureBox";
+        logoPictureBox.Size = new Size(244, 78);
+        logoPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+        logoPictureBox.TabIndex = 0;
+        logoPictureBox.TabStop = false;
+        // 
+        // MainWizardForm
+        // 
+        AutoScaleDimensions = new SizeF(8F, 20F);
+        AutoScaleMode = AutoScaleMode.Font;
+        ClientSize = new Size(1100, 700);
+        Controls.Add(mainPanel);
+        Name = "MainWizardForm";
+        Text = "XComms Installation Wizard";
+        mainPanel.ResumeLayout(false);
+        contentPanel.ResumeLayout(false);
+        headerPanel.ResumeLayout(false);
+        headerPanel.PerformLayout();
+        sidebarPanel.ResumeLayout(false);
+        logoPanel.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)logoPictureBox).EndInit();
+        ResumeLayout(false);
     }
 
     #endregion
+
+    private Panel separatorPanel;
 }
