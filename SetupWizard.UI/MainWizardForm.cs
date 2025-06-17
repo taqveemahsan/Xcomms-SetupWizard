@@ -381,12 +381,14 @@ Please ensure all required files are present before running the setup wizard.
         // Deploy button
         var deployButton = CreateStyledButton("Deploy Applications", 150, 40);
         deployButton.Location = new Point(150, 350);
+        deployButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         deployButton.Click += async (s, e) => await DeployApplications();
-        
-        // Next button (initially hidden)
+
+        // Next button
         var nextButton = CreateStyledButton("Next", 100, 40);
-        nextButton.Location = new Point(320, 350);
-        nextButton.Visible = false;
+        nextButton.Name = "DeploymentNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 3; // Move to IIS tab
         
         contentPanel.Controls.Add(apiGroupBox);
@@ -693,7 +695,9 @@ Please ensure all required files are present before running the setup wizard.
         
         // Navigation buttons
         var nextButton = CreateStyledButton("Next", 100, 40);
-        nextButton.Location = new Point(450, 350);
+        nextButton.Name = "DatabaseNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 2;
         
         contentPanel.Controls.Add(connectionGroupBox);
@@ -956,13 +960,13 @@ Please ensure all required files are present before running the setup wizard.
         };
         checkIISButton.Click += (s, e) => CheckIISStatus();
 
-        // Next button (initially hidden)
-        var nextButton = new Button { 
-            Text = "Next >>", 
-            Location = new Point(280, 220), 
+        // Next button
+        var nextButton = new Button {
+            Text = "Next >>",
             Width = 100,
             Name = "IISNextButton",
-            Visible = false 
+            Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50),
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
         };
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 4; // Move to Backup tab
 
@@ -1043,13 +1047,13 @@ Please ensure all required files are present before running the setup wizard.
         };
         testBackupButton.Click += async (s, e) => await TestBackup();
 
-        // Next button (initially hidden)
-        var nextButton = new Button { 
-            Text = "Next >>", 
-            Location = new Point(280, 120), 
+        // Next button
+        var nextButton = new Button {
+            Text = "Next >>",
             Width = 100,
             Name = "BackupNextButton",
-            Visible = false 
+            Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50),
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
         };
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 5; // Move to Review tab
 
