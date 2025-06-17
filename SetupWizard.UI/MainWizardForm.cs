@@ -160,6 +160,7 @@ Please ensure all required files are present before running the setup wizard.
                 Width = 220,
                 Height = 40,
                 Location = new Point(10, yPos),
+                Padding = new Padding(5, 0, 0, 0),
                 Tag = item.Text,
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
@@ -168,7 +169,8 @@ Please ensure all required files are present before running the setup wizard.
             string iconPath = Path.Combine(Application.StartupPath, "PublishFiles", item.Icon);
             if (File.Exists(iconPath))
             {
-                navButton.Image = Image.FromFile(iconPath);
+                var rawImage = Image.FromFile(iconPath);
+                navButton.Image = new Bitmap(rawImage, new Size(24, 24));
                 navButton.ImageAlign = ContentAlignment.MiddleLeft;
                 navButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             }

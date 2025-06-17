@@ -60,12 +60,12 @@ partial class MainWizardForm
         this.sidebarPanel.BackColor = System.Drawing.ColorTranslator.FromHtml("#1E88E5");
 
         // logoPanel
-        this.logoPanel.Height = 80;
+        this.logoPanel.Height = 100;
         this.logoPanel.Dock = System.Windows.Forms.DockStyle.Top;
         this.logoPanel.BackColor = System.Drawing.ColorTranslator.FromHtml("#1E88E5");
 
         // logoPictureBox
-        this.logoPictureBox.Size = new System.Drawing.Size(60, 60);
+        this.logoPictureBox.Size = new System.Drawing.Size(80, 80);
         this.logoPictureBox.Location = new System.Drawing.Point(10, 10);
         this.logoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
         this.logoPanel.Controls.Add(this.logoPictureBox);
