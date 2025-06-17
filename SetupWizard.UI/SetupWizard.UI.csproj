@@ -18,6 +18,12 @@
     <Folder Include="Scripts\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="PublishFiles\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <Target Name="CopyPublishFiles" AfterTargets="Publish">
     <ItemGroup>
       <PublishFilesFolder Include="$(ProjectDir)PublishFiles\**\*.*" />

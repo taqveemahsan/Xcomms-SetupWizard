@@ -6,6 +6,8 @@ using static SetupWizard.Core.ConfigurationManager;
 using Application = System.Windows.Forms.Application;
 using ConfigurationManager = SetupWizard.Core.ConfigurationManager;
 using System.Xml;
+using System.IO;
+using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -31,8 +33,8 @@ public partial class MainWizardForm : Form
             this.Icon = new Icon(iconPath, 32, 32);
         }
         
-        this.Size = new Size(900, 600);
-        this.MinimumSize = new Size(700, 500); // Set minimum size to prevent UI collapse
+        this.Size = new Size(1100, 700);
+        this.MinimumSize = new Size(800, 600); // Set minimum size to prevent UI collapse
         this.FormBorderStyle = FormBorderStyle.Sizable; // Allow resizing
         this.MaximizeBox = true; // Allow maximizing
         this.StartPosition = FormStartPosition.CenterScreen;
@@ -40,7 +42,7 @@ public partial class MainWizardForm : Form
         // Handle resize events to ensure UI remains responsive
         this.Resize += (s, e) =>
         {
-            sidebarPanel.Width = Math.Max(200, this.ClientSize.Width / 4);
+            sidebarPanel.Width = Math.Max(250, this.ClientSize.Width / 4);
             foreach (TabPage tab in wizardTabs?.TabPages ?? new TabControl.TabPageCollection(new TabControl()))
             {
                 foreach (Control control in tab.Controls)
@@ -55,6 +57,12 @@ public partial class MainWizardForm : Form
 
         InitializeWizard();
         EnsurePublishDirectoriesExist();
+
+        string logoImg = Path.Combine(Application.StartupPath, "PublishFiles", "xcomms.png");
+        if (File.Exists(logoImg))
+        {
+            logoPictureBox.Image = Image.FromFile(logoImg);
+        }
     }
 
     private void EnsurePublishDirectoriesExist()
@@ -130,33 +138,42 @@ Please ensure all required files are present before running the setup wizard.
 
     private void SetupWizardTabs()
     {
-        var navItems = new List<string>
+        var navItems = new List<(string Text, string Icon)>
         {
-            "Database Setup",
-            "Install Location",
-            "Configuration",
-            "Backup Setup",
-            "Review & Install"
+            ("Database Setup", "database.png"),
+            ("Install Location", "google-docs.png"),
+            ("Configuration", "maintenance.png"),
+            ("Backup Setup", "reload.png"),
+            ("Review & Install", "checklist.png")
         };
 
         int yPos = 20;
-        foreach (var text in navItems)
+        foreach (var item in navItems)
         {
             var navButton = new Button
             {
-                Text = text,
+                Text = "  " + item.Text,
                 TextAlign = ContentAlignment.MiddleLeft,
                 FlatStyle = FlatStyle.Flat,
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI", 10),
-                Width = 180,
+                Width = 220,
                 Height = 40,
                 Location = new Point(10, yPos),
-                Tag = text,
+                Padding = new Padding(5, 0, 0, 0),
+                Tag = item.Text,
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
             navButton.FlatAppearance.BorderSize = 0;
             navButton.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#1976D2");
+            string iconPath = Path.Combine(Application.StartupPath, "PublishFiles", item.Icon);
+            if (File.Exists(iconPath))
+            {
+                var rawImage = Image.FromFile(iconPath);
+                navButton.Image = new Bitmap(rawImage, new Size(24, 24));
+                navButton.ImageAlign = ContentAlignment.MiddleLeft;
+                navButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            }
             navButton.Click += NavButton_Click;
             navPanel.Controls.Add(navButton);
             yPos += 50;
@@ -266,17 +283,14 @@ Please ensure all required files are present before running the setup wizard.
         
         var contentPanel = new Panel
         {
-            Width = 600,
-            Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
+            Dock = DockStyle.Fill
         };
         
         // API Deployment group
         var apiGroupBox = CreateGroupBox("API Deployment", 550, 150);
         apiGroupBox.Location = new Point(0, 10);
-        apiGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        // Keep a fixed width so it doesn't overflow the form
+        apiGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
         
         var apiPathLabel = CreateLabel("API Source:", 100, 30);
         apiPathLabel.Location = new Point(20, 30);
@@ -320,7 +334,8 @@ Please ensure all required files are present before running the setup wizard.
         // Web Deployment group
         var webGroupBox = CreateGroupBox("Web Deployment", 550, 150);
         webGroupBox.Location = new Point(0, 180);
-        webGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        // Prevent stretching beyond the window width
+        webGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
         
         var webPathLabel = CreateLabel("Web Source:", 100, 30);
         webPathLabel.Location = new Point(20, 30);
@@ -363,13 +378,15 @@ Please ensure all required files are present before running the setup wizard.
         
         // Deploy button
         var deployButton = CreateStyledButton("Deploy Applications", 150, 40);
-        deployButton.Location = new Point(150, 350);
+        deployButton.Location = new Point(contentPanel.Width - 280, contentPanel.Height - 50);
+        deployButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         deployButton.Click += async (s, e) => await DeployApplications();
-        
-        // Next button (initially hidden)
+
+        // Next button
         var nextButton = CreateStyledButton("Next", 100, 40);
-        nextButton.Location = new Point(320, 350);
-        nextButton.Visible = false;
+        nextButton.Name = "DeploymentNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 3; // Move to IIS tab
         
         contentPanel.Controls.Add(apiGroupBox);
@@ -604,13 +621,12 @@ Please ensure all required files are present before running the setup wizard.
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink
+            Dock = DockStyle.Fill
         };
-        
         // Database connection group
         var connectionGroupBox = CreateGroupBox("Database Connection", 550, 150);
         connectionGroupBox.Location = new Point(0, 10);
+        connectionGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         
         var serverLabel = CreateLabel("Server Name:", 100, 30);
         serverLabel.Location = new Point(20, 30);
@@ -648,6 +664,7 @@ Please ensure all required files are present before running the setup wizard.
         // Database setup group
         var setupGroupBox = CreateGroupBox("Database Setup", 550, 150);
         setupGroupBox.Location = new Point(0, 180);
+        setupGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         
         var dbNameLabel = CreateLabel("Database:", 100, 30);
         dbNameLabel.Location = new Point(20, 30);
@@ -676,7 +693,9 @@ Please ensure all required files are present before running the setup wizard.
         
         // Navigation buttons
         var nextButton = CreateStyledButton("Next", 100, 40);
-        nextButton.Location = new Point(450, 350);
+        nextButton.Name = "DatabaseNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 2;
         
         contentPanel.Controls.Add(connectionGroupBox);
@@ -801,9 +820,7 @@ Please ensure all required files are present before running the setup wizard.
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            Dock = DockStyle.Fill
         };
         
         // Welcome text
@@ -845,7 +862,7 @@ Please ensure all required files are present before running the setup wizard.
         
         // Next button
         var nextButton = CreateStyledButton("Next", 100, 40);
-        nextButton.Location = new Point(400, 300);
+        nextButton.Location = new Point(480, 350);
         nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 1;
         
@@ -870,14 +887,11 @@ Please ensure all required files are present before running the setup wizard.
             Dock = DockStyle.Fill,
             AutoScroll = true
         };
-        
         var contentPanel = new Panel
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
+            Dock = DockStyle.Fill
         };
 
         var iisInfoLabel = new Label
@@ -931,22 +945,17 @@ Please ensure all required files are present before running the setup wizard.
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
 
-        var checkIISButton = new Button { 
-            Text = "Check IIS Status", 
-            Location = new Point(150, 220), 
-            Width = 120,
-            Name = "CheckIISButton"
-        };
+        var checkIISButton = CreateStyledButton("Check IIS Status", 150, 40);
+        checkIISButton.Name = "CheckIISButton";
+        checkIISButton.Location = new Point(contentPanel.Width - 280, contentPanel.Height - 50);
+        checkIISButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         checkIISButton.Click += (s, e) => CheckIISStatus();
 
-        // Next button (initially hidden)
-        var nextButton = new Button { 
-            Text = "Next >>", 
-            Location = new Point(280, 220), 
-            Width = 100,
-            Name = "IISNextButton",
-            Visible = false 
-        };
+        // Next button
+        var nextButton = CreateStyledButton("Next >>", 100, 40);
+        nextButton.Name = "IISNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 4; // Move to Backup tab
 
         contentPanel.Controls.AddRange(new Control[] {
@@ -975,9 +984,7 @@ Please ensure all required files are present before running the setup wizard.
         {
             Width = 600,
             Height = 400,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left
+            Dock = DockStyle.Fill
         };
 
         var backupLabel = new Label { 
@@ -994,12 +1001,9 @@ Please ensure all required files are present before running the setup wizard.
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
         
-        var backupBrowseButton = new Button { 
-            Text = "Browse", 
-            Location = new Point(430, 20), 
-            Width = 80,
-            Anchor = AnchorStyles.Top | AnchorStyles.Right
-        };
+        var backupBrowseButton = CreateStyledButton("Browse", 80, 30);
+        backupBrowseButton.Location = new Point(430, 20);
+        backupBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         backupBrowseButton.Click += (s, e) => BrowseForFolder("BackupPath");
 
         var scheduleLabel = new Label { 
@@ -1018,22 +1022,17 @@ Please ensure all required files are present before running the setup wizard.
         scheduleComboBox.Items.AddRange(new string[] { "Daily", "Weekly", "Monthly" });
         scheduleComboBox.SelectedIndex = 0;
 
-        var testBackupButton = new Button { 
-            Text = "Test Backup", 
-            Location = new Point(150, 120), 
-            Width = 120,
-            Name = "TestBackupButton"
-        };
+        var testBackupButton = CreateStyledButton("Test Backup", 120, 40);
+        testBackupButton.Name = "TestBackupButton";
+        testBackupButton.Location = new Point(contentPanel.Width - 280, contentPanel.Height - 50);
+        testBackupButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         testBackupButton.Click += async (s, e) => await TestBackup();
 
-        // Next button (initially hidden)
-        var nextButton = new Button { 
-            Text = "Next >>", 
-            Location = new Point(280, 120), 
-            Width = 100,
-            Name = "BackupNextButton",
-            Visible = false 
-        };
+        // Next button
+        var nextButton = CreateStyledButton("Next >>", 100, 40);
+        nextButton.Name = "BackupNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 5; // Move to Review tab
 
         contentPanel.Controls.AddRange(new Control[] {
@@ -1052,6 +1051,19 @@ Please ensure all required files are present before running the setup wizard.
     {
         var tab = new TabPage("Review & Install");
 
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true
+        };
+
+        var contentPanel = new Panel
+        {
+            Width = 600,
+            Height = 400,
+            Dock = DockStyle.Fill
+        };
+
         var reviewTextBox = new TextBox
         {
             Location = new Point(20, 20),
@@ -1059,22 +1071,18 @@ Please ensure all required files are present before running the setup wizard.
             Multiline = true,
             ScrollBars = ScrollBars.Vertical,
             ReadOnly = true,
-            Name = "ReviewText"
+            Name = "ReviewText",
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
         };
 
-        var startSetupButton = new Button
-        {
-            Text = "Start Setup",
-            Location = new Point(200, 290),
-            Width = 120,
-            Height = 40,
-            BackColor = Color.Green,
-            ForeColor = Color.White,
-            Font = new Font("Segoe UI", 10, FontStyle.Bold)
-        };
+        var startSetupButton = CreateStyledButton("Start Setup", 120, 40);
+        startSetupButton.Location = new Point(contentPanel.Width - 140, contentPanel.Height - 50);
+        startSetupButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         startSetupButton.Click += async (s, e) => await StartCompleteSetup();
 
-        tab.Controls.AddRange(new Control[] { reviewTextBox, startSetupButton });
+        contentPanel.Controls.AddRange(new Control[] { reviewTextBox, startSetupButton });
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
 
         // Update review when tab is selected
         wizardTabs.SelectedIndexChanged += (s, e) =>
