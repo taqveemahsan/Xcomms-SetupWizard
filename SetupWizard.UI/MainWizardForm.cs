@@ -140,6 +140,7 @@ Please ensure all required files are present before running the setup wizard.
     {
         var navItems = new List<(string Text, string Icon)>
         {
+            ("License Agreement", "google-docs.png"),
             ("Database Setup", "database.png"),
             ("Install Location", "google-docs.png"),
             ("Configuration", "maintenance.png"),
@@ -201,6 +202,9 @@ Please ensure all required files are present before running the setup wizard.
             string tag = button.Tag.ToString();
             switch (tag)
             {
+                case "License Agreement":
+                    wizardTabs.SelectedIndex = 1;
+                    break;
                 case "Database Setup":
                     wizardTabs.SelectedIndex = 2;
                     break;
