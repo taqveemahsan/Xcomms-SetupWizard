@@ -180,6 +180,7 @@ Please ensure all required files are present before running the setup wizard.
         }
 
         wizardTabs.TabPages.Add(CreateWelcomeTab());
+        wizardTabs.TabPages.Add(CreateLicenseTab());
         wizardTabs.TabPages.Add(CreateDatabaseTab());
         wizardTabs.TabPages.Add(CreateDeploymentTab());
         wizardTabs.TabPages.Add(CreateIISTab());
@@ -201,19 +202,19 @@ Please ensure all required files are present before running the setup wizard.
             switch (tag)
             {
                 case "Database Setup":
-                    wizardTabs.SelectedIndex = 1;
-                    break;
-                case "Install Location":
                     wizardTabs.SelectedIndex = 2;
                     break;
-                case "Configuration":
+                case "Install Location":
                     wizardTabs.SelectedIndex = 3;
                     break;
-                case "Backup Setup":
+                case "Configuration":
                     wizardTabs.SelectedIndex = 4;
                     break;
-                case "Review & Install":
+                case "Backup Setup":
                     wizardTabs.SelectedIndex = 5;
+                    break;
+                case "Review & Install":
+                    wizardTabs.SelectedIndex = 6;
                     break;
             }
         }
@@ -387,7 +388,7 @@ Please ensure all required files are present before running the setup wizard.
         nextButton.Name = "DeploymentNextButton";
         nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
         nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 3; // Move to IIS tab
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 4; // Move to IIS tab
         
         contentPanel.Controls.Add(apiGroupBox);
         contentPanel.Controls.Add(webGroupBox);
@@ -397,6 +398,114 @@ Please ensure all required files are present before running the setup wizard.
         mainPanel.Controls.Add(contentPanel);
         tab.Controls.Add(mainPanel);
         
+        return tab;
+    }
+
+    private TabPage CreateLicenseTab()
+    {
+        var tab = new TabPage("License Agreement");
+        tab.Padding = new Padding(20);
+
+        var mainPanel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            AutoScroll = true
+        };
+
+        var contentPanel = new Panel
+        {
+            Width = 600,
+            Height = 400,
+            Dock = DockStyle.Fill
+        };
+
+        var licenseBox = new TextBox
+        {
+            Multiline = true,
+            ReadOnly = true,
+            ScrollBars = ScrollBars.Vertical,
+            Size = new Size(550, 250),
+            Location = new Point(0, 20),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
+
+        licenseBox.Text = @"END USER LICENSE AGREEMENT (EULA) FOR XCOMMS
+IMPORTANT-READ CAREFULLY BEFORE USING THE SOFTWARE: This End-User License Agreement (""EULA"") is a legal agreement between you (either an individual or a single entity) and XCOMMS (""Licensor"") for the software product(s) identified above which may include associated software components, media, printed materials, and ""online"" or electronic documentation (""Software""). By installing, copying, or otherwise using the Software, you agree to be bound by the terms of this EULA. If you do not agree to the terms of this EULA, do not install or use the Software.
+1. GRANT OF LICENSE
+Licensor grants you a non-exclusive, non-transferable, limited license to use the Software solely for your own personal or internal business purposes in accordance with this EULA. The terms below specify distinct conditions depending on whether you are using the Software as a Cloud-hosted solution or as a Locally Hosted On-Premise solution.
+2. LICENSE USE MODELS
+2.1 Cloud-Hosted Solution (SaaS)
+When you access and use the Software as a cloud-hosted service provided by Licensor:
+Your use is governed by this EULA and any applicable Terms of Service provided by Licensor.
+Licensor maintains and operates the software, infrastructure, and security.
+Data security, backups, and availability are the responsibility of Licensor as outlined in Licensor’s policies.
+2.2 Locally Hosted On-Premise Solution
+When you license and deploy the Software on your own local hardware or infrastructure:
+You are responsible for installation, configuration, maintenance, and operation of the Software.
+You must comply with all terms of this EULA and the following additional terms specific to the on-premise deployment (see Section 3).
+
+3. ADDITIONAL TERMS FOR LOCALLY HOSTED ON-PREMISE SOLUTION
+3.1 License Scope and Deployment
+Licensor grants you a non-exclusive, non-transferable license to install and use the Software on your local hardware solely for internal business purposes. You may not deploy the Software outside of the authorized on-premise environment.
+
+3.2 Installation, Maintenance, and Support
+You are responsible for all installation, configuration, operation, and maintenance of the Software in your environment.
+Licensor may provide support, updates, and upgrades only if a separate support agreement is in place.
+3.3 Updates and Upgrades
+Licensor may provide updates or upgrades, which you are responsible for applying unless otherwise agreed.
+3.4 Data Security and Backup
+You are solely responsible for the security, backup, and integrity of all data processed or stored on your on-premise system. Licensor disclaims liability for any data loss or security breaches on your system.
+3.5 License Restrictions and Audits
+You must not exceed authorized installations or users.
+Licensor may audit your use of the Software upon reasonable notice to ensure compliance.
+3.6 Warranty and Liability
+The Software is licensed “as-is” for on-premise use. Licensor disclaims all warranties regarding suitability or performance on your hardware.
+Licensor is not liable for damages resulting from your environment or use of the Software on-premise.
+3.7 Termination
+This license terminates automatically if you breach any terms. Upon termination, you must uninstall and destroy all copies of the Software.
+4. OWNERSHIP
+The Software is owned by Licensor and is protected by United States copyright laws and international treaties. Licensor retains all rights, title, and interest in the Software, including intellectual property rights.
+
+5. RESTRICTIONS
+You may not sell, transfer, rent, lease, modify, adapt, translate, reverse engineer, decompile, or disassemble the Software or any part of it. You may not make copies except for backup purposes. You may not remove or alter any proprietary notices.
+6. TERMINATION
+This license is effective until terminated. It terminates automatically upon breach of this EULA. Upon termination, you must destroy all copies of the Software.
+7. LIMITATION OF LIABILITY
+IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING FROM USE OR INABILITY TO USE THE SOFTWARE, INCLUDING LOSS OF PROFITS, DATA, OR BUSINESS INTERRUPTION.
+8. GOVERNING LAW
+This EULA is governed by the laws of the State of Florida, without regard to conflict of laws rules.
+9. ENTIRE AGREEMENT
+This EULA constitutes the entire agreement between you and Licensor regarding the Software and supersedes all prior agreements.
+10. SEVERABILITY
+If any provision is invalid, the remainder remains effective.
+11. ACKNOWLEDGMENT
+By installing or using the Software, you acknowledge you have read, understood, and agree to this EULA.
+If you have any questions, contact XCOMMS at support@xcomms.com";
+
+        var acceptCheck = new CheckBox
+        {
+            Text = "I accept the terms and conditions",
+            Location = new Point(0, 290),
+            AutoSize = true,
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+        };
+
+        var nextButton = CreateStyledButton("Next", 100, 40);
+        nextButton.Name = "LicenseNextButton";
+        nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
+        nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        nextButton.Enabled = false;
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 2;
+
+        acceptCheck.CheckedChanged += (s, e) => nextButton.Enabled = acceptCheck.Checked;
+
+        contentPanel.Controls.Add(licenseBox);
+        contentPanel.Controls.Add(acceptCheck);
+        contentPanel.Controls.Add(nextButton);
+
+        mainPanel.Controls.Add(contentPanel);
+        tab.Controls.Add(mainPanel);
+
         return tab;
     }
 
@@ -696,7 +805,7 @@ Please ensure all required files are present before running the setup wizard.
         nextButton.Name = "DatabaseNextButton";
         nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
         nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 2;
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 3;
         
         contentPanel.Controls.Add(connectionGroupBox);
         contentPanel.Controls.Add(setupGroupBox);
@@ -956,7 +1065,7 @@ Please ensure all required files are present before running the setup wizard.
         nextButton.Name = "IISNextButton";
         nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
         nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 4; // Move to Backup tab
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 5; // Move to Backup tab
 
         contentPanel.Controls.AddRange(new Control[] {
             iisInfoLabel, appPoolLabel, appPoolTextBox,
@@ -1033,7 +1142,7 @@ Please ensure all required files are present before running the setup wizard.
         nextButton.Name = "BackupNextButton";
         nextButton.Location = new Point(contentPanel.Width - 120, contentPanel.Height - 50);
         nextButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 5; // Move to Review tab
+        nextButton.Click += (s, e) => wizardTabs.SelectedIndex = 6; // Move to Review tab
 
         contentPanel.Controls.AddRange(new Control[] {
             backupLabel, backupTextBox, backupBrowseButton,
