@@ -140,7 +140,7 @@ Please ensure all required files are present before running the setup wizard.
     {
         var navItems = new List<(string Text, string Icon)>
         {
-            ("License Agreement", "google-docs.png"),
+            ("License Agreement", "donor-consent-form.png"),
             ("Database Setup", "database.png"),
             ("Install Location", "google-docs.png"),
             ("Configuration", "maintenance.png"),
